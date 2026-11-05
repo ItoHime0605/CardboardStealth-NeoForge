@@ -88,8 +88,17 @@ public final class BoxEvents {
     }
 
     public static void damaged(LivingDamageEvent.Post event) {
-        if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player))
-            BoxState.interrupt(player, 20);
+        // Taking a hit or successfully hurting another entity breaks the disguise.
+        // This covers projectile/hitscan damage where AttackEntityEvent never fires.
+        if (event.getEntity() instanceof ServerPlayer victim && BoxState.active(victim))
+            BoxState.interrupt(victim, 20);
+        if (event.getSource().getEntity() instanceof ServerPlayer attacker && BoxState.active(attacker))
+            BoxState.interrupt(attacker, 20);
+    }
+    public static void useItem(PlayerInteractEvent.RightClickItem event) {
+        // Do not permit item activation while remaining visually disguised.
+        if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player)
+                && !event.getItemStack().isEmpty()) BoxState.interrupt(player, 20);
     }
     public static void attack(AttackEntityEvent event) {
         if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player))
