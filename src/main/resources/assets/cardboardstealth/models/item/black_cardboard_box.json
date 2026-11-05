@@ -1,7 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "cardboardstealth:item/box_dye_base",
-    "layer1": "cardboardstealth:item/box_dye_details"
+    "layer0": "cardboardstealth:item/colored/black_cardboard_box"
   }
 }
