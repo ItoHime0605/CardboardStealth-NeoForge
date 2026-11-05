@@ -27,7 +27,8 @@ import tw.zonezero.cardboardstealth.CardboardStealth;
  *
  * - Forward = -Z: discreet peep opening, no printed recycling logo.
  * - Rear = +Z: recycling stamp in the lower right corner.
- * - Four separate, outward-folded bottom flaps; the underside is hollow.
+ * - Four separate, outward-folded bottom flaps; a recessed black liner hides
+ *   the player's torso at the lower mouth while their feet remain visible.
  * - 16 dye body shades, warm natural tape, edge folds and print remain distinct.
  * - All geometry is vanilla ModelPart cuboids, with restrained pixel paper grain.
  */
@@ -42,6 +43,7 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
     private final ModelPart body;
     private final ModelPart sideShade;
     private final ModelPart foldedEdges;
+    private final ModelPart undersideShade;
     private final ModelPart shadowInk;
     private final ModelPart tape;
     private final ModelPart recycling;
@@ -51,6 +53,7 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
         body = root.getChild("body");
         sideShade = root.getChild("side_shade");
         foldedEdges = root.getChild("folded_edges");
+        undersideShade = root.getChild("underside_shade");
         shadowInk = root.getChild("shadow_ink");
         tape = root.getChild("tape");
         recycling = root.getChild("recycling");
@@ -111,6 +114,22 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
         folded.addOrReplaceChild("right_flap", CubeListBuilder.create().texOffs(45, 84)
                 .addBox(-0.35F, 0F, -11F, 0.70F, 10F, 22F),
                 PartPose.offsetAndRotation(9F, 16F, 0F, 0F, 0F, -0.62F));
+
+        // Recessed opaque lining immediately INSIDE the lower mouth of the
+        // box, above the four hinged flaps (NOT part of those flaps).
+        // The body walls stop at Y=16; this 0.46px-thick dark false bottom
+        // occupies Y=15.40..15.86, hiding upper legs, skin and torso from a
+        // viewer looking upward without blocking the lower legs below it.
+        // Tiny intersections with the inner wall avoid seams/light leaks.
+        PartDefinition underside = root.addOrReplaceChild("underside_shade",
+                CubeListBuilder.create(), PartPose.ZERO);
+        underside.addOrReplaceChild("dark_inner_mouth", CubeListBuilder.create().texOffs(0, 105)
+                .addBox(-BoxModelGeometry.LINER_HALF_WIDTH,
+                        BoxModelGeometry.LINER_TOP_Y,
+                        -BoxModelGeometry.LINER_HALF_DEPTH,
+                        2F * BoxModelGeometry.LINER_HALF_WIDTH,
+                        BoxModelGeometry.LINER_THICKNESS,
+                        2F * BoxModelGeometry.LINER_HALF_DEPTH), PartPose.ZERO);
 
         // Color-matched low-profile fold scores and corrugated panel edging.
         PartDefinition ink = root.addOrReplaceChild("shadow_ink", CubeListBuilder.create(), PartPose.ZERO);
@@ -193,6 +212,10 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
                 BoxModelGeometry.multiplyTint(dye, 0.88F));
         foldedEdges.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
                 BoxModelGeometry.multiplyTint(dye, 0.95F));
+        // The liner is independent of dye color: it represents the darkness
+        // inside a box, not another dyed outer panel. Fully opaque; no alpha.
+        undersideShade.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
+                BoxModelGeometry.UNDERMOUTH_DARK_ARGB);
         shadowInk.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
                 BoxModelGeometry.multiplyTint(dye, 0.58F));
         tape.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TAPE)),

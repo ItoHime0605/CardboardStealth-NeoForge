@@ -19,6 +19,18 @@ public final class BoxModelGeometry {
     public static final float SLIT_BOTTOM_Y = 0.70F;
     public static final float PANEL_THICKNESS = 0.72F;
 
+    /** Fully opaque dark false bottom, recessed just above the four flap hinges. */
+    public static final float LINER_HALF_WIDTH = 8.45F;
+    public static final float LINER_HALF_DEPTH = 10.45F;
+    public static final float LINER_TOP_Y = 15.40F;
+    public static final float LINER_THICKNESS = 0.46F;
+    // Warm near-black keeps the interior matte, even for 16 dyed cardboard colors.
+    public static final int UNDERMOUTH_DARK_ARGB = 0xFF201A16;
+
+    public static float linerCoverage() {
+        return (4F * LINER_HALF_WIDTH * LINER_HALF_DEPTH) / (WIDTH_PIXELS * DEPTH_PIXELS);
+    }
+
     public static float slitWidth() { return SLIT_HALF_WIDTH * 2.0F; }
     public static float slitHeight() { return SLIT_BOTTOM_Y - SLIT_TOP_Y; }
     public static float externalSlitAreaRatio() {

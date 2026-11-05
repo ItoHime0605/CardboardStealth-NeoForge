@@ -73,6 +73,17 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxModelGeometry.java src/main/java/tw/zonezero/cardboardstealth/BoxViewGeometry.java tests/BoxModelGeometryTest.java
           java -cp build/rule-tests BoxModelGeometryTest
+      - name: Verify the dark under-mouth belongs to the body, not the flaps
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("src/main/java/tw/zonezero/cardboardstealth/client/CardboardLayer.java").read_text()
+          assert 'root.addOrReplaceChild("underside_shade"' in p
+          assert 'undersideShade.render(' in p
+          assert 'BoxModelGeometry.UNDERMOUTH_DARK_ARGB' in p
+          assert 'folded.addOrReplaceChild("front_flap"' in p
+          print('PASS: 4/4 bottom shadow panel integration checks')
+          PY
       - name: Verify recipes and model assets
         run: |
           python3 - <<'PY'
@@ -119,5 +130,5 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.18-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.19-alpha
           path: build/libs/*.jar

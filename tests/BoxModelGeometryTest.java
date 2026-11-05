@@ -24,6 +24,15 @@ public final class BoxModelGeometryTest {
         check(BoxModelGeometry.multiplyTint(0xAA7840,0.5F) == 0xFF553C20,"shadow multiplies dye safely");
         check(BoxModelGeometry.multiplyTint(0x000000,0.5F) == 0xFF000000,"zero color remains zero");
         check(BoxModelGeometry.multiplyTint(0xFFFFFF,2F) == 0xFFFFFFFF,"tint clamped");
-        System.out.println("PASS: " + checked + "/15 physical cardboard geometry and independent eye mask checks");
+        check(BoxModelGeometry.linerCoverage() > 0.85F, "opaque interior spans most of box mouth");
+        check(BoxModelGeometry.LINER_HALF_WIDTH < BoxModelGeometry.WIDTH_PIXELS / 2F,
+                "dark interior hidden behind side walls");
+        check(BoxModelGeometry.LINER_HALF_DEPTH < BoxModelGeometry.DEPTH_PIXELS / 2F,
+                "dark interior hidden behind front and rear");
+        check(BoxModelGeometry.LINER_TOP_Y + BoxModelGeometry.LINER_THICKNESS
+                < BoxModelGeometry.FLOOR_BODY_Y, "dark lining recessed above flap hinges");
+        check((BoxModelGeometry.UNDERMOUTH_DARK_ARGB >>> 24) == 255,
+                "underside is fully opaque, not transparent");
+        System.out.println("PASS: " + checked + "/20 physical box and opaque underside checks");
     }
 }
