@@ -37,19 +37,9 @@ public abstract class ZombieAwarenessMixin {
             cir.setReturnValue(false);
     }
 
-    // Stop only disguised players' local FOOTSTEP sound from generating ZA sound traces.
-    // Weapon fire, explosions, block damage, etc. remain detectable by ZA.
-    @Inject(method = "hookSoundEvent", at = @At("HEAD"), cancellable = true)
-    private static void cardboardstealth$quietStep(SoundEvent sound, Level level, double x, double y, double z,
-            float volume, float pitch, CallbackInfo ci) {
-        if (!(level instanceof ServerLevel server) || sound == null) return;
-        String path = sound.getLocation().getPath();
-        if (!path.endsWith(".step")) return;
-        for (ServerPlayer player : server.players()) {
-            if (BoxState.active(player) && player.distanceToSqr(x, y, z) <= 1.0D) {
-                ci.cancel();
-                return;
-            }
-        }
-    }
+    // Deliberately do NOT cancel ZAUtil.hookSoundEvent by nearby position.
+    // That hook provides only a sound and XYZ, not the emitting entity; cancelling
+    // footsteps because any boxed player is nearby also silences unrelated players.
+    // Source-specific sound volume is handled by PlayLevelSoundEvent.AtEntity.
+    // ZA scent remains suppressed by the player-specific tickPlayer hook above.
 }
