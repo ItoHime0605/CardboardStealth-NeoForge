@@ -27,6 +27,8 @@ public final class BoxState {
     private static final String MOVING_UNTIL = "cardboardstealth_moving_until";
     // Ignore extremely small numeric jitter, but count jumps and half-slab climbing as movement.
     private static final double MOTION_EPSILON_SQR = 0.0001D;
+    private static final ResourceLocation STEP_ID = ResourceLocation.fromNamespaceAndPath(
+            CardboardStealth.MOD_ID, "inside_cardboard_step_height");
     private static final ResourceLocation SLOW_ID = ResourceLocation.fromNamespaceAndPath(
             CardboardStealth.MOD_ID, "inside_cardboard_box");
     private static final TagKey<EntityType<?>> FOOLED = TagKey.create(
@@ -109,6 +111,18 @@ public final class BoxState {
         } else if (speed.getModifier(SLOW_ID) == null) {
             speed.addTransientModifier(new AttributeModifier(SLOW_ID, -0.40D,
                     AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        }
+
+        // Vanilla step height is 0.6. Bring it down to exactly 0.5 during the
+        // disguise so slabs stay traversable while higher ledges are not.
+        AttributeInstance step = player.getAttribute(Attributes.STEP_HEIGHT);
+        if (step != null) {
+            if (!active) {
+                step.removeModifier(STEP_ID);
+            } else if (step.getModifier(STEP_ID) == null) {
+                step.addTransientModifier(new AttributeModifier(STEP_ID, -0.10D,
+                        AttributeModifier.Operation.ADD_VALUE));
+            }
         }
     }
     public static int hold(Player player) { return player.getPersistentData().getInt(HOLD); }
