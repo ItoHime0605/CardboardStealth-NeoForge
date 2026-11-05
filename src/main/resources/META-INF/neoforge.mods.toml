@@ -3,7 +3,7 @@ loaderVersion="[4,)"
 license="All Rights Reserved"
 [[mods]]
 modId="cardboardstealth"
-version="0.1.5-alpha"
+version="0.1.6-alpha"
 displayName="Cardboard Stealth / 紙箱潛行"
 authors="Zone Zero"
 description="紙箱偽裝、Curios 裝備槽與 Zombie Awareness AI 相容"

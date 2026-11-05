@@ -16,6 +16,11 @@ public final class BoxDetectionRules {
         return moving ? MOVING_RECOGNITION_RADIUS : STATIONARY_RECOGNITION_RADIUS;
     }
 
+    /** Even if far away, an enemy that still has this player targeted is not fooled. */
+    public static boolean concealsTarget(double distanceSquared, boolean moving, boolean alreadyLocked) {
+        return !alreadyLocked && concealsNewTarget(distanceSquared, moving);
+    }
+
     public static boolean concealsNewTarget(double distanceSquared, boolean moving) {
         double radius = recognitionRadius(moving);
         // The boundary itself is detectable, so only *beyond* the radius is concealed.

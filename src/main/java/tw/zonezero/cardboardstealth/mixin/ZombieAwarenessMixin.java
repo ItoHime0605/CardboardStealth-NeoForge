@@ -54,7 +54,7 @@ public abstract class ZombieAwarenessMixin {
         // Avoid spawning duplicate traces from the same player on a single tick.
         long now = level.getGameTime();
         String key = "cardboardstealth_last_footstep_tick";
-        if (source.getPersistentData().getLong(key) != now) {
+        if (ZAUtil.canSpawnTraceQuickCheck(level) && source.getPersistentData().getLong(key) != now) {
             int strength = Math.max(1, ZAConfigGeneral.soundStrength / (land ? 8 : 16));
             ZAUtil.spawnOrBuffSenseAtPos(level, new Vector3d(x, y, z),
                     EnumSenseType.SOUND, strength);

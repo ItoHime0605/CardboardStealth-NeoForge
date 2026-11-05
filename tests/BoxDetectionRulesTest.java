@@ -15,6 +15,11 @@ public final class BoxDetectionRulesTest {
         check(BoxDetectionRules.concealsNewTarget(2.0D * 2.0D, false), "2 blocks stationary concealed");
         check(!BoxDetectionRules.concealsNewTarget(2.0D * 2.0D, true), "2 blocks moving detected");
         check(!BoxDetectionRules.concealsNewTarget(Double.NaN, false), "invalid distance safe default");
-        System.out.println("PASS: 9/9 detection boundary checks");
+        check(!BoxDetectionRules.concealsTarget(10000.0D, false, true), "locked stationary remains chased");
+        check(!BoxDetectionRules.concealsTarget(10000.0D, true, true), "locked moving remains chased");
+        check(BoxDetectionRules.concealsTarget(10000.0D, false, false), "unlocked stationary conceal");
+        check(BoxDetectionRules.concealsTarget(10000.0D, true, false), "unlocked moving conceal");
+        check(!BoxDetectionRules.concealsNewTarget(-1.0D, false), "negative distance fails closed");
+        System.out.println("PASS: 14/14 detection and existing-lock checks");
     }
 }

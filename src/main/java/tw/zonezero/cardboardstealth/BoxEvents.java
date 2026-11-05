@@ -68,11 +68,14 @@ public final class BoxEvents {
     public static void jump(LivingEvent.LivingJumpEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || !BoxState.active(player)) return;
         BoxMovement.limitJump(player);
-        // A small but nonzero ZA sound trace: about 12.5% of its configured sound strength.
-        int strength = Math.max(1, ZAConfigGeneral.soundStrength / 8);
-        ZAUtil.spawnOrBuffSenseAtPos(player.level(),
-                new Vector3d(player.getX(), player.getY(), player.getZ()),
-                EnumSenseType.SOUND, strength);
+        // Follow Zombie Awareness's own dimension/sound enablement rules.
+        // Disabled ZA hearing must never be re-enabled by a disguised jump.
+        if (ZAUtil.canSpawnTraceQuickCheck(player.level())) {
+            int strength = Math.max(1, ZAConfigGeneral.soundStrength / 8);
+            ZAUtil.spawnOrBuffSenseAtPos(player.level(),
+                    new Vector3d(player.getX(), player.getY(), player.getZ()),
+                    EnumSenseType.SOUND, strength);
+        }
     }
 
     public static void stepSound(PlayLevelSoundEvent.AtEntity event) {
@@ -95,6 +98,14 @@ public final class BoxEvents {
         // Do not permit item activation while remaining visually disguised.
         if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player)
                 && !event.getItemStack().isEmpty()) BoxState.interrupt(player, 20);
+    }
+    public static void interactBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player))
+            BoxState.interrupt(player, 20);
+    }
+    public static void interactEntity(PlayerInteractEvent.EntityInteract event) {
+        if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player))
+            BoxState.interrupt(player, 20);
     }
     public static void attack(AttackEntityEvent event) {
         if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player))

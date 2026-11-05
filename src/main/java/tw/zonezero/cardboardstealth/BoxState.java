@@ -84,8 +84,8 @@ public final class BoxState {
 
     /** An attacker already locked on the player is NEVER tricked by the box. */
     public static boolean concealedFrom(Player player, Mob observer) {
-        return active(player) && fooled(observer) && observer.getTarget() != player
-                && BoxDetectionRules.concealsNewTarget(observer.distanceToSqr(player), moving(player));
+        return active(player) && fooled(observer)
+                && BoxDetectionRules.concealsTarget(observer.distanceToSqr(player), moving(player), observer.getTarget() == player);
     }
 
     public static void set(ServerPlayer player, int newVariant) {

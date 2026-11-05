@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.5-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.6-alpha 開發原始碼
 
 > **0.1.2-alpha 已成功透過 NeoForge/Gradle 編譯；0.1.5-alpha 仍待編譯與 Minecraft 專用伺服器實測。** 本工程是原始碼，不是可直接安裝的模組 JAR。
 
@@ -55,7 +55,7 @@ javac -encoding UTF-8 -d /tmp/cardboard-rules \
 java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 ```
 
-預期結果：`PASS: 9/9 detection boundary checks`。
+預期結果：`PASS: 14/14 detection and existing-lock checks`。
 
 ## NeoForge 專案建置
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.5-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.6-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -88,3 +88,13 @@ gradle --no-daemon build
 - 先前僅伺服器會以玩家 NBT 判斷紙箱音效；0.1.5-alpha 另使用 `ClientBoxState` 判斷客戶端實際發出的玩家腳步／落地聲量，讓自己和旁人的聽感與伺服器偵測邏輯一致。
 - 只對客戶端的聲音事件處理，避免整合伺服器時重複降低音量。
 - 正式模型／紙箱走上半磚後傾動畫仍未製作，待使用者參考圖片。
+
+## 0.1.6-alpha（聲音設定尊重與互動防偽裝）
+
+- Zombie Awareness 聽覺追蹤關閉、或僅限主世界且玩家不在主世界時，**跳躍與腳步不能自行補生新的聲音追蹤節點**；符合原模組 `ZAUtil.canSpawnTraceQuickCheck` 的規則。
+- 玩家在紙箱內右鍵互動方塊、實體（含開啟容器和與 NPC 互動）會中斷偽裝，與攻擊、使用物品限制一致。
+- 把「已經鎖定玩家」加入純 Java 判定函式與迴歸測試。遠離殭屍但未真正脫離鎖定，不能靠紙箱清仇恨。
+- 純 Java 測試擴充至 14 項，並透過 GitHub Actions 驗證。
+- 正式紙箱外觀仍未製作，待使用者提供參考圖後再製作模型及半磚上坡後傾動畫。
+
+**驗收限制**：以上是程式邏輯與自動建置驗證，仍需要 Minecraft 客戶端＋專用伺服器遊戲內實測。
