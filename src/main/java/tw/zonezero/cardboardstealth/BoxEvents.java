@@ -81,8 +81,8 @@ public final class BoxEvents {
     public static void stepSound(PlayLevelSoundEvent.AtEntity event) {
         if (!(event.getEntity() instanceof Player player) || !BoxState.active(player) || event.getSound() == null) return;
         String path = event.getSound().value().getLocation().getPath();
-        if (path.endsWith(".step")) event.setNewVolume(event.getNewVolume() * 0.18F);
-        else if (path.endsWith(".land") || path.endsWith(".fall"))
+        if (BoxSoundRules.isStep(path)) event.setNewVolume(event.getNewVolume() * 0.18F);
+        else if (BoxSoundRules.isLanding(path))
             event.setNewVolume(event.getNewVolume() * 0.28F);
     }
 
