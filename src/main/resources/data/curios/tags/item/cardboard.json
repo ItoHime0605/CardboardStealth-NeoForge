@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "cardboardstealth:cardboard_box",
+    "cardboardstealth:delivery_box",
+    "cardboardstealth:supply_box"
+  ]
+}

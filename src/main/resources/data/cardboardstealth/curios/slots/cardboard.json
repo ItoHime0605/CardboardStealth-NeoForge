@@ -1,0 +1,10 @@
+{
+  "size": 1,
+  "operation": "SET",
+  "order": 90,
+  "icon": "cardboardstealth:slot/empty_cardboard",
+  "add_cosmetic": false,
+  "validators": [
+    "curios:tag"
+  ]
+}

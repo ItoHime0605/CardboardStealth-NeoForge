@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "tw.zonezero.cardboardstealth.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ZombieAwarenessMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

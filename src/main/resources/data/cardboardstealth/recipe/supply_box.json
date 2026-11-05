@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "cardboardstealth:cardboard_box",
+    "minecraft:green_dye"
+  ],
+  "result": {
+    "id": "cardboardstealth:supply_box",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PSP",
+    "PPP"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "S": "minecraft:string"
+  },
+  "result": {
+    "id": "cardboardstealth:cardboard_box",
+    "count": 1
+  }
+}

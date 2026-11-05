@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "cardboardstealth:cardboard_box",
+    "minecraft:red_dye"
+  ],
+  "result": {
+    "id": "cardboardstealth:delivery_box",
+    "count": 1
+  }
+}

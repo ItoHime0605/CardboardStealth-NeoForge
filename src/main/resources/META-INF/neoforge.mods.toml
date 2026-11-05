@@ -1,0 +1,35 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="All Rights Reserved"
+[[mods]]
+modId="cardboardstealth"
+version="0.1.1-alpha"
+displayName="Cardboard Stealth / 紙箱潛行"
+authors="Zone Zero"
+description="紙箱偽裝、Curios 裝備槽與 Zombie Awareness AI 相容"
+[[mixins]]
+config="cardboardstealth.mixins.json"
+[[dependencies.cardboardstealth]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.60,)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.cardboardstealth]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.21.2)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.cardboardstealth]]
+modId="curios"
+type="required"
+versionRange="[9.5.1,)"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.cardboardstealth]]
+modId="zombieawareness"
+type="required"
+versionRange="[1.21.0-1.13.2,)"
+ordering="AFTER"
+side="BOTH"
