@@ -14,6 +14,8 @@ import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.event.PlayLevelSoundEvent;
 import tw.zonezero.cardboardstealth.BoxMovement;
 import net.neoforged.neoforge.common.NeoForge;
 import tw.zonezero.cardboardstealth.CardboardStealth;
@@ -30,6 +32,7 @@ public final class ClientInit {
         NeoForge.EVENT_BUS.addListener(ClientInit::post);
         NeoForge.EVENT_BUS.addListener(ClientInit::logout);
         NeoForge.EVENT_BUS.addListener(ClientInit::jump);
+        NeoForge.EVENT_BUS.addListener(ClientInit::clientSounds);
     }
     public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(BOX_LAYER, CardboardLayer::createBodyLayer);
@@ -62,6 +65,16 @@ public final class ClientInit {
         if (event.getEntity() instanceof LocalPlayer player && ClientBoxState.variant(player.getId()) != 0) {
             BoxMovement.limitJump(player);
         }
+    }
+    // Server-side persistent NBT is NOT synchronized to the client, so the
+    // audible local sound must use the explicit BoxPayload state instead.
+    public static void clientSounds(PlayLevelSoundEvent.AtEntity event) {
+        if (!(event.getEntity() instanceof Player player) || !player.level().isClientSide()
+                || ClientBoxState.variant(player.getId()) == 0 || event.getSound() == null) return;
+        String path = event.getSound().value().getLocation().getPath();
+        if (path.endsWith(".step")) event.setNewVolume(event.getNewVolume() * 0.18F);
+        else if (path.endsWith(".land") || path.endsWith(".fall"))
+            event.setNewVolume(event.getNewVolume() * 0.28F);
     }
     public static void logout(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientBoxState.clear(); SAVED.clear();
