@@ -23,6 +23,8 @@ public final class CardboardStealth {
         NeoForge.EVENT_BUS.addListener(BoxEvents::startTracking);
         NeoForge.EVENT_BUS.addListener(BoxEvents::playerJoin);
         NeoForge.EVENT_BUS.addListener(BoxEvents::playerLeave);
+        NeoForge.EVENT_BUS.addListener(BoxEvents::respawn);
+        NeoForge.EVENT_BUS.addListener(BoxEvents::changedDimension);
         NeoForge.EVENT_BUS.addListener(BoxEvents::leftClickBlock);
         if (FMLEnvironment.dist == Dist.CLIENT) ClientInit.register(modBus);
     }
