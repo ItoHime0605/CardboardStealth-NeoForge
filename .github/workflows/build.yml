@@ -20,7 +20,7 @@ jobs:
           mkdir -p build/rule-tests
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxDetectionRules.java tests/BoxDetectionRulesTest.java
           java -cp build/rule-tests BoxDetectionRulesTest
-      - run: gradle --no-daemon build
+      - run: gradle --no-daemon build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: cardboardstealth-neoforge-1.21.1-0.1.2-alpha
