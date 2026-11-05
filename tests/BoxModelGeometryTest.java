@@ -13,6 +13,11 @@ public final class BoxModelGeometryTest {
         check(BoxModelGeometry.HEIGHT_PIXELS == 21F, "body height");
         check(BoxModelGeometry.FRONT_Z == -11F, "eye facing forward");
         check(BoxModelGeometry.BACK_Z == 11F, "recycling stamp on rear");
+        check(BoxModelGeometry.REAR_STAMP_LEFT_X > 0F
+                && BoxModelGeometry.REAR_STAMP_RIGHT_X < BoxModelGeometry.WIDTH_PIXELS / 2F,
+                "rear-facing recycling stamp positioned on the viewer's right");
+        check(BoxModelGeometry.REAR_STAMP_RIGHT_X > BoxModelGeometry.REAR_STAMP_LEFT_X,
+                "rear recycling symbol is not mirrored horizontally");
         check(BoxModelGeometry.slitWidth() > 9.5F, "peep hole is usable from outside");
         check(BoxModelGeometry.slitWidth() < 11F, "peep hole does not span entire front");
         check(BoxModelGeometry.slitHeight() == 1.5F, "exterior slot is slender");
@@ -37,6 +42,6 @@ public final class BoxModelGeometryTest {
                 == 24F, "rested box wall hinge reaches ground plane");
         check(Math.abs(10D * Math.cos(tw.zonezero.cardboardstealth.BoxModelPose.flapAngle(true))) < 0.00001D,
                 "resting flap tips reach the ground without drooping below it");
-        System.out.println("PASS: " + checked + "/22 physical box and ground-contact checks");
+        System.out.println("PASS: " + checked + "/24 physical box, grounding and rear-logo checks");
     }
 }

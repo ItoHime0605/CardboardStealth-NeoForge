@@ -240,13 +240,14 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
 
     /**
      * True transparent UV-mapped printed glyph, facing outside the back (+Z).
-     * Negative model X is the rear viewer's right: the mark belongs there,
-     * never beside the forward eye slit.
+     * On the +Z back face, positive model X is the rear viewer's right.
+     * Keep the recycling print on that side; it never faces the eye slit.
      */
     private static void renderBackRecyclingStamp(PoseStack pose, MultiBufferSource buffers, int light) {
         VertexConsumer out = buffers.getBuffer(RenderType.entityCutoutNoCull(RECYCLE));
         PoseStack.Pose transform = pose.last();
-        float left = -8.35F / 16.0F, right = -2.15F / 16.0F;
+        float left = BoxModelGeometry.REAR_STAMP_LEFT_X / 16.0F;
+        float right = BoxModelGeometry.REAR_STAMP_RIGHT_X / 16.0F;
         float top = 7.8F / 16.0F, bottom = 14.0F / 16.0F;
         float z = 11.15F / 16.0F;
         addStampVertex(out, transform, left, bottom, z, 0F, 0.25F, light);

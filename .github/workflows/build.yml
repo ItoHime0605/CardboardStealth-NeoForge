@@ -102,7 +102,7 @@ jobs:
           assert 'lookRelativeYaw(bodyYaw, headYaw)' in render
           assert 'stepBackTilt' not in render and 'stepBackTilt' not in props
           assert 'eye_cavity' in render and 'head_shadow' in render
-          assert 'renderBackRecyclingStamp' in render and 'left = -8.35F' in render
+          assert 'renderBackRecyclingStamp' in render and 'REAR_STAMP_LEFT_X' in render
           assert 'innerBase(variant)' in overlay and 'BoxViewGeometry.calculate' in overlay
           assert 'ModCreativeTabs.TABS.register(modBus)' in entry
           assert 'itemGroup.cardboardstealth' in tabs
