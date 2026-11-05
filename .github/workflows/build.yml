@@ -95,5 +95,5 @@ jobs:
       - run: gradle --no-daemon build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.14-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.15-alpha
           path: build/libs/*.jar

@@ -25,6 +25,6 @@ public final class BoxColorsAndPoseTest {
         check(BoxModelPose.stepBackTilt(0.2, false, false) == 0F, "jump does not tilt");
         check(BoxModelPose.stepBackTilt(0.2, true, true) == 0F, "settled no tilt");
         check(BoxModelPose.stepBackTilt(0.8, true, false) == 0F, "large jumps ignored");
-        System.out.println("PASS: " + checks + "/44 dye palette and model animation checks");
+        System.out.println("PASS: " + checks + "/45 dye palette and model animation checks");
     }
 }

@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.14-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.15-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.14-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.15-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -188,3 +188,10 @@ gradle --no-daemon build
 - 正式配方：紙 ×7、史萊姆球 ×1、對應染料 ×1（每種顏色有獨立合成配方）。另可用任意 Curios 紙箱 ×1 加染料 ×1 改染色。既有三款測試配方移除，但原有物品仍受支援。
 - 中文名稱及英文名稱齊全；增加純 Java 色票／後傾測試及 16 色配方驗證。
 - **實際遊戲驗收仍必要**：正面孔的視角位置、模型 3D UV、回收標誌貼圖朝向、夾層厚度、第一人稱 TaCZ 手槍顯示、多玩家與伺服器載入。CI 通過不代表遊戲中視覺完全正確。
+
+
+## 0.1.15-alpha｜圓角觀察孔與測試紀錄修正
+
+- 正面實體觀察孔的四個內角各補一塊 1×1 像素的箱體，讓遊戲中遠看具備圓角輪廓，與玩家提供的第一人稱視野參考圖呼應。
+- 修正 0.1.14-alpha 新增的色票與動作測試通過數顯示為 45/44 的文字錯誤（實際有 45 個通過項目）。
+- 未更動既定 16 色合成、 Curios 偽裝、五 tick 靜止貼地、多人同步及殭屍感知範圍。

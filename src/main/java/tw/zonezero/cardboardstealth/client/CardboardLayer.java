@@ -70,6 +70,16 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
                 .addBox(-9F, 0F, -11F, 4F, 4F, 0.75F), PartPose.ZERO);
         paper.addOrReplaceChild("front_right", CubeListBuilder.create().texOffs(0, 75)
                 .addBox(5F, 0F, -11F, 4F, 4F, 0.75F), PartPose.ZERO);
+        // Block the 1x1 corners to give the physical opening a pixel-rounded shape,
+        // matching the first-person window reference rather than a square slot.
+        paper.addOrReplaceChild("eye_corner_top_left", CubeListBuilder.create().texOffs(0, 75)
+                .addBox(-5F, 0F, -11F, 1F, 1F, 0.75F), PartPose.ZERO);
+        paper.addOrReplaceChild("eye_corner_top_right", CubeListBuilder.create().texOffs(0, 75)
+                .addBox(4F, 0F, -11F, 1F, 1F, 0.75F), PartPose.ZERO);
+        paper.addOrReplaceChild("eye_corner_bottom_left", CubeListBuilder.create().texOffs(0, 75)
+                .addBox(-5F, 3F, -11F, 1F, 1F, 0.75F), PartPose.ZERO);
+        paper.addOrReplaceChild("eye_corner_bottom_right", CubeListBuilder.create().texOffs(0, 75)
+                .addBox(4F, 3F, -11F, 1F, 1F, 0.75F), PartPose.ZERO);
 
         // Bottom has no base plate: four separate 0.7px-thick 10px flaps
         // swing out ~35 degrees. At rest their tips reach ground level (Y24).
