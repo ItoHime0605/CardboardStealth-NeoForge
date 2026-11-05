@@ -164,7 +164,11 @@ jobs:
               assert len(unique)==16, 'Some dyed sprites are identical'
               print('PASS: 16/16 distinct 64px dyed box item icons packed into JAR')
           PY
+      - name: Decode final JAR pixels to verify real dyed icons and recycling mark
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests tests/CardboardAssetIntegrityTest.java
+          java -cp build/rule-tests CardboardAssetIntegrityTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.21-alpha.jar
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.20-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.21-alpha
           path: build/libs/*.jar

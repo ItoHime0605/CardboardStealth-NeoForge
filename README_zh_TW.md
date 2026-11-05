@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.20-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.21-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.20-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.21-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -250,3 +250,13 @@ gradle --no-daemon build
 - 既有 Zombie Awareness 識破半徑、Curios、TaCZ 手槍行為、非手槍解除偽裝、聲音與速度判定均不更動。NeoForge 21.1.264 / Minecraft 1.21.1 / Java21。
 - CI 補充姿態與角度測試、箱內調色測試、整合工作表關鍵檢查、JAR 內 16 張不同顏色的 PNG 驗證。
 - **仍需在 Minecraft 實機驗收**：箱蓋在不同地形是否貼地、人物正面轉向及回收印刷符號、Curios／多人／TaCZ 的各種第三方渲染效果。CI 成功不等於客戶端全部通過。
+
+
+## 0.1.21-alpha｜實機截圖後的美術與穩定性核查
+
+- 回收標誌現在**依照玩家提供的 320×318 原圖**縮成忠實的 32×32 像素版本，新增可檢視的 `src/main/cardboard_art/recycle_mark_32.txt`，由 Gradle 自動轉成透明的 128px 圖集。原來的 16px 隨意簡化版已移除；Logo 仍然位於玩家背後的紙箱右下角。
+- 四片底蓋在靜止滿五 tick 的狀態由約 86 度調整為 **90 度水平展開**，避免原有約 0.7 像素長度落到地面以下；移動時仍保持原本斜開、稍微抬高且露腳的造型。無半磚傾斜。
+- 針對共享 `PlayerRenderer` 的情況，在每次 `RenderPlayerEvent.Pre` 的起點先清除前一玩家可能遺留的渲染層遮蔽快照，避免先前被其他模組取消的渲染留下不可見裝備狀態。
+- **新增真正讀取 JAR 像素的自動測試**，逐一驗證 16 色物品有至少 1800 個完整不透明像素、具有可辨識的不同色彩；並核對實際 128px 圖集的回收標誌精準形狀、印刷綠色與透明區域。先前僅驗證 PNG 檔頭與色彩雜湊不足以排除透明紙箱問題。
+- 既有 Curios、TaCZ、Zombie Awareness、第一人稱較大的圓角視窗、紙箱內部隨顏色變化及 16 色主配方全部沿用。
+- GitHub Actions 可以驗證資源及 Java 編譯，但**不能取代 Modrinth 客戶端與多人實際畫面驗收**。這次仍以一次整合版本交付，不針對每個子項目發放 JAR。
