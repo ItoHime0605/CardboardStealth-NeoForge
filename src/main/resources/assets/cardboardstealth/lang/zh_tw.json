@@ -18,5 +18,6 @@
   "item.cardboardstealth.brown_cardboard_box": "棕色紙箱",
   "item.cardboardstealth.green_cardboard_box": "綠色紙箱",
   "item.cardboardstealth.red_cardboard_box": "紅色紙箱",
-  "item.cardboardstealth.black_cardboard_box": "黑色紙箱"
+  "item.cardboardstealth.black_cardboard_box": "黑色紙箱",
+  "itemGroup.cardboardstealth": "紙箱潛行"
 }

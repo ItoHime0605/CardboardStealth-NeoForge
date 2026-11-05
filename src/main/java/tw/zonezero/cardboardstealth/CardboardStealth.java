@@ -13,7 +13,7 @@ public final class CardboardStealth {
     public static final String MOD_ID = "cardboardstealth";
     public CardboardStealth(IEventBus modBus) {
         ModItems.ITEMS.register(modBus);
-        modBus.addListener(ModItems::creativeTabs);
+        ModCreativeTabs.TABS.register(modBus);
         modBus.addListener(ModNetwork::register);
         NeoForge.EVENT_BUS.addListener(BoxEvents::playerTick);
         NeoForge.EVENT_BUS.addListener(BoxEvents::changeTarget);

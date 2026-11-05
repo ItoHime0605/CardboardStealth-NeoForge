@@ -3,9 +3,7 @@ package tw.zonezero.cardboardstealth;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -33,12 +31,5 @@ public final class ModItems {
             if (item == DYED.get(BoxColors.NAMES[i]).get()) return BoxColors.dyedVariant(i);
         }
         return 0;
-    }
-    public static void creativeTabs(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-            event.accept(CARDBOARD.get());
-            for (var dyed : DYED.values()) event.accept(dyed.get());
-            // Legacy delivery and supply items remain registered for compatibility.
-        }
     }
 }

@@ -20,11 +20,12 @@ public final class BoxColorsAndPoseTest {
         check(BoxColors.rgb(1) != 0, "legacy box still colored");
         check(BoxColors.rgb(2) != 0 && BoxColors.rgb(3) != 0, "legacy red/green");
         check(BoxModelPose.liftPixels(false) == 3F, "walking reveals legs");
-        check(BoxModelPose.liftPixels(true) == 0F, "resting lowers to ground");
-        check(BoxModelPose.stepBackTilt(0.2, true, false) < 0F, "steps tilt back");
-        check(BoxModelPose.stepBackTilt(0.2, false, false) == 0F, "jump does not tilt");
-        check(BoxModelPose.stepBackTilt(0.2, true, true) == 0F, "settled no tilt");
-        check(BoxModelPose.stepBackTilt(0.8, true, false) == 0F, "large jumps ignored");
-        System.out.println("PASS: " + checks + "/45 dye palette and model animation checks");
+        check(BoxModelPose.liftPixels(true) == -8F, "resting body hinge reaches ground");
+        check(BoxModelPose.flapAngle(false) > 0.60F, "walking flaps angled");
+        check(BoxModelPose.flapAngle(true) > 1.45F, "resting flaps nearly flat");
+        check(BoxModelPose.lookRelativeYaw(30F, 90F) == -60F, "box follows head yaw");
+        check(BoxModelPose.lookRelativeYaw(170F, -170F) == -20F, "yaw wraps correctly");
+        check(BoxModelPose.lookRelativeYaw(45F, 45F) == 0F, "no unnecessary yaw");
+        System.out.println("PASS: " + checks + "/47 dye palette and pose checks");
     }
 }
