@@ -69,9 +69,13 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxColors.java src/main/java/tw/zonezero/cardboardstealth/BoxModelPose.java tests/BoxColorsAndPoseTest.java
           java -cp build/rule-tests BoxColorsAndPoseTest
+      - name: Check tinted interior cardboard appearance
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxColors.java src/main/java/tw/zonezero/cardboardstealth/BoxInteriorPalette.java tests/BoxInteriorPaletteTest.java
+          java -cp build/rule-tests BoxInteriorPaletteTest
       - name: Check exterior eye slot vs larger player-view mask
         run: |
-          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxModelGeometry.java src/main/java/tw/zonezero/cardboardstealth/BoxViewGeometry.java tests/BoxModelGeometryTest.java
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxModelGeometry.java src/main/java/tw/zonezero/cardboardstealth/BoxModelPose.java src/main/java/tw/zonezero/cardboardstealth/BoxViewGeometry.java tests/BoxModelGeometryTest.java
           java -cp build/rule-tests BoxModelGeometryTest
       - name: Verify the dark under-mouth belongs to the body, not the flaps
         run: |
@@ -83,6 +87,26 @@ jobs:
           assert 'BoxModelGeometry.UNDERMOUTH_DARK_ARGB' in p
           assert 'folded.addOrReplaceChild("front_flap"' in p
           print('PASS: 4/4 bottom shadow panel integration checks')
+          PY
+      - name: Validate full visual worklist source integration
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('src/main/java/tw/zonezero/cardboardstealth')
+          render=(root/'client/CardboardLayer.java').read_text()
+          overlay=(root/'client/BoxViewOverlay.java').read_text()
+          props=(root/'BoxModelPose.java').read_text()
+          tabs=(root/'ModCreativeTabs.java').read_text()
+          entry=(root/'CardboardStealth.java').read_text()
+          assert 'flapAngle(resting)' in render and 'liftPixels(resting)' in render
+          assert 'lookRelativeYaw(bodyYaw, headYaw)' in render
+          assert 'stepBackTilt' not in render and 'stepBackTilt' not in props
+          assert 'eye_cavity' in render and 'head_shadow' in render
+          assert 'renderBackRecyclingStamp' in render and 'left = -8.35F' in render
+          assert 'innerBase(variant)' in overlay and 'BoxViewGeometry.calculate' in overlay
+          assert 'ModCreativeTabs.TABS.register(modBus)' in entry
+          assert 'itemGroup.cardboardstealth' in tabs
+          print('PASS: 8/8 integrated full-worklist source checks')
           PY
       - name: Verify recipes and model assets
         run: |
@@ -100,7 +124,9 @@ jobs:
               assert data['result']['id']==f'cardboardstealth:{name}'
               re=json.loads((ns/'data/cardboardstealth/recipe'/f'recolor_{name}.json').read_text())
               assert '#curios:cardboard' in re['ingredients']
-              assert (ns/'assets/cardboardstealth/models/item'/f'{name}.json').is_file()
+              model=json.loads((ns/'assets/cardboardstealth/models/item'/f'{name}.json').read_text())
+              assert model['textures']['layer0']==f'cardboardstealth:item/colored/{name}'
+              assert 'layer1' not in model
           for name in ['cardboard_box','box_dye_base','box_dye_details']:
               assert (ns/'assets/cardboardstealth/textures/item'/f'{name}.png').is_file()
           for name in ['paper','tape','recycle_logo']:
@@ -127,8 +153,18 @@ jobs:
                   assert raw[:8] == bytes.fromhex('89504e470d0a1a0a'), p
                   assert struct.unpack_from('>II',raw,16)==(128,128), p
               print('PASS: 3/3 128px model-art texture atlases packed into JAR')
+              import hashlib
+              unique=set()
+              for color in 'white orange magenta light_blue yellow lime pink gray light_gray cyan purple blue brown green red black'.split():
+                  p=f'assets/cardboardstealth/textures/item/colored/{color}_cardboard_box.png'
+                  png=z.read(p)
+                  assert png[:8]==bytes.fromhex('89504e470d0a1a0a'),p
+                  assert struct.unpack_from('>II',png,16)==(64,64),p
+                  unique.add(hashlib.sha256(png).hexdigest())
+              assert len(unique)==16, 'Some dyed sprites are identical'
+              print('PASS: 16/16 distinct 64px dyed box item icons packed into JAR')
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.19-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.20-alpha
           path: build/libs/*.jar

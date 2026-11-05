@@ -33,6 +33,10 @@ public final class BoxModelGeometryTest {
                 < BoxModelGeometry.FLOOR_BODY_Y, "dark lining recessed above flap hinges");
         check((BoxModelGeometry.UNDERMOUTH_DARK_ARGB >>> 24) == 255,
                 "underside is fully opaque, not transparent");
-        System.out.println("PASS: " + checked + "/20 physical box and opaque underside checks");
+        check(BoxModelGeometry.FLOOR_BODY_Y - tw.zonezero.cardboardstealth.BoxModelPose.liftPixels(true)
+                == 24F, "rested box wall hinge reaches ground plane");
+        check(tw.zonezero.cardboardstealth.BoxModelPose.flapAngle(true) > 1.45F,
+                "rested flaps lie nearly flat on terrain");
+        System.out.println("PASS: " + checked + "/22 physical box and ground-contact checks");
     }
 }

@@ -26,6 +26,6 @@ public final class BoxColorsAndPoseTest {
         check(BoxModelPose.lookRelativeYaw(30F, 90F) == -60F, "box follows head yaw");
         check(BoxModelPose.lookRelativeYaw(170F, -170F) == -20F, "yaw wraps correctly");
         check(BoxModelPose.lookRelativeYaw(45F, 45F) == 0F, "no unnecessary yaw");
-        System.out.println("PASS: " + checks + "/47 dye palette and pose checks");
+        System.out.println("PASS: " + checks + "/46 dye palette and pose checks");
     }
 }
