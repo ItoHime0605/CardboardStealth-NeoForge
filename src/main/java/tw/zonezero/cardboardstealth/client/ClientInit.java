@@ -12,6 +12,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.minecraft.client.player.LocalPlayer;
+import tw.zonezero.cardboardstealth.BoxMovement;
 import net.neoforged.neoforge.common.NeoForge;
 import tw.zonezero.cardboardstealth.CardboardStealth;
 
@@ -26,6 +29,7 @@ public final class ClientInit {
         NeoForge.EVENT_BUS.addListener(ClientInit::pre);
         NeoForge.EVENT_BUS.addListener(ClientInit::post);
         NeoForge.EVENT_BUS.addListener(ClientInit::logout);
+        NeoForge.EVENT_BUS.addListener(ClientInit::jump);
     }
     public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(BOX_LAYER, CardboardLayer::createBodyLayer);
@@ -51,6 +55,13 @@ public final class ClientInit {
         if (v == null) return;
         m.head.visible=v[0]; m.hat.visible=v[1]; m.body.visible=v[2]; m.jacket.visible=v[3];
         m.leftArm.visible=v[4]; m.rightArm.visible=v[5]; m.leftSleeve.visible=v[6]; m.rightSleeve.visible=v[7];
+    }
+    // Apply the same half-block jump impulse on the predicting client and the server.
+    // Entity IDs are synced by ModNetwork; do not rely on server-only persistent NBT here.
+    public static void jump(LivingEvent.LivingJumpEvent event) {
+        if (event.getEntity() instanceof LocalPlayer player && ClientBoxState.variant(player.getId()) != 0) {
+            BoxMovement.limitJump(player);
+        }
     }
     public static void logout(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientBoxState.clear(); SAVED.clear();
