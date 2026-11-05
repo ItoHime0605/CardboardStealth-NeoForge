@@ -21,6 +21,7 @@ public final class CardboardStealth {
         NeoForge.EVENT_BUS.addListener(BoxEvents::damaged);
         NeoForge.EVENT_BUS.addListener(BoxEvents::attack);
         NeoForge.EVENT_BUS.addListener(BoxEvents::startTracking);
+        NeoForge.EVENT_BUS.addListener(BoxEvents::stopTracking);
         NeoForge.EVENT_BUS.addListener(BoxEvents::playerJoin);
         NeoForge.EVENT_BUS.addListener(BoxEvents::playerLeave);
         NeoForge.EVENT_BUS.addListener(BoxEvents::respawn);
