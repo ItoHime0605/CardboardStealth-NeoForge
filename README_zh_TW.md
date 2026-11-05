@@ -1,10 +1,19 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.1-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.3-alpha 開發原始碼
 
 > **尚未完成 NeoForge 編譯或 Minecraft 專用伺服器實測。** 本工程是原始碼，不是可直接安裝的模組 JAR。
 
 環境：Minecraft 1.21.1、NeoForge 21.1.x、Java 21、Curios 9.5.1、Zombie Awareness 1.13.2。此工程不需要 Zombie Extreme。
 
-## 0.1.1 實作變更
+## 0.1.3 新增與修正（2026-11-06）
+
+- 修正 Gradle `localRuntime` 不存在的問題，改用 `runtimeOnly`；0.1.2-alpha 已由 GitHub Actions 成功產生 JAR。
+- 紙箱低跳會同時在玩家客戶端與伺服器限制跳躍速度，減少跳躍預測不同造成的回彈；初速改為 0.240，**實際半格高度仍需遊戲測量**。
+- 不再透過聲音發生位置附近是否有紙箱玩家來取消 Zombie Awareness 腳步追蹤，避免誤刪其他玩家的聲音。ZA 音量縮減、感知抑制仍需多人連線實測。
+- 玩家重新出生、切換維度時清理紙箱狀態；造成實際傷害（包含部分彈丸來源）或使用道具時，會中斷偽裝。
+- 保留原本追擊：已鎖定玩家的殭屍不會因紙箱突然清除目標。靜止 1.25 格、移動 3.5 格是防止**新索敵**的半徑，不是瞬間清仇恨。
+- 正式紙箱 3D 外觀、上半磚後傾動畫仍**等待使用者提供參考圖**，這輪沒有製作。
+
+## 0.1.1 基礎機制
 
 1. **靜止／移動兩段識破半徑（新版需求）**
    - 紙箱內完全靜止：殭屍在 **1.25 格（含）** 內能識破；距離 **超過 1.25 格** 時不會因直接辨識選擇新目標。
@@ -36,7 +45,7 @@
 
 ## 程式距離規則的本機測試（不依賴遊戲）
 
-在專案根目錄執行：
+在專案根目錄執行（原始判定規則）：
 
 ```sh
 mkdir -p /tmp/cardboard-rules
@@ -56,4 +65,9 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.1-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.3-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+
+
+## 測試提醒
+
+目前 GitHub Actions 成功只代表建置完成，**尚未測試安裝於專用伺服器**。在正式給玩家安裝之前，仍須確認 Curios 裝備槽、客戶端紙箱渲染、Zombie Awareness 偵測、切維度、死亡重生，以及 TaCZ 開槍取消偽裝的實際效果。不要把編譯成功當作遊戲內功能都已通過。
