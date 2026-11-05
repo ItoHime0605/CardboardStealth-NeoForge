@@ -55,6 +55,10 @@ jobs:
           assert 'ClientLayerFilterMixin' in mixins['client']
           print('PASS: 3/3 client render hook source invariants')
           PY
+      - name: Check five-tick cardboard settling
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxMotionRules.java tests/BoxMotionRulesTest.java
+          java -cp build/rule-tests BoxMotionRulesTest
       - name: Validate assets and Curios data JSON
         run: |
           find src/main/resources -name '*.json' -print0 | xargs -0 -n1 python3 -m json.tool > /dev/null
@@ -64,5 +68,5 @@ jobs:
       - run: gradle --no-daemon build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.12-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.13-alpha
           path: build/libs/*.jar

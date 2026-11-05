@@ -25,8 +25,8 @@ public final class BoxState {
     private static final String MOVE_Y = "cardboardstealth_motion_y";
     private static final String MOVE_Z = "cardboardstealth_motion_z";
     private static final String MOVING_UNTIL = "cardboardstealth_moving_until";
-    // Ignore extremely small numeric jitter, but count jumps and half-slab climbing as movement.
-    private static final double MOTION_EPSILON_SQR = 0.0001D;
+    private static final String RESTED = "cardboardstealth_rested";
+    // Movement/jitter/settling rules shared with standalone Java regression tests.
     private static final ResourceLocation STEP_ID = ResourceLocation.fromNamespaceAndPath(
             CardboardStealth.MOD_ID, "inside_cardboard_step_height");
     private static final ResourceLocation SLOW_ID = ResourceLocation.fromNamespaceAndPath(
@@ -50,8 +50,8 @@ public final class BoxState {
         return mob instanceof Zombie || mob.getType().is(FOOLED);
     }
     /**
-     * Called once per server player tick while disguised. Motion remains true for two
-     * additional ticks after stopping, avoiding instant stealth from a tiny pause.
+     * Called once per server player tick while disguised. Motion remains true until
+     * five consecutive stationary ticks have elapsed, avoiding instant cardboard settlement.
      * The key is current game time; no global entity scan is needed.
      */
     public static void updateMotion(ServerPlayer player) {
@@ -63,23 +63,34 @@ public final class BoxState {
             double dx = player.getX() - data.getDouble(MOVE_X);
             double dy = player.getY() - data.getDouble(MOVE_Y);
             double dz = player.getZ() - data.getDouble(MOVE_Z);
-            moving |= dx * dx + dy * dy + dz * dz > MOTION_EPSILON_SQR;
+            moving |= BoxMotionRules.moved(dx, dy, dz, true);
         }
-        if (moving) data.putLong(MOVING_UNTIL, now + 2L);
+        if (moving) data.putLong(MOVING_UNTIL, BoxMotionRules.movingUntil(now));
         data.putLong(MOVE_TICK, now);
         data.putDouble(MOVE_X, player.getX());
         data.putDouble(MOVE_Y, player.getY());
         data.putDouble(MOVE_Z, player.getZ());
+        // A visual update is sent only on a transition, not once every tick.
+        boolean rested = !moving(player);
+        if (rested != data.getBoolean(RESTED)) {
+            data.putBoolean(RESTED, rested);
+            if (active(player)) ModNetwork.broadcast(player, variant(player));
+        }
     }
 
-    /** Moving = detection up to 3.5 blocks, stationary = detection up to 1.25 blocks. */
+    /** Moving = detection up to 3.5 blocks, five-tick rested = 1.25 blocks. */
     public static boolean moving(Player player) {
         if (!player.onGround()) return true;
         var data = player.getPersistentData();
         long now = player.level().getGameTime();
         // If a movement snapshot is missing/stale, err on the side of being detectable.
         if (data.getLong(MOVE_TICK) < now - 1L) return true;
-        return data.getLong(MOVING_UNTIL) >= now;
+        return BoxMotionRules.countsAsMoving(now, data.getLong(MOVING_UNTIL));
+    }
+
+    /** True after five consecutive grounded stationary ticks, synchronized to clients. */
+    public static boolean rested(Player player) {
+        return active(player) && !moving(player);
     }
 
     /** An attacker already locked on the player is NEVER tricked by the box. */
@@ -97,6 +108,7 @@ public final class BoxState {
         if (newVariant == 0) {
             player.getPersistentData().remove(MOVE_TICK);
             player.getPersistentData().remove(MOVING_UNTIL);
+            player.getPersistentData().remove(RESTED);
         }
         if (oldVariant != newVariant) ModNetwork.broadcast(player, newVariant);
         // IMPORTANT: never clear an existing mob target or stop its navigation here.

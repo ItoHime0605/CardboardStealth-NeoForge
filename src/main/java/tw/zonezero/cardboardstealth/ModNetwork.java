@@ -13,11 +13,12 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import tw.zonezero.cardboardstealth.client.ClientBoxState;
 
 public final class ModNetwork {
-    public record BoxPayload(int entityId, int variant) implements CustomPacketPayload {
+    public record BoxPayload(int entityId, int variant, boolean rested) implements CustomPacketPayload {
         public static final Type<BoxPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID, "state"));
         public static final StreamCodec<RegistryFriendlyByteBuf, BoxPayload> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, BoxPayload::entityId,
-                ByteBufCodecs.VAR_INT, BoxPayload::variant, BoxPayload::new);
+                ByteBufCodecs.VAR_INT, BoxPayload::variant,
+                ByteBufCodecs.BOOL, BoxPayload::rested, BoxPayload::new);
         @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     }
     /** Client indicates an empty-air melee swing; server rechecks the actual held item. */
@@ -29,10 +30,10 @@ public final class ModNetwork {
         @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     }
     public static void register(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("2");
+        var registrar = event.registrar("3");
         registrar.playToClient(BoxPayload.TYPE, BoxPayload.STREAM_CODEC, (payload, context) -> {
             context.enqueueWork(() -> {
-                if (FMLEnvironment.dist == Dist.CLIENT) ClientBoxState.receive(payload.entityId(), payload.variant());
+                if (FMLEnvironment.dist == Dist.CLIENT) ClientBoxState.receive(payload.entityId(), payload.variant(), payload.rested());
             });
         });
         registrar.playToServer(MeleePayload.TYPE, MeleePayload.STREAM_CODEC, (payload, context) -> {
@@ -45,9 +46,11 @@ public final class ModNetwork {
         });
     }
     public static void broadcast(ServerPlayer player, int variant) {
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new BoxPayload(player.getId(), variant));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
+                new BoxPayload(player.getId(), variant, variant != 0 && BoxState.rested(player)));
     }
     public static void send(ServerPlayer viewer, ServerPlayer subject, int variant) {
-        PacketDistributor.sendToPlayer(viewer, new BoxPayload(subject.getId(), variant));
+        PacketDistributor.sendToPlayer(viewer,
+                new BoxPayload(subject.getId(), variant, variant != 0 && BoxState.rested(subject)));
     }
 }
