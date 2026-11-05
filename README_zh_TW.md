@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.17-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.18-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.17-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.18-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -214,3 +214,14 @@ gradle --no-daemon build
 - 修正 Gradle Groovy 腳本中 Java 陣列初始化造成的語法錯誤，使用 Groovy list 對 `int[][]` 的型別轉換。
 - 改用 Python `bytes.fromhex` 在 CI 驗證 PNG 的標準檔頭，避免 escape 字串被當作普通反斜線。
 - 其他精修紙箱 3D 模型、外部細長縫、第一人稱大視窗、五 tick 貼地及 16 色配方均保持不變。
+
+
+## 0.1.18-alpha｜修復玩家實測的 NeoForge 客戶端啟動崩潰（2026-11-06）
+
+- 使用者提供的 Modrinth 客戶端日誌明確顯示 0.1.17-alpha 在 NeoForge **21.1.264** 崩潰：`ClientLayerFilterMixin` 的 `@Redirect` 沒有任何目標（`0/1 succeeded, Scanned 0 target(s)`），使模組初始化時拋出 `MixinTransformerError`。
+- 移除全部兩個**客戶端專用渲染 Mixin** 的註冊及原始碼。兩者不會再參與 Minecraft 類別轉換，因此不再以此方式強制阻止啟動。
+- 改用 NeoForge 的 `RenderPlayerEvent.Pre` 和 `RenderPlayerEvent.Post`，只在箱子啟動時暫時保留 `CardboardLayer`，透過玩家 renderer 所持的 `List<RenderLayer>` 隱藏手持武器、頭盔、Curios、披風等一般附加渲染層，畫完後立即還原原清單與順序。若渲染鏈被其他模組改造至無法取得附加層，只記錄一次警告而**不導致啟動崩潰**。
+- 第一人稱手槍與準心不經過這個第三人稱玩家渲染事件，因此不改動原有顯示方式；玩家主體模型的上身／停走雙腳仍使用原本的 Pre／Post 保護。
+- CI 新增 5 項「沒有註冊脆弱的 client Mixin」檢查與 10 項渲染層隱藏／順序還原單元測試。
+- 將開發編譯的 NeoForge 版本由 21.1.200 升至 **21.1.264**，對準使用者的 Modrinth 客戶端。Minecraft 1.21.1、Java 21、Curios 9.5.1、Zombie Awareness 1.13.2 保持。
+- **重要：CI 通過仍只證明規則、資源及編譯成功**；還要在使用者的真實 Modrinth 客戶端進行啟動和第三人稱渲染驗收。若其他自訂渲染層不是正常 `RenderLayer`，可能仍會顯示，不代表紙箱可以在所有第三方模組完美隱藏。

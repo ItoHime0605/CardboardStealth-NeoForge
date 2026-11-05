@@ -43,18 +43,24 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxRenderRules.java tests/BoxRenderRulesTest.java
           java -cp build/rule-tests BoxRenderRulesTest
-      - name: Validate required third-person layer hook signature
+      - name: Confirm crash-causing client Mixins are not registered
         run: |
           python3 - <<'PY'
-          from pathlib import Path
-          p = Path("src/main/java/tw/zonezero/cardboardstealth/mixin/ClientLayerFilterMixin.java").read_text()
-          assert 'RenderLayer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V' in p
-          assert 'require = 1' in p
           import json
-          mixins = json.loads(Path("src/main/resources/cardboardstealth.mixins.json").read_text())
-          assert 'ClientLayerFilterMixin' in mixins['client']
-          print('PASS: 3/3 client render hook source invariants')
+          from pathlib import Path
+          mixins=json.loads(Path("src/main/resources/cardboardstealth.mixins.json").read_text())
+          assert not mixins.get('client',[]), "No client render Mixins may be registered"
+          code=Path("src/main/java/tw/zonezero/cardboardstealth/client/ClientInit.java").read_text()
+          assert "ClientLayerRenderControl.before(event.getRenderer())" in code
+          assert "ClientLayerRenderControl.after(event.getRenderer())" in code
+          assert not Path("src/main/java/tw/zonezero/cardboardstealth/mixin/ClientLayerFilterMixin.java").exists()
+          assert not Path("src/main/java/tw/zonezero/cardboardstealth/mixin/ClientItemInHandMixin.java").exists()
+          print("PASS: 5/5 client render startup-regression checks")
           PY
+      - name: Test temporary third-person layer filtering and restoration
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxLayerMasking.java tests/BoxLayerMaskingTest.java
+          java -cp build/rule-tests BoxLayerMaskingTest
       - name: Check five-tick cardboard settling
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxMotionRules.java tests/BoxMotionRulesTest.java
@@ -113,5 +119,5 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.17-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.18-alpha
           path: build/libs/*.jar

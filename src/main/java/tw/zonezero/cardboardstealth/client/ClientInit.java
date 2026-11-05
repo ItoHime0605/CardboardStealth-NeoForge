@@ -69,6 +69,8 @@ public final class ClientInit {
         boolean[] stale = SAVED.remove(m);
         if (stale != null) restore(m, stale);
         if (ClientBoxState.variant(event.getEntity().getId()) == 0) return;
+        // Stable NeoForge event approach, no fragile LivingEntityRenderer Mixin.
+        ClientLayerRenderControl.before(event.getRenderer());
         SAVED.put(m, new boolean[] {m.head.visible, m.hat.visible, m.body.visible, m.jacket.visible,
                  m.leftArm.visible, m.rightArm.visible, m.leftSleeve.visible, m.rightSleeve.visible,
                  m.leftLeg.visible, m.rightLeg.visible, m.leftPants.visible, m.rightPants.visible});
@@ -84,6 +86,7 @@ public final class ClientInit {
         PlayerModel<?> m = event.getRenderer().getModel();
         boolean[] v = SAVED.remove(m);
         if (v != null) restore(m, v);
+        ClientLayerRenderControl.after(event.getRenderer());
     }
     private static void restore(PlayerModel<?> m, boolean[] v) {
         m.head.visible=v[0]; m.hat.visible=v[1]; m.body.visible=v[2]; m.jacket.visible=v[3];
@@ -122,6 +125,8 @@ public final class ClientInit {
         }
     }
     public static void logout(ClientPlayerNetworkEvent.LoggingOut event) {
-        ClientBoxState.clear(); SAVED.clear();
+        ClientLayerRenderControl.reset();
+        ClientBoxState.clear();
+        SAVED.clear();
     }
 }
