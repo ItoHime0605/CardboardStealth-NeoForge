@@ -23,8 +23,14 @@ jobs:
           mkdir -p build/rule-tests
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxDetectionRules.java tests/BoxDetectionRulesTest.java
           java -cp build/rule-tests BoxDetectionRulesTest
+      - name: Validate assets and Curios data JSON
+        run: |
+          find src/main/resources -name '*.json' -print0 | xargs -0 -n1 python3 -m json.tool > /dev/null
+          test -f src/main/resources/data/cardboardstealth/curios/slots/cardboard.json
+          test -f src/main/resources/data/cardboardstealth/curios/entities/players.json
+          test -f src/main/resources/data/curios/tags/item/cardboard.json
       - run: gradle --no-daemon build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.5-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.6-alpha
           path: build/libs/*.jar

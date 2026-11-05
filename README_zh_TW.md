@@ -1,6 +1,6 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.5-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.6-alpha 開發原始碼
 
-> **0.1.2-alpha 已成功透過 NeoForge/Gradle 編譯；0.1.5-alpha 仍待編譯與 Minecraft 專用伺服器實測。** 本工程是原始碼，不是可直接安裝的模組 JAR。
+> **0.1.2-alpha 已成功透過 NeoForge/Gradle 編譯；0.1.6-alpha 仍待編譯與 Minecraft 專用伺服器實測。** 本工程是原始碼，不是可直接安裝的模組 JAR。
 
 環境：Minecraft 1.21.1、NeoForge 21.1.x、Java 21、Curios 9.5.1、Zombie Awareness 1.13.2。此工程不需要 Zombie Extreme。
 
@@ -38,7 +38,7 @@
 ## 重要限制與後續工作
 
 - **目前只有自動編譯／純 Java 規則測試**：不代表遊戲內運作或多人連線已通過驗收。
-- Zombie Awareness 音效追蹤以座標為參數；0.1.5-alpha 新增伺服器實體聲音來源記錄，只攔截紙箱玩家自己的腳步／落地聲，無來源的座標聲響仍保持原樣。
+- Zombie Awareness 音效追蹤以座標為參數；0.1.6-alpha 新增伺服器實體聲音來源記錄，只攔截紙箱玩家自己的腳步／落地聲，無來源的座標聲響仍保持原樣。
 - 半格跨越和半格跳躍高度，目前是依據原版移動模型的程式設計值，需要遊戲實測再校準，不保證其他移動／重力模組下也恰好半格。
 - 目前 Zombie Awareness 跟 `fooled_by_box` 標籤支援的怪物能介入索敵；未來更換殭屍模組時需要額外對接它的 AI。
 - 仍需完成槍械開火中斷、玩家死亡／登出、原版與特殊怪物追蹤、多人同步、Curios 槽位，以及裝甲／手持物件的相容實測。
@@ -65,14 +65,14 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.5-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.6-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
 
 目前 GitHub Actions 成功只代表建置完成，**尚未測試安裝於專用伺服器**。在正式給玩家安裝之前，仍須確認 Curios 裝備槽、客戶端紙箱渲染、Zombie Awareness 偵測、切維度、死亡重生，以及 TaCZ 開槍取消偽裝的實際效果。不要把編譯成功當作遊戲內功能都已通過。
 
-## 0.1.5-alpha 新增項目
+## 0.1.6-alpha 新增項目
 
 1. Zombie Awareness 聽覺改成**根據實際發聲玩家判定**，避免貼著紙箱的另一位玩家腳步聲也被抑制。
 2. 紙箱的腳步與落地聲不是完全消失：保留原本追蹤強度約 1/16 與 1/8 的微弱聲響線索。
@@ -82,9 +82,15 @@ gradle --no-daemon build
 
 注意：伺服器實體聲響追蹤要做實際 Minecraft／Zombie Awareness 測試；Gradle 編譯只驗證程式碼可建置。
 
-## 0.1.5-alpha 半格跨越與客戶端音量修正
+## 0.1.6-alpha 半格跨越與客戶端音量修正
 
 - 紙箱啟動時除了移速 -40%，另對玩家增加暫時的 `STEP_HEIGHT -0.1` 屬性修正；以原版玩家的 0.6 格跨步高度為基準，紙箱狀態降為 0.5 格，仍能跨越半磚。離開紙箱自動移除修正；其他模組若自行修改跨步高度，需遊戲實測相容。
-- 先前僅伺服器會以玩家 NBT 判斷紙箱音效；0.1.5-alpha 另使用 `ClientBoxState` 判斷客戶端實際發出的玩家腳步／落地聲量，讓自己和旁人的聽感與伺服器偵測邏輯一致。
+- 先前僅伺服器會以玩家 NBT 判斷紙箱音效；0.1.6-alpha 另使用 `ClientBoxState` 判斷客戶端實際發出的玩家腳步／落地聲量，讓自己和旁人的聽感與伺服器偵測邏輯一致。
 - 只對客戶端的聲音事件處理，避免整合伺服器時重複降低音量。
 - 正式模型／紙箱走上半磚後傾動畫仍未製作，待使用者參考圖片。
+
+## 0.1.6-alpha 開發環境與資源驗證
+
+- Zombie Awareness 的 1.21.1 NeoForge JAR 在 `neoforge.mods.toml` 宣告必須安裝 CoroUtil；正式遊戲端仍由玩家／伺服器自行裝好前置。為了能啟動 MDG 開發環境，Gradle 的 `runtimeOnly` 追加對應 1.21.1 的 CoroUtil 1.3.9。
+- GitHub Actions 新增所有資源 JSON 格式檢查，以及 Curios 紙箱槽、玩家槽位指派與物品標籤的存在性檢查。
+- 這些是建置與資源靜態檢查，仍不能取代 Minecraft 專用伺服器啟動及多人 AI 遊戲實測。
