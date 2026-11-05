@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.6-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.7-alpha 開發原始碼
 
 > **0.1.2-alpha 已成功透過 NeoForge/Gradle 編譯；0.1.5-alpha 仍待編譯與 Minecraft 專用伺服器實測。** 本工程是原始碼，不是可直接安裝的模組 JAR。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.6-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.7-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -89,7 +89,7 @@ gradle --no-daemon build
 - 只對客戶端的聲音事件處理，避免整合伺服器時重複降低音量。
 - 正式模型／紙箱走上半磚後傾動畫仍未製作，待使用者參考圖片。
 
-## 0.1.6-alpha（聲音設定尊重與互動防偽裝）
+## 0.1.7-alpha（聲音設定尊重與互動防偽裝）
 
 - Zombie Awareness 聽覺追蹤關閉、或僅限主世界且玩家不在主世界時，**跳躍與腳步不能自行補生新的聲音追蹤節點**；符合原模組 `ZAUtil.canSpawnTraceQuickCheck` 的規則。
 - 玩家在紙箱內右鍵互動方塊、實體（含開啟容器和與 NPC 互動）會中斷偽裝，與攻擊、使用物品限制一致。
@@ -98,3 +98,10 @@ gradle --no-daemon build
 - 正式紙箱外觀仍未製作，待使用者提供參考圖後再製作模型及半磚上坡後傾動畫。
 
 **驗收限制**：以上是程式邏輯與自動建置驗證，仍需要 Minecraft 客戶端＋專用伺服器遊戲內實測。
+## 0.1.7-alpha 增修
+
+- CoroUtil 1.3.9 (NeoForge 1.21.1) 加入開發環境的 `runtimeOnly` 依賴，因 Zombie Awareness 1.13.2 需要它。玩家端／正式伺服器仍須自行安裝 Zombie Awareness 所需的前置。
+- 新增 `BoxSoundRules` 統一腳步／落地音效辨識，涵蓋玩家 `small_fall`、`big_fall`，同時防止誤把槍聲當腳步聲。
+- 伺服器聲音、客戶端音量與 Zombie Awareness 抑制共用判定；純 Java 聲音規則測試新增 12 項。
+- GitHub Actions 新增資源 JSON 與 Curios 紙箱裝備槽資料檢查。
+- 仍未做 Minecraft 實機 AI/聲音/多人測試；正式紙箱模型與材質等使用者提供參考圖片。

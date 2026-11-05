@@ -17,6 +17,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
 import tw.zonezero.cardboardstealth.BoxMovement;
+import tw.zonezero.cardboardstealth.BoxSoundRules;
 import net.neoforged.neoforge.common.NeoForge;
 import tw.zonezero.cardboardstealth.CardboardStealth;
 
@@ -72,8 +73,8 @@ public final class ClientInit {
         if (!(event.getEntity() instanceof Player player) || !player.level().isClientSide()
                 || ClientBoxState.variant(player.getId()) == 0 || event.getSound() == null) return;
         String path = event.getSound().value().getLocation().getPath();
-        if (path.endsWith(".step")) event.setNewVolume(event.getNewVolume() * 0.18F);
-        else if (path.endsWith(".land") || path.endsWith(".fall"))
+        if (BoxSoundRules.isStep(path)) event.setNewVolume(event.getNewVolume() * 0.18F);
+        else if (BoxSoundRules.isLanding(path))
             event.setNewVolume(event.getNewVolume() * 0.28F);
     }
     public static void logout(ClientPlayerNetworkEvent.LoggingOut event) {

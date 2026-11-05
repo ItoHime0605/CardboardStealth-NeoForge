@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tw.zonezero.cardboardstealth.BoxState;
 import tw.zonezero.cardboardstealth.BoxSoundContext;
+import tw.zonezero.cardboardstealth.BoxSoundRules;
 import org.joml.Vector3d;
 
 @Mixin(value = ZAUtil.class, remap = false)
@@ -46,8 +47,8 @@ public abstract class ZombieAwarenessMixin {
         Player source = BoxSoundContext.disguisedOrigin();
         if (source == null || source.level() != level) return;
         String path = sound.getLocation().getPath();
-        boolean step = path.endsWith(".step");
-        boolean land = path.endsWith(".land") || path.endsWith(".fall");
+        boolean step = BoxSoundRules.isStep(path);
+        boolean land = BoxSoundRules.isLanding(path);
         if (!step && !land) return;
 
         // Paper cardboard is not perfectly silent: weak sound sense traces remain.

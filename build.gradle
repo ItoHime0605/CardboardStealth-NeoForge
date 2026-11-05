@@ -25,5 +25,7 @@ dependencies {
     runtimeOnly 'top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1'
     compileOnly 'curse.maven:zombie-awareness-237754:5731744'
     runtimeOnly 'curse.maven:zombie-awareness-237754:5731744'
+    // Required by Zombie Awareness when running the mod in a local development game.
+    runtimeOnly 'curse.maven:coroutil-237749:7796187'
 }
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
