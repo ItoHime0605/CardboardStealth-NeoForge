@@ -124,4 +124,8 @@ public final class BoxEvents {
         if (event.getEntity() instanceof ServerPlayer viewer && event.getTarget() instanceof ServerPlayer target)
             ModNetwork.send(viewer, target, BoxState.variant(target));
     }
+    public static void stopTracking(PlayerEvent.StopTracking event) {
+        if (event.getEntity() instanceof ServerPlayer viewer && event.getTarget() instanceof ServerPlayer target)
+            ModNetwork.send(viewer, target, 0);
+    }
 }
