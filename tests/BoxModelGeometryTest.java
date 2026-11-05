@@ -13,9 +13,9 @@ public final class BoxModelGeometryTest {
         check(BoxModelGeometry.HEIGHT_PIXELS == 21F, "body height");
         check(BoxModelGeometry.FRONT_Z == -11F, "eye facing forward");
         check(BoxModelGeometry.BACK_Z == 11F, "recycling stamp on rear");
-        check(BoxModelGeometry.REAR_STAMP_LEFT_X > 0F
-                && BoxModelGeometry.REAR_STAMP_RIGHT_X < BoxModelGeometry.WIDTH_PIXELS / 2F,
-                "rear-facing recycling stamp positioned on the viewer's right");
+        check(BoxModelGeometry.REAR_STAMP_RIGHT_X < 0F
+                && BoxModelGeometry.REAR_STAMP_LEFT_X > -BoxModelGeometry.WIDTH_PIXELS / 2F,
+                "mirrored player renderer places negative model X at back viewer-right");
         check(BoxModelGeometry.REAR_STAMP_RIGHT_X > BoxModelGeometry.REAR_STAMP_LEFT_X,
                 "rear recycling symbol is not mirrored horizontally");
         check(BoxModelGeometry.slitWidth() > 9.5F, "peep hole is usable from outside");

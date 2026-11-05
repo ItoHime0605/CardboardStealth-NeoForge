@@ -13,9 +13,10 @@ public final class BoxModelGeometry {
     public static final float FLOOR_BODY_Y = 16.0F;
     public static final float FRONT_Z = -11.0F;
     public static final float BACK_Z = 11.0F;
-    // From behind the box (+Z looking toward -Z), screen-right is positive X.
-    public static final float REAR_STAMP_LEFT_X = 2.15F;
-    public static final float REAR_STAMP_RIGHT_X = 8.35F;
+    // LivingEntityRenderer applies scale(-1,-1,+1) before calling layers.
+    // Thus model NEGATIVE X appears on the back-facing viewer's right.
+    public static final float REAR_STAMP_LEFT_X = -8.35F;
+    public static final float REAR_STAMP_RIGHT_X = -2.15F;
     // A discreet exterior peep slit (NOT the larger interior player HUD window).
     public static final float SLIT_HALF_WIDTH = 5.25F;
     public static final float SLIT_TOP_Y = -0.80F;

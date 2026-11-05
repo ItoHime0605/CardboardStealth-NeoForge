@@ -240,8 +240,9 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
 
     /**
      * True transparent UV-mapped printed glyph, facing outside the back (+Z).
-     * On the +Z back face, positive model X is the rear viewer's right.
-     * Keep the recycling print on that side; it never faces the eye slit.
+     * The standard entity renderer mirrors model X. On the +Z back face,
+     * negative model X therefore displays at the rear viewer's RIGHT.
+     * The print must remain opposite the -Z eye slit.
      */
     private static void renderBackRecyclingStamp(PoseStack pose, MultiBufferSource buffers, int light) {
         VertexConsumer out = buffers.getBuffer(RenderType.entityCutoutNoCull(RECYCLE));
