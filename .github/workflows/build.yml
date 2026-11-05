@@ -2,7 +2,7 @@ name: Build cardboardstealth 1.21.1
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, 'development/**']
 concurrency:
   group: cardboardstealth-${{ github.ref }}
   cancel-in-progress: true
@@ -26,5 +26,5 @@ jobs:
       - run: gradle --no-daemon build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.3-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.4-alpha
           path: build/libs/*.jar

@@ -4,8 +4,6 @@ import com.corosus.zombieawareness.ZAUtil;
 import com.corosus.zombieawareness.EnumSenseType;
 import com.corosus.zombieawareness.config.ZAConfigGeneral;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
@@ -75,8 +73,6 @@ public final class BoxEvents {
         ZAUtil.spawnOrBuffSenseAtPos(player.level(),
                 new Vector3d(player.getX(), player.getY(), player.getZ()),
                 EnumSenseType.SOUND, strength);
-        player.serverLevel().playSound(null, player.blockPosition(), SoundEvents.WOOL_STEP,
-                SoundSource.PLAYERS, 0.15F, 0.85F);
     }
 
     public static void stepSound(PlayLevelSoundEvent.AtEntity event) {

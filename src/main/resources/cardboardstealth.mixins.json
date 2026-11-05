@@ -4,7 +4,8 @@
   "package": "tw.zonezero.cardboardstealth.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ZombieAwarenessMixin"
+    "ZombieAwarenessMixin",
+    "SoundOriginMixin"
   ],
   "injectors": {
     "defaultRequire": 1
