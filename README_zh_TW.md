@@ -1,6 +1,6 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.7-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.8-alpha 開發原始碼
 
-> **0.1.2-alpha 已成功透過 NeoForge/Gradle 編譯；0.1.5-alpha 仍待編譯與 Minecraft 專用伺服器實測。** 本工程是原始碼，不是可直接安裝的模組 JAR。
+> **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
 環境：Minecraft 1.21.1、NeoForge 21.1.x、Java 21、Curios 9.5.1、Zombie Awareness 1.13.2。此工程不需要 Zombie Extreme。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.7-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.8-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -105,3 +105,16 @@ gradle --no-daemon build
 - 伺服器聲音、客戶端音量與 Zombie Awareness 抑制共用判定；純 Java 聲音規則測試新增 12 項。
 - GitHub Actions 新增資源 JSON 與 Curios 紙箱裝備槽資料檢查。
 - 仍未做 Minecraft 實機 AI/聲音/多人測試；正式紙箱模型與材質等使用者提供參考圖片。
+
+
+## 0.1.8-alpha：啟動狀態機與伺服器效能
+
+- 20 tick 連續蹲下的啟動規則抽離成可獨立測試的 `BoxActivationRules`；起跳、落地前、追擊未解除時不得啟動。
+- 已在紙箱中持續使用道具（如拉弓、飲食）時，會中斷偽裝，避免只攔截首次右鍵而漏掉連續使用。
+- 沒穿紙箱的玩家不再每 tick 都清除紙箱速度屬性及重寫 NBT；已穿紙箱的人維持原本的正常狀態更新。
+- 紙箱激活的追擊查詢只在蹲滿一秒後進行，防止玩家靠一直按著蹲下反覆掃描附近所有殭屍。
+- 若其他模組已取消殭屍目標切換事件，不再干涉該事件。
+- 追擊兜底掃描使用 `anyMatch`，避免分配臨時清單；純 Java 啟動測試新增 11 項。
+- 本版本未改動核心數值：速度 -40%、靜止識破半徑 1.25 格、移動 3.5 格、半磚步高 0.5 格。
+
+**實測待辦：** Curios 實際裝備槽、Zombie Awareness 感知機制、多人同步、TaCZ 無命中開火的中斷、半格跳躍實際高度及客戶端渲染。正式紙箱外觀需先取得使用者參考圖。

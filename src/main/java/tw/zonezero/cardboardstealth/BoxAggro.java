@@ -43,8 +43,8 @@ public final class BoxAggro {
 
         // Fallback for targets acquired before the mod was installed, or by AI that skipped
         // LivingChangeTargetEvent. Runs ONLY on a disguise activation attempt, never every tick.
-        return !player.serverLevel().getEntitiesOfClass(Mob.class,
+        return player.serverLevel().getEntitiesOfClass(Mob.class,
                 player.getBoundingBox().inflate(48.0), BoxState::fooled).stream()
-                .filter(mob -> mob.getTarget() == player).toList().isEmpty();
+                .anyMatch(mob -> mob.getTarget() == player);
     }
 }

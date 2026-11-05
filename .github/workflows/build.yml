@@ -27,6 +27,10 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxSoundRules.java tests/BoxSoundRulesTest.java
           java -cp build/rule-tests BoxSoundRulesTest
+      - name: Check disguise activation
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxActivationRules.java tests/BoxActivationRulesTest.java
+          java -cp build/rule-tests BoxActivationRulesTest
       - name: Validate assets and Curios data JSON
         run: |
           find src/main/resources -name '*.json' -print0 | xargs -0 -n1 python3 -m json.tool > /dev/null
@@ -36,5 +40,5 @@ jobs:
       - run: gradle --no-daemon build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.7-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.8-alpha
           path: build/libs/*.jar

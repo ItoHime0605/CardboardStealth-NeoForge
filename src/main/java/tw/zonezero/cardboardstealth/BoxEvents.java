@@ -22,13 +22,19 @@ public final class BoxEvents {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         int equipped = BoxState.equippedVariant(player);
         // After activation the box stays on through its shortened jumps.
+        // Continued item use (bow draw, eating, drinking, etc.) breaks cover too,
+        // even when no new right-click event occurs during the disguise.
+        if (BoxState.active(player) && player.isUsingItem()) {
+            BoxState.interrupt(player, 20);
+            return;
+        }
         boolean eligible = equipped != 0 && player.isShiftKeyDown() &&
                 !player.isPassenger() && !player.isSwimming() && !player.isFallFlying() &&
-                !player.getAbilities().flying && player.isAlive() &&
+                !player.getAbilities().flying && player.isAlive() && !player.isUsingItem() &&
                 player.level().getGameTime() >= BoxState.blockedUntil(player);
         if (!eligible) {
-            BoxState.hold(player, 0);
-            BoxState.set(player, 0);
+            if (BoxState.hold(player) != 0) BoxState.hold(player, 0);
+            if (BoxState.active(player)) BoxState.set(player, 0);
             return;
         }
         if (BoxState.active(player)) {
@@ -36,18 +42,15 @@ public final class BoxEvents {
             BoxState.updateMotion(player);
             return;
         }
-        // Activation itself requires stable ground; airborne movement is allowed afterwards.
-        if (!player.onGround()) {
-            BoxState.hold(player, 0);
-            return;
-        }
-        int held = Math.min(BoxState.hold(player) + 1, BoxState.ACTIVATE_TICKS);
+        // Stationary activation requires twenty consecutive grounded crouch ticks.
+        // Once activated, short jumps are permitted and don't reset the disguise.
+        int held = BoxActivationRules.advanceHold(BoxState.hold(player), player.onGround());
         if (held < BoxState.ACTIVATE_TICKS) {
             BoxState.hold(player, held);
             return;
         }
-        // Do not allow instant safe disguise while any mob is still chasing this player.
-        if (BoxAggro.isBeingHunted(player)) {
+        // Query aggression only after the full hold, not on every crouching tick.
+        if (!BoxActivationRules.mayActivate(held, BoxAggro.isBeingHunted(player))) {
             BoxState.hold(player, 0);
             return;
         }
@@ -56,7 +59,8 @@ public final class BoxEvents {
     }
 
     public static void changeTarget(LivingChangeTargetEvent event) {
-        if (!(event.getEntity() instanceof Mob mob) || !BoxState.fooled(mob)) return;
+        // Respect target changes already cancelled by another mod.
+        if (event.isCanceled() || !(event.getEntity() instanceof Mob mob) || !BoxState.fooled(mob)) return;
         if (event.getNewAboutToBeSetTarget() instanceof ServerPlayer player &&
                 BoxState.concealedFrom(player, mob)) {
             // No prior lock: stop only this *new* target selection. Old paths/scent remain.
