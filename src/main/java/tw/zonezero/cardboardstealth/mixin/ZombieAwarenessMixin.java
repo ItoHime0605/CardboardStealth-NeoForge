@@ -1,13 +1,12 @@
 package tw.zonezero.cardboardstealth.mixin;
 
 import com.corosus.zombieawareness.ZAUtil;
-import com.corosus.zombieawareness.config.ZAConfigFeatures;
+import com.corosus.zombieawareness.EnumSenseType;
+import com.corosus.zombieawareness.config.ZAConfigGeneral;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tw.zonezero.cardboardstealth.BoxState;
+import tw.zonezero.cardboardstealth.BoxSoundContext;
+import org.joml.Vector3d;
 
 @Mixin(value = ZAUtil.class, remap = false)
 public abstract class ZombieAwarenessMixin {
@@ -37,9 +38,28 @@ public abstract class ZombieAwarenessMixin {
             cir.setReturnValue(false);
     }
 
-    // Deliberately do NOT cancel ZAUtil.hookSoundEvent by nearby position.
-    // That hook provides only a sound and XYZ, not the emitting entity; cancelling
-    // footsteps because any boxed player is nearby also silences unrelated players.
-    // Source-specific sound volume is handled by PlayLevelSoundEvent.AtEntity.
-    // ZA scent remains suppressed by the player-specific tickPlayer hook above.
+    // Only suppress the actual disguised player's own footsteps, never nearby bystanders.
+    @Inject(method = "hookSoundEvent", at = @At("HEAD"), cancellable = true)
+    private static void cardboardstealth$quietStep(SoundEvent sound, Level level, double x, double y, double z,
+            float volume, float pitch, CallbackInfo ci) {
+        if (sound == null || level.isClientSide()) return;
+        Player source = BoxSoundContext.disguisedOrigin();
+        if (source == null || source.level() != level) return;
+        String path = sound.getLocation().getPath();
+        boolean step = path.endsWith(".step");
+        boolean land = path.endsWith(".land") || path.endsWith(".fall");
+        if (!step && !land) return;
+
+        // Paper cardboard is not perfectly silent: weak sound sense traces remain.
+        // Avoid spawning duplicate traces from the same player on a single tick.
+        long now = level.getGameTime();
+        String key = "cardboardstealth_last_footstep_tick";
+        if (source.getPersistentData().getLong(key) != now) {
+            int strength = Math.max(1, ZAConfigGeneral.soundStrength / (land ? 8 : 16));
+            ZAUtil.spawnOrBuffSenseAtPos(level, new Vector3d(x, y, z),
+                    EnumSenseType.SOUND, strength);
+            source.getPersistentData().putLong(key, now);
+        }
+        ci.cancel();
+    }
 }
