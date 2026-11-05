@@ -102,6 +102,12 @@ public final class BoxEvents {
     public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) BoxState.interrupt(player, 0);
     }
+    public static void respawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) BoxState.interrupt(player, 0);
+    }
+    public static void changedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) BoxState.interrupt(player, 0);
+    }
     public static void playerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) BoxState.interrupt(player, 0);
     }
