@@ -1,6 +1,5 @@
 package tw.zonezero.cardboardstealth.client;
 
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import net.minecraft.client.model.PlayerModel;
@@ -15,6 +14,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tw.zonezero.cardboardstealth.ModNetwork;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.RenderNameTagEvent;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.minecraft.client.player.LocalPlayer;
@@ -36,6 +37,7 @@ public final class ClientInit {
         bus.addListener(BoxViewOverlay::register);
         NeoForge.EVENT_BUS.addListener(ClientInit::pre);
         NeoForge.EVENT_BUS.addListener(ClientInit::post);
+        NeoForge.EVENT_BUS.addListener(ClientInit::nameplate);
         NeoForge.EVENT_BUS.addListener(ClientInit::logout);
         NeoForge.EVENT_BUS.addListener(ClientInit::jump);
         NeoForge.EVENT_BUS.addListener(ClientInit::clientSounds);
@@ -70,6 +72,14 @@ public final class ClientInit {
     private static void restore(PlayerModel<?> m, boolean[] v) {
         m.head.visible=v[0]; m.hat.visible=v[1]; m.body.visible=v[2]; m.jacket.visible=v[3];
         m.leftArm.visible=v[4]; m.rightArm.visible=v[5]; m.leftSleeve.visible=v[6]; m.rightSleeve.visible=v[7];
+    }
+    /** Boxed players must appear as scenery, not as tagged players. */
+    public static void nameplate(RenderNameTagEvent event) {
+        if (event.getEntity() instanceof Player player &&
+                !tw.zonezero.cardboardstealth.BoxRenderRules.showPlayerNameplate(
+                        ClientBoxState.variant(player.getId()) != 0)) {
+            event.setCanRender(TriState.FALSE);
+        }
     }
     // Apply the same half-block jump impulse on the predicting client and the server.
     // Entity IDs are synced by ModNetwork; do not rely on server-only persistent NBT here.

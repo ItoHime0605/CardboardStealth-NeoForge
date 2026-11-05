@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +20,10 @@ import tw.zonezero.cardboardstealth.client.ClientBoxState;
  *
  * Vanilla legs are part of PlayerModel, not separate layers, and remain visible.
  * This mixin never intercepts first-person hand/gun rendering.
+ *
+ * The erased method parameter in RenderLayer<T extends LivingEntity> is
+ * LivingEntity, not Entity. Keep require=1 so a broken render hook cannot
+ * silently leave players' guns exposed in the loaded game.
  */
 @Mixin(value = LivingEntityRenderer.class, priority = 1100)
 public abstract class ClientLayerFilterMixin {
@@ -27,10 +31,10 @@ public abstract class ClientLayerFilterMixin {
     @Redirect(
             method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "INVOKE", target =
-                    "Lnet/minecraft/client/renderer/entity/layers/RenderLayer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V"),
-            require = 0)
+                    "Lnet/minecraft/client/renderer/entity/layers/RenderLayer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V"),
+            require = 1)
     private void cardboardstealth$renderVisibleLayers(RenderLayer layer, PoseStack pose,
-            MultiBufferSource buffers, int light, Entity entity, float limbSwing,
+            MultiBufferSource buffers, int light, LivingEntity entity, float limbSwing,
             float limbSwingAmount, float partialTick, float ageInTicks,
             float netHeadYaw, float headPitch) {
         boolean disguised = entity instanceof Player &&

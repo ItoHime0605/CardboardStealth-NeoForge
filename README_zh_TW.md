@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.11-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.12-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.11-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.12-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -153,3 +153,14 @@ gradle --no-daemon build
 - 新增 8 項純 Java 外觀層過濾測試。仍未製作正式紙箱外型；請等使用者提供外觀參考圖片。
 
 **待實測**：混裝盔甲與 Curios 時的真實外觀、TaCZ 其他外掛槍口火光與彈殼是否透出紙箱、第一人稱狹縫是否保留可見手槍與準心。編譯成功不足以確認 Mixin 在遊戲中正確套用。
+
+
+## 0.1.12-alpha：修復第三人稱渲染攔截與名稱標籤
+
+- 修正 `ClientLayerFilterMixin` 的 `RenderLayer.render` 位元組碼描述符：泛型 erasure 為 `LivingEntity`，不是先前誤填的 `Entity`。
+- 將 `require=0` 改為 `require=1`，要求在受支援 Minecraft 版本下有實際攔截點；如果其他模組重寫了該呼叫鏈，現在可能**明確在啟動階段回報 Mixin 錯誤**，不能再把未套用的偽裝誤認為成功。
+- 使用 NeoForge `RenderNameTagEvent`：外部看到紙箱玩家時，隱藏頭頂名稱標籤；玩家 UUID、伺服器名單及聊天姓名完全不變。
+- 第三人稱仍只保留紙箱渲染層與原本露出的腳，避免 TaCZ／裝備／Curios 飾品等一般 RenderLayer 穿出紙箱。
+- 規則測試新增名稱標籤情境，第三人稱測試擴充為 10 項；Actions 新增 3 項渲染攔截原始碼檢查。
+- **注意：編譯與靜態檢查無法取代 Minecraft 客戶端遊戲內測試**。必須實際啟動伺服器與客戶端，確認 Mixin 是否成功生效、正常進出紙箱，以及 TaCZ 槍聲／槍械可見性。
+- 外部紙箱正式 3D 模型與半磚後傾動畫尚未製作，會在準備開發時請使用者提供參考圖。

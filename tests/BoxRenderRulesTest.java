@@ -15,6 +15,8 @@ public final class BoxRenderRulesTest {
         check(!BoxRenderRules.renderAttachedLayer(true, false), "boxed wings hidden");
         check(!BoxRenderRules.renderAttachedLayer(true, false), "boxed cape hidden");
         check(!BoxRenderRules.renderAttachedLayer(true, false), "boxed Curios accessory hidden");
-        System.out.println("PASS: " + checks + "/8 cardboard render-layer rules");
+        check(BoxRenderRules.showPlayerNameplate(false), "normally visible nameplate");
+        check(!BoxRenderRules.showPlayerNameplate(true), "boxed player nameplate hidden");
+        System.out.println("PASS: " + checks + "/10 cardboard render and nameplate rules");
     }
 }

@@ -9,6 +9,10 @@ package tw.zonezero.cardboardstealth;
 public final class BoxRenderRules {
     private BoxRenderRules() {}
 
+    public static boolean showPlayerNameplate(boolean disguised) {
+        return !disguised;
+    }
+
     public static boolean renderAttachedLayer(boolean disguised, boolean cardboardLayer) {
         return !disguised || cardboardLayer;
     }
