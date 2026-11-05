@@ -8,7 +8,8 @@ import javax.imageio.ImageIO
 def generatedBoxTextures = layout.buildDirectory.dir('generated/cardboard-textures')
 
 tasks.register('generateCardboardTextures') {
-    inputs.property('texture-art-version', '2026-11-06-full-checklist-v3')
+    inputs.property('texture-art-version', '2026-11-06-recycle-reference-v4')
+    inputs.file(file('src/main/cardboard_art/recycle_mark_32.txt'))
     inputs.files(
         file('src/main/resources/assets/cardboardstealth/textures/item/box_dye_base.png'),
         file('src/main/resources/assets/cardboardstealth/textures/item/box_dye_details.png'))
@@ -55,36 +56,17 @@ tasks.register('generateCardboardTextures') {
             }
         }
 
-        // Four curved inward-pointing recycle arrows, adapted pixel-by-pixel
-        // from the user's green recycling-logo reference. Atlas UV 0..32px is
-        // mapped to a SINGLE quad on the rear face: no more cropped glyphs.
-        List<String> symbol = [
-            '.######.#######.',
-            '######.#########',
-            '##.....##.....##',
-            '##.....##.....##',
-            '##....####....##',
-            '##.....##.....##',
-            '##..#......#...#',
-            '######....#####.',
-            '.#####....######',
-            '#...#......#..##',
-            '##.....##.....##',
-            '##....####....##',
-            '##.....##.....##',
-            '##.....##.....##',
-            '#########.######',
-            '.#######.######.'
-        ]
-        assert symbol.size()==16 && symbol.every { it.length()==16 }
+        // Faithful 32x32 pixel recreation of the user's supplied green
+        // recycling symbol. The one UV mapped quad on the rear (+Z) uses
+        // only the 0..32 square of the otherwise transparent 128px atlas.
+        List<String> symbol = file('src/main/cardboard_art/recycle_mark_32.txt')
+                .readLines('UTF-8')
+        assert symbol.size()==32 && symbol.every { it.length()==32 }
         int darkGreen = new Color(0,102,0,255).getRGB()
-        for (int y=0;y<16;y++) {
-            for (int x=0;x<16;x++) {
-                if (symbol[y].charAt(x) == '#') {
-                    for (int yy=0;yy<2;yy++) for (int xx=0;xx<2;xx++)
-                        stamp.setRGB(x*2+xx,y*2+yy,darkGreen)
-                }
-            }
+        for (int y=0;y<32;y++) for (int x=0;x<32;x++) {
+            char mark = symbol[y].charAt(x)
+            assert mark=='.' || mark=='#'
+            if (mark=='#') stamp.setRGB(x,y,darkGreen)
         }
         ImageIO.write(paper,'png',new File(entityDir,'paper_refined.png'))
         ImageIO.write(tape,'png',new File(entityDir,'tape_refined.png'))

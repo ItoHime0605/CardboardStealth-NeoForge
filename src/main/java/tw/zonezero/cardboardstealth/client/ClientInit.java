@@ -58,6 +58,9 @@ public final class ClientInit {
         // Defensive restore if an earlier render was interrupted by another mod.
         boolean[] stale = SAVED.remove(m);
         if (stale != null) restore(m, stale);
+        // Model and layer renderer objects are shared across players. If another
+        // mod cancelled a previous Pre, restore the last temporary filter FIRST.
+        ClientLayerRenderControl.after(event.getRenderer());
         if (ClientBoxState.variant(event.getEntity().getId()) == 0) return;
         // Stable NeoForge event approach, no fragile LivingEntityRenderer Mixin.
         ClientLayerRenderControl.before(event.getRenderer());

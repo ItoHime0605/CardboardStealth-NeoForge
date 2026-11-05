@@ -35,8 +35,8 @@ public final class BoxModelGeometryTest {
                 "underside is fully opaque, not transparent");
         check(BoxModelGeometry.FLOOR_BODY_Y - tw.zonezero.cardboardstealth.BoxModelPose.liftPixels(true)
                 == 24F, "rested box wall hinge reaches ground plane");
-        check(tw.zonezero.cardboardstealth.BoxModelPose.flapAngle(true) > 1.45F,
-                "rested flaps lie nearly flat on terrain");
+        check(Math.abs(10D * Math.cos(tw.zonezero.cardboardstealth.BoxModelPose.flapAngle(true))) < 0.00001D,
+                "resting flap tips reach the ground without drooping below it");
         System.out.println("PASS: " + checked + "/22 physical box and ground-contact checks");
     }
 }

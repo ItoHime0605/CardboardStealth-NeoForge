@@ -6,7 +6,10 @@ public final class BoxModelPose {
     /** Negative lift is the 8px downward resting position. */
     public static float liftPixels(boolean rested) { return rested ? -8F : 3F; }
     /** Walking flaps angle outwards; rested flaps lie nearly horizontal. */
-    public static float flapAngle(boolean rested) { return rested ? 1.50F : 0.62F; }
+    /** At rest the four lid flaps are perfectly horizontal, not 0.7px underground. */
+    public static float flapAngle(boolean rested) {
+        return rested ? (float) (Math.PI / 2.0D) : 0.62F;
+    }
     /** Apply bodyYaw-headYaw after Minecraft already rotates the body renderer. */
     public static float lookRelativeYaw(float bodyYaw, float headYaw) {
         float relative = (bodyYaw - headYaw) % 360F;

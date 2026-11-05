@@ -22,7 +22,8 @@ public final class BoxColorsAndPoseTest {
         check(BoxModelPose.liftPixels(false) == 3F, "walking reveals legs");
         check(BoxModelPose.liftPixels(true) == -8F, "resting body hinge reaches ground");
         check(BoxModelPose.flapAngle(false) > 0.60F, "walking flaps angled");
-        check(BoxModelPose.flapAngle(true) > 1.45F, "resting flaps nearly flat");
+        check(Math.abs(Math.cos(BoxModelPose.flapAngle(true))) < 0.000001D,
+                "resting flaps are exactly horizontal");
         check(BoxModelPose.lookRelativeYaw(30F, 90F) == -60F, "box follows head yaw");
         check(BoxModelPose.lookRelativeYaw(170F, -170F) == -20F, "yaw wraps correctly");
         check(BoxModelPose.lookRelativeYaw(45F, 45F) == 0F, "no unnecessary yaw");
