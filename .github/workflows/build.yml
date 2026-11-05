@@ -15,8 +15,13 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
+      - name: Check detection rules
+        run: |
+          mkdir -p build/rule-tests
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxDetectionRules.java tests/BoxDetectionRulesTest.java
+          java -cp build/rule-tests BoxDetectionRulesTest
       - run: gradle --no-daemon build
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.1-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.2-alpha
           path: build/libs/*.jar

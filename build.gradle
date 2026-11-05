@@ -22,8 +22,8 @@ repositories {
 }
 dependencies {
     compileOnly 'top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api'
-    localRuntime 'top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1'
+    runtimeOnly 'top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1'
     compileOnly 'curse.maven:zombie-awareness-237754:5731744'
-    localRuntime 'curse.maven:zombie-awareness-237754:5731744'
+    runtimeOnly 'curse.maven:zombie-awareness-237754:5731744'
 }
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

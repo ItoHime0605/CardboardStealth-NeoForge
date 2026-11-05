@@ -22,7 +22,9 @@ public final class ModNetwork {
     }
     public static void register(RegisterPayloadHandlersEvent event) {
         event.registrar("1").playToClient(BoxPayload.TYPE, BoxPayload.STREAM_CODEC, (payload, context) -> {
-            if (FMLEnvironment.dist == Dist.CLIENT) ClientBoxState.receive(payload.entityId(), payload.variant());
+            context.enqueueWork(() -> {
+                if (FMLEnvironment.dist == Dist.CLIENT) ClientBoxState.receive(payload.entityId(), payload.variant());
+            });
         });
     }
     public static void broadcast(ServerPlayer player, int variant) {
