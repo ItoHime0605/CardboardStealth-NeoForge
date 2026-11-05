@@ -35,6 +35,10 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxPolicy.java tests/BoxPolicyTest.java
           java -cp build/rule-tests BoxPolicyTest
+      - name: Check cardboard eye-window geometry
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxViewGeometry.java tests/BoxViewGeometryTest.java
+          java -cp build/rule-tests BoxViewGeometryTest
       - name: Validate assets and Curios data JSON
         run: |
           find src/main/resources -name '*.json' -print0 | xargs -0 -n1 python3 -m json.tool > /dev/null
@@ -44,5 +48,5 @@ jobs:
       - run: gradle --no-daemon build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.9-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.10-alpha
           path: build/libs/*.jar
