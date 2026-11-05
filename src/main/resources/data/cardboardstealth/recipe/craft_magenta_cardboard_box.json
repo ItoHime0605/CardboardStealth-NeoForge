@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PSD",
+    "PPP"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "S": "minecraft:slime_ball",
+    "D": "minecraft:magenta_dye"
+  },
+  "result": {
+    "id": "cardboardstealth:magenta_cardboard_box",
+    "count": 1
+  }
+}

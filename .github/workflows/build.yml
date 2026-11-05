@@ -59,6 +59,33 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxMotionRules.java tests/BoxMotionRulesTest.java
           java -cp build/rule-tests BoxMotionRulesTest
+      - name: Check 16 dye colors and model movement
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxColors.java src/main/java/tw/zonezero/cardboardstealth/BoxModelPose.java tests/BoxColorsAndPoseTest.java
+          java -cp build/rule-tests BoxColorsAndPoseTest
+      - name: Verify recipes and model assets
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          ns=Path('src/main/resources')
+          colors='white orange magenta light_blue yellow lime pink gray light_gray cyan purple blue brown green red black'.split()
+          for color in colors:
+              name=f'{color}_cardboard_box'
+              data=json.loads((ns/'data/cardboardstealth/recipe'/f'craft_{name}.json').read_text())
+              assert data['pattern']==['PPP','PSD','PPP']
+              assert data['key']['S']=='minecraft:slime_ball'
+              assert data['key']['D']==f'minecraft:{color}_dye'
+              assert data['result']['id']==f'cardboardstealth:{name}'
+              re=json.loads((ns/'data/cardboardstealth/recipe'/f'recolor_{name}.json').read_text())
+              assert '#curios:cardboard' in re['ingredients']
+              assert (ns/'assets/cardboardstealth/models/item'/f'{name}.json').is_file()
+          for name in ['cardboard_box','box_dye_base','box_dye_details']:
+              assert (ns/'assets/cardboardstealth/textures/item'/f'{name}.png').is_file()
+          for name in ['paper','tape','recycle_logo']:
+              assert (ns/'assets/cardboardstealth/textures/entity'/f'{name}.png').is_file()
+          print('PASS: 16/16 dye recipes, 16/16 recolor recipes, all textures')
+          PY
       - name: Validate assets and Curios data JSON
         run: |
           find src/main/resources -name '*.json' -print0 | xargs -0 -n1 python3 -m json.tool > /dev/null
@@ -68,5 +95,5 @@ jobs:
       - run: gradle --no-daemon build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.13-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.14-alpha
           path: build/libs/*.jar

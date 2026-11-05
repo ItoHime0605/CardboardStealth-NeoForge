@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "#curios:cardboard",
+    "minecraft:gray_dye"
+  ],
+  "result": {
+    "id": "cardboardstealth:gray_cardboard_box",
+    "count": 1
+  }
+}

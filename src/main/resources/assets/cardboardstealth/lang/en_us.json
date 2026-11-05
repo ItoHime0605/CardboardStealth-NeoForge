@@ -2,5 +2,21 @@
   "item.cardboardstealth.cardboard_box": "Cardboard Box",
   "item.cardboardstealth.delivery_box": "Shipping Box",
   "item.cardboardstealth.supply_box": "Supply Box",
-  "curios.identifier.cardboard": "Cardboard Slot"
+  "curios.identifier.cardboard": "Cardboard Slot",
+  "item.cardboardstealth.white_cardboard_box": "White Cardboard Box",
+  "item.cardboardstealth.orange_cardboard_box": "Orange Cardboard Box",
+  "item.cardboardstealth.magenta_cardboard_box": "Magenta Cardboard Box",
+  "item.cardboardstealth.light_blue_cardboard_box": "Light Blue Cardboard Box",
+  "item.cardboardstealth.yellow_cardboard_box": "Yellow Cardboard Box",
+  "item.cardboardstealth.lime_cardboard_box": "Lime Cardboard Box",
+  "item.cardboardstealth.pink_cardboard_box": "Pink Cardboard Box",
+  "item.cardboardstealth.gray_cardboard_box": "Gray Cardboard Box",
+  "item.cardboardstealth.light_gray_cardboard_box": "Light Gray Cardboard Box",
+  "item.cardboardstealth.cyan_cardboard_box": "Cyan Cardboard Box",
+  "item.cardboardstealth.purple_cardboard_box": "Purple Cardboard Box",
+  "item.cardboardstealth.blue_cardboard_box": "Blue Cardboard Box",
+  "item.cardboardstealth.brown_cardboard_box": "Brown Cardboard Box",
+  "item.cardboardstealth.green_cardboard_box": "Green Cardboard Box",
+  "item.cardboardstealth.red_cardboard_box": "Red Cardboard Box",
+  "item.cardboardstealth.black_cardboard_box": "Black Cardboard Box"
 }

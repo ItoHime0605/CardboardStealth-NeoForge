@@ -2,5 +2,21 @@
   "item.cardboardstealth.cardboard_box": "普通紙箱",
   "item.cardboardstealth.delivery_box": "物流紙箱",
   "item.cardboardstealth.supply_box": "軍需紙箱",
-  "curios.identifier.cardboard": "紙箱槽"
+  "curios.identifier.cardboard": "紙箱槽",
+  "item.cardboardstealth.white_cardboard_box": "白色紙箱",
+  "item.cardboardstealth.orange_cardboard_box": "橙色紙箱",
+  "item.cardboardstealth.magenta_cardboard_box": "洋紅色紙箱",
+  "item.cardboardstealth.light_blue_cardboard_box": "淺藍色紙箱",
+  "item.cardboardstealth.yellow_cardboard_box": "黃色紙箱",
+  "item.cardboardstealth.lime_cardboard_box": "淺綠色紙箱",
+  "item.cardboardstealth.pink_cardboard_box": "粉紅色紙箱",
+  "item.cardboardstealth.gray_cardboard_box": "灰色紙箱",
+  "item.cardboardstealth.light_gray_cardboard_box": "淺灰色紙箱",
+  "item.cardboardstealth.cyan_cardboard_box": "青色紙箱",
+  "item.cardboardstealth.purple_cardboard_box": "紫色紙箱",
+  "item.cardboardstealth.blue_cardboard_box": "藍色紙箱",
+  "item.cardboardstealth.brown_cardboard_box": "棕色紙箱",
+  "item.cardboardstealth.green_cardboard_box": "綠色紙箱",
+  "item.cardboardstealth.red_cardboard_box": "紅色紙箱",
+  "item.cardboardstealth.black_cardboard_box": "黑色紙箱"
 }

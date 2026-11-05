@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tw.zonezero.cardboardstealth.ModNetwork;
@@ -25,6 +26,8 @@ import tw.zonezero.cardboardstealth.BoxMovement;
 import tw.zonezero.cardboardstealth.BoxSoundRules;
 import net.neoforged.neoforge.common.NeoForge;
 import tw.zonezero.cardboardstealth.CardboardStealth;
+import tw.zonezero.cardboardstealth.ModItems;
+import tw.zonezero.cardboardstealth.BoxColors;
 
 public final class ClientInit {
     public static final ModelLayerLocation BOX_LAYER = new ModelLayerLocation(
@@ -33,6 +36,7 @@ public final class ClientInit {
 
     public static void register(IEventBus bus) {
         bus.addListener(ClientInit::registerLayer);
+        bus.addListener(ClientInit::registerItemColors);
         bus.addListener(ClientInit::addLayers);
         bus.addListener(BoxViewOverlay::register);
         NeoForge.EVENT_BUS.addListener(ClientInit::pre);
@@ -42,6 +46,13 @@ public final class ClientInit {
         NeoForge.EVENT_BUS.addListener(ClientInit::jump);
         NeoForge.EVENT_BUS.addListener(ClientInit::clientSounds);
         NeoForge.EVENT_BUS.addListener(ClientInit::emptySwing);
+    }
+    /** Color only layer 0 (paper). Layer 1 is the user's untinted tape and recycle mark. */
+    public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
+        for (var dyed : ModItems.DYED.values()) {
+            event.register((stack, layer) -> layer == 0
+                    ? BoxColors.rgb(ModItems.variant(stack.getItem())) : -1, dyed.get());
+        }
     }
     public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(BOX_LAYER, CardboardLayer::createBodyLayer);

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PSD",
+    "PPP"
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "S": "minecraft:slime_ball",
+    "D": "minecraft:lime_dye"
+  },
+  "result": {
+    "id": "cardboardstealth:lime_cardboard_box",
+    "count": 1
+  }
+}
