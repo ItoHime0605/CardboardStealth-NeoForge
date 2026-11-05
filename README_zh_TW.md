@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.16-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.17-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.16-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.17-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -207,3 +207,10 @@ gradle --no-daemon build
 - 保留原本 5 tick 停止後紙箱貼地、移動抬高露腳，以及跨半磚時輕微後仰；不更動角色碰撞箱與殭屍識破距離。
 - 新增模型幾何測試與 JAR 內 128px 材質檢查。
 - **未在 Minecraft 客戶端實機渲染驗收**：材質 UV、不同顯示卡與 TaCZ／Curios 衝突須在進遊戲後確認。
+
+
+## 0.1.17-alpha｜材質產生器修正
+
+- 修正 Gradle Groovy 腳本中 Java 陣列初始化造成的語法錯誤，使用 Groovy list 對 `int[][]` 的型別轉換。
+- 改用 Python `bytes.fromhex` 在 CI 驗證 PNG 的標準檔頭，避免 escape 字串被當作普通反斜線。
+- 其他精修紙箱 3D 模型、外部細長縫、第一人稱大視窗、五 tick 貼地及 16 色配方均保持不變。

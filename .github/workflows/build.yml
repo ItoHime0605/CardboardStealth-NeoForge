@@ -107,11 +107,11 @@ jobs:
               for name in ('paper_refined.png','tape_refined.png','recycle_stamp.png'):
                   p='assets/cardboardstealth/textures/entity/'+name
                   raw=z.read(p)
-                  assert raw[:8] == b'\\x89PNG\\r\\n\\x1a\\n', p
+                  assert raw[:8] == bytes.fromhex('89504e470d0a1a0a'), p
                   assert struct.unpack_from('>II',raw,16)==(128,128), p
               print('PASS: 3/3 128px model-art texture atlases packed into JAR')
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.16-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.17-alpha
           path: build/libs/*.jar
