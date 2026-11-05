@@ -1,6 +1,7 @@
 package tw.zonezero.cardboardstealth.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -16,6 +17,7 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import tw.zonezero.cardboardstealth.BoxColors;
 import tw.zonezero.cardboardstealth.BoxModelGeometry;
 import tw.zonezero.cardboardstealth.BoxModelPose;
@@ -27,9 +29,9 @@ import tw.zonezero.cardboardstealth.CardboardStealth;
  *
  * - Forward = -Z: discreet peep opening, no printed recycling logo.
  * - Rear = +Z: recycling stamp in the lower right corner.
- * - Four separate, outward-folded bottom flaps; a recessed black liner hides
+ * - Walking flaps angled, stationary flaps lie flat; a recessed liner hides
  *   the player's torso at the lower mouth while their feet remain visible.
- * - 16 dye body shades, warm natural tape, edge folds and print remain distinct.
+ * - 16 dye body shades, neutral tape, pixel folds and genuine rear logo.
  * - All geometry is vanilla ModelPart cuboids, with restrained pixel paper grain.
  */
 public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
@@ -46,7 +48,7 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
     private final ModelPart undersideShade;
     private final ModelPart shadowInk;
     private final ModelPart tape;
-    private final ModelPart recycling;
+    private final ModelPart eyeCavity;
 
     public CardboardLayer(PlayerRenderer parent, ModelPart root) {
         super(parent);
@@ -56,7 +58,7 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
         undersideShade = root.getChild("underside_shade");
         shadowInk = root.getChild("shadow_ink");
         tape = root.getChild("tape");
-        recycling = root.getChild("recycling");
+        eyeCavity = root.getChild("eye_cavity");
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -177,11 +179,16 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
         tape.addOrReplaceChild("seal_edge_right", CubeListBuilder.create().texOffs(12, 15)
                 .addBox(1.46F, -5.23F, -10.7F, 0.13F, 0.10F, 21.4F), PartPose.ZERO);
 
-        // Rear-only green recycling icon. The real print is small, near bottom-right.
-        PartDefinition print = root.addOrReplaceChild("recycling", CubeListBuilder.create(), PartPose.ZERO);
-        print.addOrReplaceChild("rear_recycle_stamp", CubeListBuilder.create().texOffs(0, 0)
-                .addBox(2.35F, 8.0F, 11.035F, 6.3F, 6.3F, 0.08F), PartPose.ZERO);
+        // From outside, the slit has a shadowed inner cavity and a subtle
+        // head-shaped silhouette behind the cut. No actual player face clips out.
+        PartDefinition eye = root.addOrReplaceChild("eye_cavity", CubeListBuilder.create(), PartPose.ZERO);
+        eye.addOrReplaceChild("inside_recess", CubeListBuilder.create().texOffs(100, 65)
+                .addBox(-5.0F, -0.85F, -8.40F, 10.0F, 1.65F, 0.20F), PartPose.ZERO);
+        eye.addOrReplaceChild("head_shadow", CubeListBuilder.create().texOffs(100, 70)
+                .addBox(-2.45F, -0.55F, -8.50F, 4.90F, 1.12F, 0.10F), PartPose.ZERO);
 
+        // The rear recycle logo is rendered as a single UV-controlled 2D print
+        // instead of a CubeListBuilder cube (which used to crop/tile its logo).
         return LayerDefinition.create(mesh, 128, 128);
     }
 
@@ -193,18 +200,23 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
         if (variant == 0) return;
         boolean resting = ClientBoxState.rested(player.getId());
         float lift = BoxModelPose.liftPixels(resting);
-        float lean = BoxModelPose.stepBackTilt(player.getY() - player.yOld, player.onGround(), resting);
+        float flap = BoxModelPose.flapAngle(resting);
+        foldedEdges.getChild("front_flap").xRot = -flap;
+        foldedEdges.getChild("rear_flap").xRot = flap;
+        foldedEdges.getChild("left_flap").zRot = flap;
+        foldedEdges.getChild("right_flap").zRot = -flap;
         int dye = BoxColors.rgb(variant);
         var paperBuffer = buffers.getBuffer(RenderType.entityCutoutNoCull(PAPER));
 
         pose.pushPose();
+        // PlayerRenderer has already rotated to body yaw. Correct only the
+        // difference, so the box front follows the player's actual look yaw.
+        float bodyYaw = Mth.rotLerp(partialTick, player.yBodyRotO, player.yBodyRot);
+        float headYaw = Mth.rotLerp(partialTick, player.yHeadRotO, player.yHeadRot);
+        pose.mulPose(Axis.YP.rotationDegrees(BoxModelPose.lookRelativeYaw(bodyYaw, headYaw)));
+        // Local model Y is inverted by the vanilla LivingEntityRenderer setup:
+        // +8px lower at rest brings the body hinge to the ground (Y24).
         pose.translate(0D, -lift / 16D, 0D);
-        if (lean != 0F) {
-            // Lean around the feet rather than clipping the roof through ground.
-            pose.translate(0D, -0.50D, 0D);
-            pose.mulPose(Axis.XP.rotation(lean));
-            pose.translate(0D, 0.50D, 0D);
-        }
 
         body.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
                 BoxModelGeometry.multiplyTint(dye, 1.0F));
@@ -218,10 +230,38 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
                 BoxModelGeometry.UNDERMOUTH_DARK_ARGB);
         shadowInk.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
                 BoxModelGeometry.multiplyTint(dye, 0.58F));
+        eyeCavity.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
+                BoxModelGeometry.multiplyTint(dye, 0.24F));
         tape.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TAPE)),
                 light, OverlayTexture.NO_OVERLAY);
-        recycling.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(RECYCLE)),
-                light, OverlayTexture.NO_OVERLAY);
+        renderBackRecyclingStamp(pose, buffers, light);
         pose.popPose();
+    }
+
+    /**
+     * True transparent UV-mapped printed glyph, facing outside the back (+Z).
+     * Negative model X is the rear viewer's right: the mark belongs there,
+     * never beside the forward eye slit.
+     */
+    private static void renderBackRecyclingStamp(PoseStack pose, MultiBufferSource buffers, int light) {
+        VertexConsumer out = buffers.getBuffer(RenderType.entityCutoutNoCull(RECYCLE));
+        PoseStack.Pose transform = pose.last();
+        float left = -8.35F / 16.0F, right = -2.15F / 16.0F;
+        float top = 7.8F / 16.0F, bottom = 14.0F / 16.0F;
+        float z = 11.15F / 16.0F;
+        addStampVertex(out, transform, left, bottom, z, 0F, 0.25F, light);
+        addStampVertex(out, transform, right, bottom, z, 0.25F, 0.25F, light);
+        addStampVertex(out, transform, right, top, z, 0.25F, 0F, light);
+        addStampVertex(out, transform, left, top, z, 0F, 0F, light);
+    }
+
+    private static void addStampVertex(VertexConsumer out, PoseStack.Pose transform,
+                                       float x, float y, float z, float u, float v, int light) {
+        out.addVertex(transform, x, y, z)
+                .setColor(255, 255, 255, 255)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(transform, 0F, 0F, 1F);
     }
 }
