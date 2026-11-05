@@ -4,6 +4,7 @@ import com.corosus.zombieawareness.ZAUtil;
 import com.corosus.zombieawareness.EnumSenseType;
 import com.corosus.zombieawareness.config.ZAConfigGeneral;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.fml.ModList;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
@@ -22,15 +23,17 @@ public final class BoxEvents {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         int equipped = BoxState.equippedVariant(player);
         // After activation the box stays on through its shortened jumps.
-        // Continued item use (bow draw, eating, drinking, etc.) breaks cover too,
-        // even when no new right-click event occurs during the disguise.
-        if (BoxState.active(player) && player.isUsingItem()) {
+        // Eating, drinking, equipping items and using a pistol are permitted.
+        // Heavy TaCZ firearms immediately break concealment even without firing.
+        if (BoxState.active(player) && ModList.get().isLoaded("tacz")
+                && TaczCompat.isNonPistolGun(player.getMainHandItem())) {
             BoxState.interrupt(player, 20);
             return;
         }
         boolean eligible = equipped != 0 && player.isShiftKeyDown() &&
                 !player.isPassenger() && !player.isSwimming() && !player.isFallFlying() &&
-                !player.getAbilities().flying && player.isAlive() && !player.isUsingItem() &&
+                !player.getAbilities().flying && player.isAlive() &&
+                !(ModList.get().isLoaded("tacz") && TaczCompat.isNonPistolGun(player.getMainHandItem())) &&
                 player.level().getGameTime() >= BoxState.blockedUntil(player);
         if (!eligible) {
             if (BoxState.hold(player) != 0) BoxState.hold(player, 0);
@@ -91,32 +94,18 @@ public final class BoxEvents {
     }
 
     public static void damaged(LivingDamageEvent.Post event) {
-        // Taking a hit or successfully hurting another entity breaks the disguise.
-        // This covers projectile/hitscan damage where AttackEntityEvent never fires.
+        // Being hit still breaks disguise. Outgoing pistol projectile damage does NOT:
+        // melee is instead handled by AttackEntityEvent / LeftClickEmpty.
         if (event.getEntity() instanceof ServerPlayer victim && BoxState.active(victim))
             BoxState.interrupt(victim, 20);
-        if (event.getSource().getEntity() instanceof ServerPlayer attacker && BoxState.active(attacker))
-            BoxState.interrupt(attacker, 20);
-    }
-    public static void useItem(PlayerInteractEvent.RightClickItem event) {
-        // Do not permit item activation while remaining visually disguised.
-        if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player)
-                && !event.getItemStack().isEmpty()) BoxState.interrupt(player, 20);
-    }
-    public static void interactBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player))
-            BoxState.interrupt(player, 20);
-    }
-    public static void interactEntity(PlayerInteractEvent.EntityInteract event) {
-        if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player))
-            BoxState.interrupt(player, 20);
     }
     public static void attack(AttackEntityEvent event) {
         if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player))
             BoxState.interrupt(player, 20);
     }
     public static void leftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
-        if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player))
+        if (event.getEntity() instanceof ServerPlayer player && BoxState.active(player)
+                && !(ModList.get().isLoaded("tacz") && TaczCompat.isPistol(player.getMainHandItem())))
             BoxState.interrupt(player, 20);
     }
     public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {

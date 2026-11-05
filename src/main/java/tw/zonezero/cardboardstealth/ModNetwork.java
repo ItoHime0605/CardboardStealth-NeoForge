@@ -20,10 +20,27 @@ public final class ModNetwork {
                 ByteBufCodecs.VAR_INT, BoxPayload::variant, BoxPayload::new);
         @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     }
+    /** Client indicates an empty-air melee swing; server rechecks the actual held item. */
+    public record MeleePayload() implements CustomPacketPayload {
+        public static final Type<MeleePayload> TYPE =
+                new Type<>(ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID, "melee_swing"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, MeleePayload> STREAM_CODEC =
+                StreamCodec.unit(new MeleePayload());
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
     public static void register(RegisterPayloadHandlersEvent event) {
-        event.registrar("1").playToClient(BoxPayload.TYPE, BoxPayload.STREAM_CODEC, (payload, context) -> {
+        var registrar = event.registrar("2");
+        registrar.playToClient(BoxPayload.TYPE, BoxPayload.STREAM_CODEC, (payload, context) -> {
             context.enqueueWork(() -> {
                 if (FMLEnvironment.dist == Dist.CLIENT) ClientBoxState.receive(payload.entityId(), payload.variant());
+            });
+        });
+        registrar.playToServer(MeleePayload.TYPE, MeleePayload.STREAM_CODEC, (payload, context) -> {
+            context.enqueueWork(() -> {
+                if (context.player() instanceof ServerPlayer player && BoxState.active(player) &&
+                        !(net.neoforged.fml.ModList.get().isLoaded("tacz") &&
+                                TaczCompat.isPistol(player.getMainHandItem())))
+                    BoxState.interrupt(player, 20);
             });
         });
     }

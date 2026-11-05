@@ -1,6 +1,7 @@
 package tw.zonezero.cardboardstealth;
 
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModList;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -27,9 +28,7 @@ public final class CardboardStealth {
         NeoForge.EVENT_BUS.addListener(BoxEvents::respawn);
         NeoForge.EVENT_BUS.addListener(BoxEvents::changedDimension);
         NeoForge.EVENT_BUS.addListener(BoxEvents::leftClickBlock);
-        NeoForge.EVENT_BUS.addListener(BoxEvents::useItem);
-        NeoForge.EVENT_BUS.addListener(BoxEvents::interactBlock);
-        NeoForge.EVENT_BUS.addListener(BoxEvents::interactEntity);
+        if (ModList.get().isLoaded("tacz")) TaczCompat.register();
         if (FMLEnvironment.dist == Dist.CLIENT) ClientInit.register(modBus);
     }
 }

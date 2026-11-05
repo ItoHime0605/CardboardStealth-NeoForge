@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.8-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.9-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.8-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.9-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -118,3 +118,17 @@ gradle --no-daemon build
 - 本版本未改動核心數值：速度 -40%、靜止識破半徑 1.25 格、移動 3.5 格、半磚步高 0.5 格。
 
 **實測待辦：** Curios 實際裝備槽、Zombie Awareness 感知機制、多人同步、TaCZ 無命中開火的中斷、半格跳躍實際高度及客戶端渲染。正式紙箱外觀需先取得使用者參考圖。
+
+
+## 0.1.9-alpha｜紙箱視野與 TaCZ 手槍潛行（待實機驗收）
+
+- 第一人稱只保留一條中央窄縫；目前使用不帶正式材質的純色遮罩，紙箱正式外觀仍待使用者提供參考圖片。
+- 允許使用一般道具、吃東西、喝水、持續使用物品，並保留紙箱偽裝狀態。
+- 正式介接 TaCZ 1.1.8-hotfix-r7：查詢每把槍的 `CommonGunIndex.getType()`；只允許 `pistol`、`handgun`、`revolver`，未知分類一律視為非手槍。
+- 取出衝鋒槍、步槍、狙擊、霰彈槍、RPG、榴彈槍等非手槍，立即解除偽裝；也不能持續持有非手槍進行新偽裝。
+- TaCZ 的 `GunFireEvent` 判斷實際成功觸發的開火：手槍開火不解除偽裝，但會依 Zombie Awareness 原本的開啟狀態產生槍聲線索。TaCZ 消音器的已計算音效旗標會降低線索強度至 1/4（最低仍為 1）。
+- 出手近戰攻擊仍會解除偽裝；新增 client-to-server 的揮空封包，讓打空氣的近戰揮動也能解除偽裝，伺服器驗證手上物品。
+- 已移除「攻擊者造成傷害就一律解除偽裝」的舊判定，避免手槍命中目標後誤解除偽裝；受傷者仍會解除偽裝。
+- 純 Java 武器分類與聲音強度測試 18 項；JAR 須以 GitHub Actions 對應提交編譯成功後方可下載實測。
+
+注意：TaCZ 各個槍包自訂的 `type` 若不是上述分類，需先檢查分類資料才能新增支援，不能把 SMG 當成手槍。若遊戲使用的 TaCZ 檔案有自行修改 API，仍須實測相容。

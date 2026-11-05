@@ -10,6 +10,10 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
+import tw.zonezero.cardboardstealth.ModNetwork;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
@@ -29,11 +33,13 @@ public final class ClientInit {
     public static void register(IEventBus bus) {
         bus.addListener(ClientInit::registerLayer);
         bus.addListener(ClientInit::addLayers);
+        bus.addListener(BoxViewOverlay::register);
         NeoForge.EVENT_BUS.addListener(ClientInit::pre);
         NeoForge.EVENT_BUS.addListener(ClientInit::post);
         NeoForge.EVENT_BUS.addListener(ClientInit::logout);
         NeoForge.EVENT_BUS.addListener(ClientInit::jump);
         NeoForge.EVENT_BUS.addListener(ClientInit::clientSounds);
+        NeoForge.EVENT_BUS.addListener(ClientInit::emptySwing);
     }
     public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(BOX_LAYER, CardboardLayer::createBodyLayer);
@@ -76,6 +82,12 @@ public final class ClientInit {
         if (BoxSoundRules.isStep(path)) event.setNewVolume(event.getNewVolume() * 0.18F);
         else if (BoxSoundRules.isLanding(path))
             event.setNewVolume(event.getNewVolume() * 0.28F);
+    }
+    public static void emptySwing(PlayerInteractEvent.LeftClickEmpty event) {
+        if (event.getEntity() instanceof LocalPlayer player &&
+                ClientBoxState.variant(player.getId()) != 0) {
+            PacketDistributor.sendToServer(new ModNetwork.MeleePayload());
+        }
     }
     public static void logout(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientBoxState.clear(); SAVED.clear();
