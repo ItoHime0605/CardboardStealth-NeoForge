@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.10-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.11-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.10-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.11-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -142,3 +142,14 @@ gradle --no-daemon build
 - 新增僅限客戶端載入的 `ClientItemInHandMixin`。在紙箱狀態下取消第三人稱 `ItemInHandLayer.render`；包含 TaCZ 1.1.8 追加到該層的副手及快捷列槍械，不會有槍從紙箱穿出。第一人稱 `RenderHandEvent` 不受此 mixin 影響。
 - 第三人稱仍保留目前暫用的紙箱方塊及雙腳。正式 3D 紙箱模型和走上半磚的後傾動畫，等玩家提供外觀參考圖再製作。
 - **尚需實機驗證**：第一人稱手槍在狹縫中能看見多少模型、TaCZ 的額外特效是否穿出紙箱、多人伺服器與角色裝甲的渲染相容。GUI 遮罩會遮蔽狹縫以外的世界與手槍畫面，因此視角與槍械第一人稱位置需要玩家驗收後再校正。
+
+
+## 0.1.11-alpha｜第三人稱外觀層全面遮蔽
+
+- 使用客戶端 `LivingEntityRenderer` 層級的渲染攔截，紙箱狀態的玩家只保留自製 `CardboardLayer`，其他附加層（手持槍、TaCZ 副手／快捷列槍、盔甲、披風、鞘翅、Curios 飾品等）都不繪製，外人只會看到紙箱與原版露出的小腿。
+- 只有玩家的第三人稱渲染受影響；其他生物、以及玩家自己的第一人稱手槍渲染均不會被攔截。
+- 原本針對 `ItemInHandLayer` 的攔截保留為備援。當 NeoForge 與其他模組修改了 Layer 渲染鏈，需特別實測 `ClientLayerFilterMixin` 是否確實套用；其攔截設為 `require=0`，避免在不同渲染環境中因找不到注入點直接造成載入失敗。
+- 玩家模型預／後渲染的暫時隱藏狀態加入修復保護，避免少數渲染事件中斷後把其他玩家的模型部件一直隱藏。
+- 新增 8 項純 Java 外觀層過濾測試。仍未製作正式紙箱外型；請等使用者提供外觀參考圖片。
+
+**待實測**：混裝盔甲與 Curios 時的真實外觀、TaCZ 其他外掛槍口火光與彈殼是否透出紙箱、第一人稱狹縫是否保留可見手槍與準心。編譯成功不足以確認 Mixin 在遊戲中正確套用。
