@@ -64,8 +64,29 @@ public final class CardboardAssetIntegrityTest {
             }
             check(stampPixels==602,"32x32 reference shape has exactly 602 opaque pixels");
             check(spill==0,"recycling print must not leak beyond its UV square");
-            // The actual selected GUI textures are now straight-on 2D sprites,
-            // while the held and dropped 3D models use their own paper atlases.
+            // Restore the actual pre-0.1.22 inventory artwork rather than the
+            // newer straight-on back-view image. Verify every selected PNG.
+            String[] originals={"cardboard_box","delivery_box","supply_box"};
+            for(String name:originals){
+                BufferedImage sprite=read(jar,
+                        "assets/cardboardstealth/textures/item/"+name+".png");
+                check(sprite.getWidth()==16||sprite.getWidth()==64,
+                        "original "+name+" icon has the original source resolution");
+                check(sprite.getWidth()==sprite.getHeight(),
+                        "original "+name+" icon has square pixel-art proportions");
+                int visible=0;
+                for(int y=0;y<sprite.getHeight();y++)
+                    for(int x=0;x<sprite.getWidth();x++)
+                        if((sprite.getRGB(x,y)>>>24)>100)visible++;
+                check(visible>36,"old "+name+" graphic isn't blank");
+            }
+            for(String color:COLORS){
+                String name=color+"_cardboard_box";
+                BufferedImage sprite=read(jar,
+                        "assets/cardboardstealth/textures/item/colored/"+name+".png");
+                check(sprite.getWidth()==64&&sprite.getHeight()==64,
+                        "restore original 64x64 dyed inventory art for "+color);
+            }
             for (String name : new String[]{
                     "cardboard_box","delivery_box","supply_box",
                     "white_cardboard_box","orange_cardboard_box","magenta_cardboard_box",
@@ -74,24 +95,35 @@ public final class CardboardAssetIntegrityTest {
                     "cyan_cardboard_box","purple_cardboard_box","blue_cardboard_box",
                     "brown_cardboard_box","green_cardboard_box","red_cardboard_box",
                     "black_cardboard_box"}) {
-                BufferedImage straight = read(jar,
-                        "assets/cardboardstealth/textures/item/straight/"+name+".png");
-                check(straight.getWidth()==64 && straight.getHeight()==64,
-                        name+" straight-on GUI texture size");
-                int solid = 0, greenInk = 0;
-                for (int y=0;y<64;y++) for (int x=0;x<64;x++) {
-                    int rgba=straight.getRGB(x,y);
-                    if ((rgba>>>24)==255) solid++;
-                    if (x>=36&&x<=48&&y>=33&&y<=45&&rgba==0xFF006600) greenInk++;
-                }
-                check(solid>=1800, name+" opaque full-color straight-on icon");
-                check(greenInk>=4, name+" back-right recycle mark must be legible");
                 BufferedImage mini=read(jar,
                         "assets/cardboardstealth/textures/item/mini/"+name+"_paper.png");
                 check(mini.getWidth()==128 && mini.getHeight()==128,
-                        name+" mini 3D model paper texture size");
-                check((mini.getRGB(20,20)>>>24)==255,name+" mini 3D paper is not transparent");
+                        name+" textured hand/dropped miniature is 128x128");
+                check((mini.getRGB(20,20)>>>24)==255,
+                        name+" miniature has fully opaque paper material");
             }
+            // Item model tape/recycle material MUST be present in the item
+            // atlas. Being present only in textures/entity does not suffice.
+            BufferedImage miniTape=read(jar,
+                    "assets/cardboardstealth/textures/item/mini/packing_tape.png");
+            BufferedImage miniStamp=read(jar,
+                    "assets/cardboardstealth/textures/item/mini/recycle_stamp.png");
+            check(miniTape.getWidth()==128&&miniTape.getHeight()==128,
+                    "stitched item miniature tape atlas is 128px");
+            check(miniStamp.getWidth()==128&&miniStamp.getHeight()==128,
+                    "stitched item miniature stamp atlas is 128px");
+            int tan=0,opaqueTape=0,stampMatches=0;
+            for(int y=0;y<128;y++)for(int x=0;x<128;x++){
+                int px=miniTape.getRGB(x,y);
+                int r=(px>>>16)&255,g=(px>>>8)&255,b=px&255;
+                if((px>>>24)==255)opaqueTape++;
+                if(r>g+15&&g>b+15)tan++;
+                if(miniStamp.getRGB(x,y)==logo.getRGB(x,y))stampMatches++;
+            }
+            check(opaqueTape>16000,"miniature tape is a real complete opaque texture");
+            check(tan>15000,"miniature tape is a beige paper seal, not magenta");
+            check(stampMatches==128*128,
+                    "miniature recycle glyph has the original 32x32 stamp pixels");
             System.out.println("PASS: "+count+"/"+count+" decoded dyed-item and recycle-logo pixel checks");
         }
     }
