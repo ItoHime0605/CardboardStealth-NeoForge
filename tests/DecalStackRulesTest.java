@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=3;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=4;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=4;col<16;col++){
+        for(int col=5;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -99,6 +99,34 @@ public final class DecalStackRulesTest {
             int art=DecalStackRules.nextArt(DecalStackRules.BLACK,variant,2,slot);
             check(art>=0&&art<6, "valid black decal selection for every box and anchor");
         }
-        System.out.println("PASS: "+count+"/"+count+" four-carpet decal stack, peeling and ID tests");
+
+        // Red-poster decals must be a fifth family, with a distinct, stable
+        // encoded color index that cannot rewrite existing saved black layers.
+        int red=DecalStackRules.pack(DecalStackRules.RED,3,4);
+        check(DecalStackRules.supportedColor(DecalStackRules.RED),
+                "red carpet only activates after its six art assets exist");
+        check(DecalStackRules.artCount(DecalStackRules.RED)==6,
+                "exactly six finished red posters");
+        check(DecalStackRules.isValid(red)&&DecalStackRules.color(red)==4,
+                "red uses a distinct fifth color encoding");
+        check(!DecalStackRules.isValid(DecalStackRules.pack(DecalStackRules.RED,6,4)),
+                "unpainted red art cannot be encoded");
+        int oldBlack=DecalStackRules.pack(DecalStackRules.BLACK,5,4);
+        int[] fiveMixed=DecalStackRules.append(
+                DecalStackRules.append(
+                        DecalStackRules.append(new int[0],white), oldBlack), red);
+        check(Arrays.equals(fiveMixed,new int[]{white,oldBlack,red}),
+                "red remains uppermost after old white+black layers");
+        check(Arrays.equals(DecalStackRules.peel(fiveMixed),
+                new int[]{white,oldBlack}),"peeling red leaves black intact");
+        check(Arrays.equals(DecalStackRules.sanitized(fiveMixed),fiveMixed),
+                "saved mixed-color ordering survives sanitation");
+        check(DecalStackRules.append(fiveMixed,red).length==3,
+                "red cannot bypass the existing three-layer cap");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int next=DecalStackRules.nextArt(DecalStackRules.RED,variant,2,slot);
+            check(next>=0&&next<6,"every box/anchor selects one finished red poster");
+        }
+        System.out.println("PASS: "+count+"/"+count+" five-carpet decal stack, peeling and ID tests");
     }
 }
