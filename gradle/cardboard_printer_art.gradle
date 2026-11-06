@@ -30,7 +30,7 @@ tasks.register('generateIndustrialStickerPrinter') {
             teal:[48,173,174],orange:[207,136,69],vent:[41,49,58],
             warning:[183,117,56]
         ]
-        for(var entry:tones.entrySet()) {
+        for(def entry : tones.entrySet()) {
             String name=entry.key
             int[] rgb=entry.value
             BufferedImage img=new BufferedImage(W,W,BufferedImage.TYPE_INT_ARGB)
@@ -149,9 +149,9 @@ tasks.register('generateIndustrialStickerPrinter') {
             elements:elements,
             display:[
                 thirdperson_righthand:[rotation:[70,45,0],translation:[0,2.0,0],scale:[0.54,0.54,0.54]],
-                thirdperson_lefthand:[rotation:[70,225,0],translation:[0,2.0,0],scale:[0.54,0.54,0.54]],
+                thirdperson_lefthand:[rotation:[70,-135,0],translation:[0,2.0,0],scale:[0.54,0.54,0.54]],
                 firstperson_righthand:[rotation:[0,45,0],translation:[0,0,0],scale:[0.66,0.66,0.66]],
-                firstperson_lefthand:[rotation:[0,225,0],translation:[0,0,0],scale:[0.66,0.66,0.66]],
+                firstperson_lefthand:[rotation:[0,-135,0],translation:[0,0,0],scale:[0.66,0.66,0.66]],
                 gui:[rotation:[26,145,0],translation:[0,0,0],scale:[0.72,0.72,0.72]],
                 ground:[rotation:[0,0,0],translation:[0,2.6,0],scale:[0.49,0.49,0.49]],
                 fixed:[rotation:[0,180,0],translation:[0,0,0],scale:[0.82,0.82,0.82]]
