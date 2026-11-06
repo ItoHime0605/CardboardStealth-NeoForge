@@ -56,5 +56,11 @@
   "tooltip.cardboardstealth.orange_2": "第 %s 層：夕陽公路餐館招牌",
   "tooltip.cardboardstealth.orange_3": "第 %s 層：無線電死區公告",
   "tooltip.cardboardstealth.orange_4": "第 %s 層：撤離路線指示牌",
-  "tooltip.cardboardstealth.orange_5": "第 %s 層：廢鐵拖吊車廣告"
+  "tooltip.cardboardstealth.orange_5": "第 %s 層：廢鐵拖吊車廣告",
+  "tooltip.cardboardstealth.yellow_0": "第 %s 層：輻射落塵警告",
+  "tooltip.cardboardstealth.yellow_1": "第 %s 層：斷橋坍塌封鎖",
+  "tooltip.cardboardstealth.yellow_2": "第 %s 層：生化隔離警示",
+  "tooltip.cardboardstealth.yellow_3": "第 %s 層：高壓電危險標誌",
+  "tooltip.cardboardstealth.yellow_4": "第 %s 層：廢棄礦井坍塌警告",
+  "tooltip.cardboardstealth.yellow_5": "第 %s 層：受污染水源警告"
 }

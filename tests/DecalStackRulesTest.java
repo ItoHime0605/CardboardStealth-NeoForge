@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=5;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=6;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=6;col<16;col++){
+        for(int col=7;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -154,6 +154,36 @@ public final class DecalStackRulesTest {
             int selected=DecalStackRules.nextArt(DecalStackRules.ORANGE,variant,2,slot);
             check(selected>=0&&selected<6,"every variant and anchor has a valid orange art");
         }
-        System.out.println("PASS: "+count+"/"+count+" six-carpet decal stack, peeling and ID tests");
+
+        // Keep every pre-existing color code stable when adding yellow.
+        int yellow=DecalStackRules.pack(DecalStackRules.YELLOW,1,4);
+        check(DecalStackRules.supportedColor(DecalStackRules.YELLOW),
+                "only finished yellow hazards are allowed");
+        check(DecalStackRules.artCount(DecalStackRules.YELLOW)==6,
+                "yellow has exactly six original drawings");
+        check(DecalStackRules.isValid(yellow) &&
+                DecalStackRules.color(yellow)==6,
+                "yellow color ID is the non-colliding seventh index");
+        check(!DecalStackRules.isValid(
+                DecalStackRules.pack(DecalStackRules.YELLOW,6,4)),
+                "unpainted yellow hazards must never become invisible layers");
+        int oldOrange=DecalStackRules.pack(DecalStackRules.ORANGE,2,4);
+        int[] mixedYellow=DecalStackRules.append(
+                DecalStackRules.append(
+                DecalStackRules.append(new int[0],white),oldOrange),yellow);
+        check(Arrays.equals(mixedYellow,new int[]{white,oldOrange,yellow}),
+                "new yellow remains the topmost among mixed poster families");
+        check(Arrays.equals(DecalStackRules.peel(mixedYellow),new int[]{white,oldOrange}),
+                "yellow peels cleanly without changing prior orange art");
+        check(Arrays.equals(DecalStackRules.sanitized(mixedYellow),mixedYellow),
+                "mixed saved yellow layers survive sanitizer");
+        check(DecalStackRules.append(mixedYellow,yellow).length==3,
+                "fourth decal remains rejected for yellow family");
+        for(int variant=1;variant<=19;variant++) for(int slot=0;slot<9;slot++){
+            int selected=DecalStackRules.nextArt(DecalStackRules.YELLOW,variant,2,slot);
+            check(selected>=0 && selected<6,
+                    "all cardboard variants and 9 anchors select a valid yellow drawing");
+        }
+        System.out.println("PASS: "+count+"/"+count+" seven-carpet decal stack, peeling and ID tests");
     }
 }
