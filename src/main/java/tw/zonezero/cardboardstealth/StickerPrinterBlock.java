@@ -50,7 +50,9 @@ public final class StickerPrinterBlock extends BaseEntityBlock {
     }
     @Override protected void onRemove(BlockState state,Level level,BlockPos pos,
                                       BlockState next,boolean moved){
-        if(!state.is(next.getBlock())){
+        // Drops are authoritative and occur only when the actual block is
+        // replaced, never during client prediction or facing-state updates.
+        if(!level.isClientSide && !state.is(next.getBlock())){
             if(level.getBlockEntity(pos) instanceof StickerPrinterBlockEntity printer)
                 Containers.dropContents(level,pos,printer);
         }
