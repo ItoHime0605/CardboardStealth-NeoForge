@@ -24,23 +24,22 @@ public final class DecalItemData {
         });
         return result;
     }
-    public static ItemStack addCarpet(ItemStack box, int carpetColor, int placement) {
-        int[] previous = get(box);
-        if (!DecalStackRules.supportedColor(carpetColor)
-                || ModItems.variant(box.getItem()) == 0
-                || previous.length >= DecalStackRules.MAX_LAYERS
-                || placement < 0 || placement >= DecalStackRules.ANCHORS) return ItemStack.EMPTY;
-        // Keep all legacy white-carpet results stable. New light-gray carpet
-        // gets its own six-design warehouse label palette.
-        int art = carpetColor == DecalStackRules.WHITE
-                ? DecalStackRules.nextWhiteArt(ModItems.variant(box.getItem()), previous.length, placement)
-                : DecalStackRules.nextArt(carpetColor, ModItems.variant(box.getItem()), previous.length, placement);
-        int code = DecalStackRules.pack(carpetColor, art, placement);
-        return withLayers(box, DecalStackRules.append(previous, code));
+    /**
+     * Preserve the old packed integer format, only the source of color/art
+     * changes. Crafted sticker is a stable choice, never a random result.
+     */
+    public static ItemStack addSticker(ItemStack box, int color, int artwork, int anchor) {
+        int[] previous=get(box);
+        if (!DecalStackRules.supportedColor(color)
+                || artwork<0 || artwork>=DecalStackRules.artCount(color)
+                || ModItems.variant(box.getItem())==0
+                || previous.length>=DecalStackRules.MAX_LAYERS
+                || anchor<0 || anchor>=DecalStackRules.ANCHORS)
+            return ItemStack.EMPTY;
+        int code=DecalStackRules.pack(color,artwork,anchor);
+        return withLayers(box,DecalStackRules.append(previous,code));
     }
-    public static ItemStack addWhite(ItemStack box, int carpetSlot) {
-        return addCarpet(box, DecalStackRules.WHITE, carpetSlot);
-    }
+
     public static ItemStack peel(ItemStack box) {
         int[] previous = get(box);
         if (previous.length == 0) return ItemStack.EMPTY;

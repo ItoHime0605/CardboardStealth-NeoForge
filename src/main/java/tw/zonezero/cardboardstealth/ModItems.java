@@ -14,6 +14,15 @@ public final class ModItems {
     public static final DeferredItem<Item> CARDBOARD = ITEMS.registerSimpleItem("cardboard_box", new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> DELIVERY = ITEMS.registerSimpleItem("delivery_box", new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> SUPPLY = ITEMS.registerSimpleItem("supply_box", new Item.Properties().stacksTo(1));
+    /** Paper + slime ball creates a neutral base, independently of box dye. */
+    public static final DeferredItem<Item> BLANK_STICKER =
+            ITEMS.registerSimpleItem("blank_sticker", new Item.Properties().stacksTo(64));
+    /** Six named, individually visible sticker items for each of the 16 colors. */
+    public static final String[] STICKER_COLORS = {
+            "white","light_gray","gray","black","red","orange","yellow","lime",
+            "pink","brown","green","cyan","blue","purple","magenta","light_blue"
+    };
+    public static final Map<String, DeferredItem<DecalStickerItem>> STICKERS;
     public static final Map<String, DeferredItem<Item>> DYED;
     static {
         Map<String, DeferredItem<Item>> colors = new LinkedHashMap<>();
@@ -21,6 +30,18 @@ public final class ModItems {
             colors.put(name, ITEMS.registerSimpleItem(name + "_cardboard_box", new Item.Properties().stacksTo(1)));
         }
         DYED = Collections.unmodifiableMap(colors);
+        Map<String, DeferredItem<DecalStickerItem>> stickers = new LinkedHashMap<>();
+        for (int color=0;color<STICKER_COLORS.length;color++) {
+            for (int artwork=0;artwork<6;artwork++) {
+                final int savedColor=color;
+                final int savedArt=artwork;
+                String id="sticker_"+STICKER_COLORS[color]+"_"+(artwork+1);
+                stickers.put(id, ITEMS.register(id, () ->
+                        new DecalStickerItem(new Item.Properties().stacksTo(64),
+                                savedColor, savedArt)));
+            }
+        }
+        STICKERS = Collections.unmodifiableMap(stickers);
     }
     /** Wire format uses variants 1-3 for legacy, 4-19 for the new 16 dye colors. */
     public static int variant(Item item) {

@@ -19,6 +19,8 @@ public final class ModCreativeTabs {
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.CARDBOARD.get());
                         for (var dyed : ModItems.DYED.values()) output.accept(dyed.get());
+                        output.accept(ModItems.BLANK_STICKER.get());
+                        for (var sticker : ModItems.STICKERS.values()) output.accept(sticker.get());
                     })
                     .build());
 }

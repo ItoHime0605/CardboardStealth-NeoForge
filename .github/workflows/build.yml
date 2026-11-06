@@ -167,10 +167,14 @@ jobs:
           assert 'tape_seal_left_raised_edge' in parts and 'tape_seal_right_raised_edge' in parts
           assert any(e.get('name')=='recycle_symbol' for e in miniature['elements'])
           assert any(e.get('name')=='eye_shadow' for e in miniature['elements'])
-          for recipe in ('decal_white_carpet','decal_light_gray_carpet','decal_gray_carpet','decal_black_carpet','decal_red_carpet','decal_orange_carpet','decal_yellow_carpet','decal_lime_carpet','decal_pink_carpet','decal_brown_carpet','decal_green_carpet','decal_cyan_carpet','decal_blue_carpet','decal_purple_carpet','decal_magenta_carpet','decal_light_blue_carpet','decal_peel_slime'):
+          for recipe in ('decal_apply_sticker','decal_peel_slime'):
               data=json.loads((ns/'data/cardboardstealth/recipe'/f'{recipe}.json').read_text())
               assert data['type']==f'cardboardstealth:{recipe}'
-          print('PASS: 19 restored original GUI images, rear-grip miniature UV, 16 dyes, and 17 decal crafting recipes')
+          for color in 'white light_gray gray black red orange yellow lime pink brown green cyan blue purple magenta light_blue'.split():
+              assert not (ns/'data/cardboardstealth/recipe'/f'decal_{color}_carpet.json').exists(), 'old random carpet recipe survived'
+          assert Path('src/main/java/tw/zonezero/cardboardstealth/DecalStickerItem.java').is_file()
+          assert 'output.accept(ModItems.BLANK_STICKER.get())' in Path('src/main/java/tw/zonezero/cardboardstealth/ModCreativeTabs.java').read_text()
+          print('PASS: restored box art, old carpet recipes fully retired, fixed-pattern sticker recipe registered')
           PY
       - name: Verify ordered sixteen-carpet decal rendering paths
         run: |
@@ -187,42 +191,27 @@ jobs:
           assert 'ResourceLocation atlas = CardboardDecalRenderer.atlasFor' in gui
           assert '"light_gray_"' in gui and '"gray_"' in gui and '"black_"' in gui and '"red_"' in gui and '"orange_"' in gui and '"yellow_"' in gui and '"lime_"' in gui and '"pink_"' in gui and '"brown_"' in gui and '"green_"' in gui and '"cyan_"' in gui and '"blue_"' in gui and '"purple_"' in gui and '"magenta_"' in gui and '"light_blue_"' in gui
           assert '"tooltip.cardboardstealth."' in gui
-          assert 'DecalStackRules.LIGHT_GRAY' in recipes
-          assert 'DecalStackRules.GRAY' in recipes
-          assert 'DecalStackRules.BLACK' in recipes
-          assert 'DecalStackRules.RED' in recipes
-          assert 'DecalStackRules.ORANGE' in recipes
-          assert 'DecalStackRules.YELLOW' in recipes
-          assert 'DecalStackRules.LIME' in recipes
-          assert 'DecalStackRules.PINK' in recipes
-          assert 'DecalStackRules.BROWN' in recipes
-          assert 'DecalStackRules.GREEN' in recipes
-          assert 'DecalStackRules.CYAN' in recipes
-          assert 'DecalStackRules.BLUE' in recipes
-          assert 'DecalStackRules.PURPLE' in recipes
-          assert 'DecalStackRules.MAGENTA' in recipes
-          assert 'DecalStackRules.LIGHT_BLUE' in recipes
+          assert 'decal_apply_sticker' in recipes
+          assert 'decal_peel_slime' in recipes
+          assert 'decal_white_carpet' not in recipes
+          assert 'DecalStickerItem' in (r/'ModItems.java').read_text()
+          assert 'STICKERS' in (r/'ModItems.java').read_text()
           assert 'supportedColor(color(value))' in stack
           craft=(r/'DecalCraftingRecipe.java').read_text()
-          assert 'case DecalStackRules.LIGHT_GRAY ->' in craft
-          assert 'case DecalStackRules.GRAY ->' in craft
-          assert 'case DecalStackRules.BLACK ->' in craft
-          assert 'case DecalStackRules.RED ->' in craft
-          assert 'case DecalStackRules.ORANGE ->' in craft
-          assert 'case DecalStackRules.YELLOW ->' in craft
-          assert 'case DecalStackRules.LIME ->' in craft
-          assert 'case DecalStackRules.PINK ->' in craft
-          assert 'case DecalStackRules.BROWN ->' in craft
-          assert 'case DecalStackRules.GREEN ->' in craft
-          assert 'case DecalStackRules.CYAN ->' in craft
-          assert 'case DecalStackRules.BLUE ->' in craft
-          assert 'case DecalStackRules.PURPLE ->' in craft
-          assert 'case DecalStackRules.MAGENTA ->' in craft
-          assert 'case DecalStackRules.LIGHT_BLUE ->' in craft
+          assert 'instanceof DecalStickerItem' in craft
+          assert 'DecalItemData.addSticker' in craft
+          assert 'DecalStackRules.ANCHORS' in craft
+          assert 'Items.SLIME_BALL' in craft
+          assert 'Items.WHITE_CARPET' not in craft
+          assert 'DecalStackRules.nextArt(' not in craft
+          data=(r/'DecalItemData.java').read_text()
+          assert 'addSticker(' in data
+          assert 'DecalStackRules.pack(color,artwork,anchor)' in data
+          assert 'addCarpet(' not in data
           mini=(r/'client/CardboardLayer.java').read_text()
           assert 'CardboardDecalRenderer.render(' in mini
           assert "CardboardDecalRenderer.render(" not in (r/'client/BoxViewOverlay.java').read_text()
-          print('PASS: 39/39 sixteen-family sticker, ordered layering, GUI and recipe checks')
+          print('PASS: 16-color rendering and fixed artwork-sticker crafting code checks')
           PY
       - name: Validate assets and Curios data JSON
         run: |
@@ -231,6 +220,47 @@ jobs:
           test -f src/main/resources/data/cardboardstealth/curios/entities/players.json
           test -f src/main/resources/data/curios/tags/item/cardboard.json
       - run: gradle --no-daemon build --stacktrace
+      - name: Verify real 96 chosen-design sticker recipes, icons and names in packaged JAR
+        run: |
+          python3 - <<'PY'
+          import glob,hashlib,json,struct,zipfile
+          from pathlib import Path
+          path=glob.glob('build/libs/cardboardstealth-neoforge-*.jar')[0]
+          colors='white light_gray gray black red orange yellow lime pink brown green cyan blue purple magenta light_blue'.split()
+          lang=json.loads(Path('src/main/resources/assets/cardboardstealth/lang/zh_tw.json').read_text())
+          en=json.loads(Path('src/main/resources/assets/cardboardstealth/lang/en_us.json').read_text())
+          assert len(colors)==16
+          with zipfile.ZipFile(path) as z:
+              read=lambda path: json.loads(z.read(path))
+              blank=read('data/cardboardstealth/recipe/blank_sticker.json')
+              assert blank['type']=='minecraft:crafting_shapeless'
+              assert blank['ingredients']==['minecraft:paper','minecraft:slime_ball']
+              assert blank['result']['id']=='cardboardstealth:blank_sticker'
+              assert read('data/cardboardstealth/recipe/decal_apply_sticker.json')['type']=='cardboardstealth:decal_apply_sticker'
+              thumbs=set()
+              for color in colors:
+                  assert f'data/cardboardstealth/recipe/decal_{color}_carpet.json' not in z.namelist()
+                  for num in range(1,7):
+                      id=f'sticker_{color}_{num}'
+                      recipe=read(f'data/cardboardstealth/recipe/{id}.json')
+                      assert recipe['type']=='minecraft:crafting_shapeless',id
+                      assert recipe['ingredients']==['cardboardstealth:blank_sticker']+['minecraft:'+color+'_dye']*num,id
+                      assert recipe['result']=={'id':'cardboardstealth:'+id,'count':1},id
+                      model=read(f'assets/cardboardstealth/models/item/{id}.json')
+                      assert model['textures']['layer0']=='cardboardstealth:item/stickers/'+id,id
+                      png=z.read(f'assets/cardboardstealth/textures/item/stickers/{id}.png')
+                      assert png[:8]==bytes.fromhex('89504e470d0a1a0a')
+                      assert struct.unpack_from('>II',png,16)==(64,64),id
+                      thumbs.add(hashlib.sha256(png).hexdigest())
+                      assert lang[f'item.cardboardstealth.{id}'].find('圖樣貼紙')!=-1,id
+                      assert lang[f'item.cardboardstealth.sticker_subject_{color}_{num}'],id
+                      assert en[f'item.cardboardstealth.{id}'],id
+              assert len(thumbs)==96,'96 individual image icons must have distinct pixel contents'
+              assert 'assets/cardboardstealth/textures/item/stickers/blank_sticker.png' in z.namelist()
+              assert read('assets/cardboardstealth/models/item/blank_sticker.json')['textures']['layer0']=='cardboardstealth:item/stickers/blank_sticker'
+              assert 'data/cardboardstealth/recipe/decal_peel_slime.json' in z.namelist()
+          print('PASS: one blank recipe, 96 exact dye-count recipes, 96 unique real-art icons, 96 localized subjects, no carpet lottery')
+          PY
       - name: Check generated Minecraft box textures are in the final JAR
         run: |
           python3 - <<'PY'
@@ -341,5 +371,5 @@ jobs:
           java -cp build/rule-tests CardboardAssetIntegrityTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.39-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.40-alpha
           path: build/libs/*.jar

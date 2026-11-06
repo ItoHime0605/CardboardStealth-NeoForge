@@ -1,0 +1,138 @@
+import java.awt.image.BufferedImage
+import java.awt.Color
+import java.awt.Font
+import java.awt.RenderingHints
+import javax.imageio.ImageIO
+import groovy.json.JsonOutput
+
+/**
+ * 16 colors × 6 independently craftable, non-random numbered sticker items.
+ *
+ * Recipes are real vanilla crafting_shapeless recipe JSONs, so JEI/REI can
+ * enumerate all 96 patterns. One neutral paper+slime blank, then 1..6
+ * identical dye items select which illustrated sticker exists. No carpeting.
+ *
+ * Asset icons are derived directly from the existing SIXTY-FOUR? no: 96
+ * original illustrated decal PNGs. Each item is a unique 64px square paper
+ * card with its real pattern, so the item visually shows the selection.
+ */
+def printedStickerOutput = layout.buildDirectory.dir('generated/cardboard-printed-stickers')
+def stickerNames = [
+  'white','light_gray','gray','black','red','orange','yellow','lime',
+  'pink','brown','green','cyan','blue','purple','magenta','light_blue'
+]
+def decalTasks=[
+  'generateCardboardDecals',
+  'generateLightGrayCardboardDecals',
+  'generateGrayCardboardDecals',
+  'generateBlackCardboardDecals',
+  'generateRedCardboardDecals',
+  'generateOrangeCardboardDecals',
+  'generateYellowCardboardDecals',
+  'generateLimeCardboardDecals',
+  'generatePinkCardboardDecals',
+  'generateBrownCardboardDecals',
+  'generateGreenCardboardDecals',
+  'generateCyanCardboardDecals',
+  'generateBlueCardboardDecals',
+  'generatePurpleCardboardDecals',
+  'generateMagentaCardboardDecals',
+  'generateLightBlueCardboardDecals'
+]
+tasks.register('generatePrintedCardboardStickers') {
+    dependsOn decalTasks.collect { tasks.named(it) }
+    inputs.property('paper-sticker-crafting-revision','2026-11-06-fixed-pattern-1-6-dye-v1')
+    outputs.dir(printedStickerOutput)
+    doLast {
+        File root=printedStickerOutput.get().asFile
+        File textures=new File(root,'assets/cardboardstealth/textures/item/stickers')
+        File models=new File(root,'assets/cardboardstealth/models/item')
+        File recipes=new File(root,'data/cardboardstealth/recipe')
+        textures.mkdirs();models.mkdirs();recipes.mkdirs()
+
+        def jsonFile = { File out, def value ->
+            out.text=JsonOutput.prettyPrint(JsonOutput.toJson(value))+'\n'
+        }
+
+        // Paper + slime ball -> one neutral, uncolored blank sticker.
+        jsonFile(new File(recipes,'blank_sticker.json'),[
+            type:'minecraft:crafting_shapeless',
+            category:'misc',
+            ingredients:['minecraft:paper','minecraft:slime_ball'],
+            result:[id:'cardboardstealth:blank_sticker',count:1]
+        ])
+        jsonFile(new File(models,'blank_sticker.json'),[
+            parent:'minecraft:item/generated',
+            textures:[layer0:'cardboardstealth:item/stickers/blank_sticker']
+        ])
+        BufferedImage blank=new BufferedImage(64,64,BufferedImage.TYPE_INT_ARGB)
+        def b=blank.createGraphics()
+        b.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF)
+        b.setColor(new Color(71,58,48));b.fillRoundRect(7,7,51,50,4,4)
+        b.setColor(new Color(221,207,179));b.fillRoundRect(9,9,47,46,3,3)
+        b.setColor(new Color(239,227,201));b.fillRect(13,13,40,38)
+        b.setColor(new Color(168,155,129));b.drawRect(13,13,39,37)
+        b.setColor(new Color(184,173,148));b.fillRect(18,21,30,2)
+        b.fillRect(18,26,25,2);b.fillRect(18,31,27,2)
+        b.setColor(new Color(145,132,110));b.fillRect(18,41,21,2)
+        b.setColor(new Color(188,173,143));b.fillRect(44,43,8,8)
+        b.setColor(new Color(230,218,190));b.fillRect(44,43,7,7)
+        b.dispose()
+        ImageIO.write(blank,'png',new File(textures,'blank_sticker.png'))
+
+        // Stable saved color IDs are the order above: 0..15, NOT vanilla dye order.
+        File buildDir=layout.buildDirectory.get().asFile
+        int count=0
+        for(int color=0;color<stickerNames.size();color++){
+            String cname=stickerNames[color]
+            String dirname=cname=='white'?'cardboard-decals':
+                'cardboard-'+cname.replace('_','-')+'-decals'
+            for(int design=0;design<6;design++){
+                String id='sticker_'+cname+'_'+(design+1)
+                File artFile=new File(buildDir,'generated/'+dirname+
+                    '/assets/cardboardstealth/textures/decals/'+cname+'_'+design+'.png')
+                if(!artFile.isFile())throw new GradleException(
+                    'Source decal art missing before sticker pack generation: '+artFile)
+                BufferedImage art=ImageIO.read(artFile)
+                if(art==null||art.width!=128||art.height!=80)
+                    throw new GradleException('Invalid source sticker sprite '+artFile)
+                BufferedImage sprite=new BufferedImage(64,64,BufferedImage.TYPE_INT_ARGB)
+                def g=sprite.createGraphics()
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF)
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR)
+                // Physical adhesive paper card with one illustrated printed design.
+                g.setColor(new Color(72,57,48));g.fillRoundRect(4,9,57,46,4,4)
+                g.setColor(new Color(227,216,192));g.fillRoundRect(6,11,53,42,3,3)
+                g.setColor(new Color(245,234,214));g.fillRect(8,13,48,36)
+                // Use the real image, including its worn transparent boundary.
+                g.drawImage(art,8,16,48,30,null)
+                g.setColor(new Color(121,103,87));g.drawRect(8,13,47,35)
+                g.setColor(new Color(98,82,70));g.setFont(new Font('Monospaced',Font.BOLD,7))
+                g.drawString(String.format('%02d',design+1),46,52)
+                g.dispose()
+                ImageIO.write(sprite,'png',new File(textures,id+'.png'))
+                jsonFile(new File(models,id+'.json'),[
+                    parent:'minecraft:item/generated',
+                    textures:[layer0:'cardboardstealth:item/stickers/'+id]
+                ])
+                // 1..6 identical dye items, not a numbered item RNG mechanic.
+                List<String> ingredients=['cardboardstealth:blank_sticker']
+                for(int n=0;n<=design;n++)ingredients.add('minecraft:'+cname+'_dye')
+                jsonFile(new File(recipes,id+'.json'),[
+                    type:'minecraft:crafting_shapeless',
+                    category:'misc',
+                    ingredients:ingredients,
+                    result:[id:'cardboardstealth:'+id,count:1]
+                ])
+                count++
+            }
+        }
+        assert count==96
+        println 'Generated 96 named patterned sticker items, 96 fixed dye-count recipes, 96 real art icons and one blank paper+slime recipe.'
+    }
+}
+tasks.named('processResources') {
+    dependsOn tasks.named('generatePrintedCardboardStickers')
+    from(printedStickerOutput)
+}
