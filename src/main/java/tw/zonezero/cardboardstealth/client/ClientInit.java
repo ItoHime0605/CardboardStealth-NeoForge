@@ -79,6 +79,23 @@ public final class ClientInit {
         for (var item : ModItems.DYED.values()) event.register(item.get(), decorator);
     }
     public static void itemTooltip(ItemTooltipEvent event) {
+        // Printed sticker is a physical item: show its exact numbered design
+        // before crafting, rather than a randomly chosen decal afterwards.
+        if(event.getItemStack().getItem() instanceof tw.zonezero.cardboardstealth.DecalStickerItem sticker) {
+            String key=ModItems.STICKER_COLORS[sticker.color()]+"_"+(sticker.artwork()+1);
+            event.getToolTip().add(Component.translatable(
+                    "tooltip.cardboardstealth.sticker_pattern",
+                    Component.translatable("item.cardboardstealth.sticker_subject_"+key)));
+            event.getToolTip().add(Component.translatable(
+                    "tooltip.cardboardstealth.sticker_dyes",sticker.artwork()+1));
+            event.getToolTip().add(Component.translatable(
+                    "tooltip.cardboardstealth.sticker_use"));
+            return;
+        }
+        if(event.getItemStack().is(ModItems.BLANK_STICKER.get())) {
+            event.getToolTip().add(Component.translatable("tooltip.cardboardstealth.blank_sticker"));
+            return;
+        }
         int[] layers=DecalItemData.get(event.getItemStack());
         if (layers.length == 0) return;
         event.getToolTip().add(Component.translatable("tooltip.cardboardstealth.decals",
