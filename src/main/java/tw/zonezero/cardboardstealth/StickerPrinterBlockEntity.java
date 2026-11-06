@@ -93,8 +93,10 @@ public final class StickerPrinterBlockEntity extends BlockEntity
     }
     @Override protected void loadAdditional(CompoundTag tag,HolderLookup.Provider registries){
         super.loadAdditional(tag,registries);
-        inventory.clear();
-        for(int i=0;i<SLOTS;i++)inventory.add(ItemStack.EMPTY);
+        // NonNullList.withSize(3, EMPTY).clear() RESETS the existing three
+        // slots; it does not shrink the list. Adding slots after clear()
+        // silently grew this inventory to six entries on every load.
+        // ContainerHelper already resets and reloads the fixed-size list.
         ContainerHelper.loadAllItems(tag,inventory,registries);
         pattern=Math.clamp(tag.getInt("SelectedPattern"),0,5);
     }
