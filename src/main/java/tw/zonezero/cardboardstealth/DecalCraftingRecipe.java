@@ -11,7 +11,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 /**
- * One paper box plus exactly one finished carpet (white/light gray/gray/black/red/orange/yellow/lime/pink) or slime ball.
+ * One paper box plus exactly one finished carpet (white/light gray/gray/black/red/orange/yellow/lime/pink/brown) or slime ball.
  * The source stack, other component data and oldest decorations survive.
  * Additional carpet families will be introduced only after their art exists.
  */
@@ -33,6 +33,7 @@ public final class DecalCraftingRecipe extends CustomRecipe {
             case DecalStackRules.YELLOW -> Items.YELLOW_CARPET;
             case DecalStackRules.LIME -> Items.LIME_CARPET;
             case DecalStackRules.PINK -> Items.PINK_CARPET;
+            case DecalStackRules.BROWN -> Items.BROWN_CARPET;
             default -> throw new IllegalArgumentException("No finished decal for carpet: " + color);
         };
     }
@@ -88,6 +89,7 @@ public final class DecalCraftingRecipe extends CustomRecipe {
             case DecalStackRules.YELLOW -> ModRecipes.YELLOW.get();
             case DecalStackRules.LIME -> ModRecipes.LIME.get();
             case DecalStackRules.PINK -> ModRecipes.PINK.get();
+            case DecalStackRules.BROWN -> ModRecipes.BROWN.get();
             default -> throw new IllegalStateException("Missing decal serializer for " + color);
         };
     }
