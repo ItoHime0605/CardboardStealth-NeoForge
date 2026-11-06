@@ -87,7 +87,7 @@ public final class StickerPrinterScreen extends AbstractContainerScreen<StickerP
                     128,80,256,240);
             g.fill(x+15,y+34,x+75,y+37,DYE_COLORS[color]);
         }else{
-            g.drawCenteredString(font,"NO INK",x+138,y+58,0xFF879CA2);
+            g.drawCenteredString(font,Component.translatable("gui.cardboardstealth.printer.no_dye"),x+138,y+58,0xFF879CA2);
             g.fill(x+15,y+34,x+75,y+37,0xFF6C7A80);
         }
         // Thin output-tray mouth and six preview selection guides.
@@ -144,5 +144,24 @@ public final class StickerPrinterScreen extends AbstractContainerScreen<StickerP
         renderBackground(g,mouseX,mouseY,partialTick);
         super.render(g,mouseX,mouseY,partialTick);
         renderTooltip(g,mouseX,mouseY);
+        // A Chinese design title may be longer than the miniature monitor.
+        // Hovering the live proof print OR any numbered key reveals the
+        // complete illustrated subject, never an ellipsis-only name.
+        int rx=mouseX-leftPos,ry=mouseY-topPos;
+        int selected=menu.pattern();
+        if(ry>=97&&ry<=116&&rx>=73&&rx<73+6*26){
+            int candidate=(rx-73)/26;
+            if((rx-73)%26<23)selected=candidate;
+            else selected=-1;
+        }else if(!(rx>=80&&rx<=197&&ry>=30&&ry<=92)){
+            selected=-1;
+        }
+        int color=menu.color();
+        if(color>=0&&color<16&&selected>=0&&selected<6){
+            g.renderTooltip(font,Component.translatable(
+                    "item.cardboardstealth.sticker_subject_"+
+                    ModItems.STICKER_COLORS[color]+"_"+(selected+1)),
+                    mouseX,mouseY);
+        }
     }
 }
