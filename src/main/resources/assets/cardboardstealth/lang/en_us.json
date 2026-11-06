@@ -62,5 +62,11 @@
   "tooltip.cardboardstealth.yellow_2": "Layer %s: Biohazard Quarantine",
   "tooltip.cardboardstealth.yellow_3": "Layer %s: High Voltage Danger",
   "tooltip.cardboardstealth.yellow_4": "Layer %s: Unstable Mine Shaft Warning",
-  "tooltip.cardboardstealth.yellow_5": "Layer %s: Contaminated Water Warning"
+  "tooltip.cardboardstealth.yellow_5": "Layer %s: Contaminated Water Warning",
+  "tooltip.cardboardstealth.lime_0": "Layer %s: Mutated Vine Field Sample",
+  "tooltip.cardboardstealth.lime_1": "Layer %s: Bioluminescent Glowcap Guide",
+  "tooltip.cardboardstealth.lime_2": "Layer %s: Flooded Street Algae Bloom",
+  "tooltip.cardboardstealth.lime_3": "Layer %s: Crystal Thornflower Observation",
+  "tooltip.cardboardstealth.lime_4": "Layer %s: Greenhouse Overgrown by Vines",
+  "tooltip.cardboardstealth.lime_5": "Layer %s: Unstable Botanical Specimen"
 }
