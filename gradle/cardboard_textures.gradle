@@ -88,7 +88,7 @@ tasks.register('generateCardboardTextures') {
             int rr=Math.max(0,Math.min(255,((px>>16)&255)+wear))
             int gg=Math.max(0,Math.min(255,((px>>8)&255)+wear))
             int bb=Math.max(0,Math.min(255,(px&255)+wear))
-            miniTape.setRGB(x,y,0xFF000000|(rr<<16)|(gg<<8)|bb)
+            miniTape.setRGB(x,y,(int)(0xFF000000L | (rr<<16) | (gg<<8) | bb))
         }
         ImageIO.write(miniTape,'png',new File(miniDir,'packing_tape.png'))
         ImageIO.write(stamp,'png',new File(miniDir,'recycle_stamp.png'))
