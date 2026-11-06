@@ -1,0 +1,177 @@
+import java.awt.Color
+import java.awt.Font
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
+import groovy.json.JsonOutput
+
+/**
+ * 1-block high-detail industrial sticker printer, hand-built original model.
+ * Multiple raised/panel parts, paper feed, ink cartridges, screen, output tray.
+ * Deterministic 64x64 machine material artwork; all assets built offline.
+ */
+def industrialPrinterOutput=layout.buildDirectory.dir('generated/cardboard-printer-model')
+tasks.register('generateIndustrialStickerPrinter') {
+    inputs.property('original-printer-art','2026-11-06-modern-industrial-sticker-v1')
+    outputs.dir(industrialPrinterOutput)
+    doLast {
+        File root=industrialPrinterOutput.get().asFile
+        File textures=new File(root,'assets/cardboardstealth/textures/block')
+        File models=new File(root,'assets/cardboardstealth/models/block')
+        File items=new File(root,'assets/cardboardstealth/models/item')
+        File states=new File(root,'assets/cardboardstealth/blockstates')
+        [textures,models,items,states].each{it.mkdirs()}
+        java.util.Random seed=new java.util.Random(14092026L)
+        final int W=64
+
+        Map<String,int[]> tones=[
+            metal:[68,82,89],dark:[25,35,41],steel:[139,154,157],
+            panel:[43,59,69],screen:[22,41,54],paper:[224,214,183],
+            teal:[48,173,174],orange:[207,136,69],vent:[41,49,58],
+            warning:[183,117,56]
+        ]
+        for(var entry:tones.entrySet()) {
+            String name=entry.key
+            int[] rgb=entry.value
+            BufferedImage img=new BufferedImage(W,W,BufferedImage.TYPE_INT_ARGB)
+            def g=img.createGraphics()
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF)
+            for(int y=0;y<W;y++)for(int x=0;x<W;x++){
+                int grain=seed.nextInt(19)-9
+                if(name=='metal'||name=='steel'||name=='panel')grain+=((y%5)==0?9:0)
+                if(name=='paper')grain+=(x%9==0?3:0)
+                if(name=='screen')grain+=(y%3==0?3:0)
+                if(name=='dark'||name=='vent')grain=(grain/2).intValue()
+                int r=Math.min(255,Math.max(0,rgb[0]+grain))
+                int gg=Math.min(255,Math.max(0,rgb[1]+grain))
+                int b=Math.min(255,Math.max(0,rgb[2]+grain))
+                img.setRGB(x,y,(int)(0xFF000000L|(r<<16)|(gg<<8)|b))
+            }
+            g.setColor(new Color(23,33,38,110));g.drawRect(1,1,61,61)
+            if(name=='metal'||name=='steel'||name=='panel'){
+                g.setColor(new Color(177,190,188,95))
+                for(int x : [6,57])for(int y : [6,57])g.fillRect(x,y,2,2)
+                g.setColor(new Color(24,38,47,90));g.drawLine(5,11,57,11)
+            }
+            if(name=='vent') {
+                g.setColor(new Color(11,22,29))
+                for(int y=8;y<58;y+=7)g.fillRect(6,y,52,3)
+                g.setColor(new Color(144,157,161))
+                for(int y=8;y<58;y+=7)g.fillRect(6,y+3,52,1)
+            }
+            if(name=='screen') {
+                g.setColor(new Color(18,62,73));g.fillRect(3,5,58,52)
+                g.setColor(new Color(67,201,190));g.fillRect(7,12,6,5)
+                g.fillRect(17,12,6,5);g.fillRect(27,12,6,5)
+                g.setColor(new Color(215,222,205));g.setFont(new Font('Monospaced',Font.BOLD,8))
+                g.drawString('DECAL',7,34);g.drawString('PRINT',7,43)
+                g.setColor(new Color(211,146,75));g.fillRect(7,49,42,3)
+            }
+            if(name=='paper') {
+                g.setColor(new Color(43,62,67));g.drawRect(4,4,55,55)
+                g.setColor(new Color(98,130,129))
+                for(int y : [15,22,30,37])g.fillRect(10,y,43,2)
+                g.setColor(new Color(157,103,79));g.fillRect(10,44,25,3)
+            }
+            if(name=='teal') {
+                g.setColor(new Color(19,65,72));g.drawRect(8,8,47,47)
+                g.setColor(new Color(146,240,220));g.fillRect(12,18,40,7)
+                g.setColor(new Color(20,80,87));g.fillRect(12,33,40,4)
+            }
+            if(name=='orange'||name=='warning'){
+                g.setColor(new Color(58,46,35));g.fillRect(4,8,56,5)
+                g.fillRect(4,51,56,5)
+                for(int x=5;x<57;x+=12)g.fillRect(x,22,6,26)
+            }
+            g.dispose()
+            ImageIO.write(img,'png',new File(textures,'printer_'+name+'.png'))
+        }
+
+        // Hand-built cuboids are composed to keep the 3D shape readable at
+        // third-person distance, with functional hardware not just decorations.
+        List elements=[]
+        def cube={String name,List from,List to,String material ->
+            def faces=[:]
+            for(String face in ['north','south','east','west','up','down'])
+                faces[face]=[texture:'#'+material,uv:[0,0,16,16],cullface:null]
+            // Null cullface is not emitted; internal micro-geometry must render.
+            faces.values().each{it.remove('cullface')}
+            elements << [name:name,from:from,to:to,faces:faces,shade:true]
+        }
+
+        cube('rubber_base',[1.2,0.4,2.5],[14.8,1.4,15.1],'dark')
+        cube('left_machine_foot',[2.2,0,3.3],[4.5,0.6,13.7],'dark')
+        cube('right_machine_foot',[11.5,0,3.3],[13.8,0.6,13.7],'dark')
+        cube('die_cast_metal_housing',[1.5,1.5,3],[14.5,11.9,14.4],'metal')
+        cube('front_faceplate',[2.1,2.2,2.68],[13.9,10.8,3.12],'panel')
+        cube('upper_chassis_rim',[1.55,11.6,2.88],[14.45,12.45,14.5],'steel')
+        cube('left_top_rounded_lip',[1.8,12.38,3],[3,12.7,14],'steel')
+        cube('right_top_rounded_lip',[13,12.38,3],[14.2,12.7,14],'steel')
+        cube('raised_operator_console',[3,12.38,4.2],[13,13.15,9.3],'panel')
+        cube('illuminated_design_screen',[4.1,13.16,4.8],[11.7,13.24,8.65],'screen')
+        cube('screen_glass_bezel_front',[3.8,13.18,4.4],[12,13.3,4.8],'steel')
+        cube('rear_paper_input_feeder',[4,12.4,10.1],[12,14.6,14.65],'dark')
+        cube('paper_feed_roller',[4.6,14.61,11],[11.4,14.83,13.9],'steel')
+        cube('inserted_blank_paper',[5.1,14.83,12],[10.9,15.6,13.7],'paper')
+        cube('feeder_left_guide',[3.7,12.65,10.3],[4.2,14.75,14.3],'steel')
+        cube('feeder_right_guide',[11.8,12.65,10.3],[12.3,14.75,14.3],'steel')
+        cube('paper_exit_dark_slot',[4.1,6.4,2.38],[11.9,7.7,2.73],'dark')
+        cube('paper_exit_upper_rim',[3.9,7.7,2.28],[12.1,8.05,3.05],'steel')
+        cube('paper_exit_lower_roller',[4.2,6.12,2.27],[11.8,6.47,2.85],'steel')
+        cube('output_tray_flat',[3.1,2.5,0.65],[12.9,3.13,4.9],'steel')
+        cube('output_tray_left_wall',[2.9,2.55,0.65],[3.35,4.05,4.9],'dark')
+        cube('output_tray_right_wall',[12.65,2.55,0.65],[13.1,4.05,4.9],'dark')
+        cube('printed_sticker_on_tray',[5,3.15,1.35],[11,3.25,3.3],'paper')
+        cube('small_front_status_led',[12.45,9.3,2.36],[13.35,10.15,2.7],'teal')
+        cube('amber_caution_label',[2.45,9.3,2.37],[4.35,10.4,2.69],'orange')
+        cube('right_side_service_vent',[14.48,5.2,5.3],[14.75,10.3,12.1],'vent')
+        cube('right_side_ink_door',[14.48,3.7,8.8],[14.78,5.0,13.3],'panel')
+        cube('left_cartridge_bay',[0.65,4.2,7.0],[1.58,11.1,13.3],'dark')
+        cube('left_cyan_ink_cartridge',[0.4,4.7,7.3],[0.83,8.0,8.9],'teal')
+        cube('left_orange_ink_cartridge',[0.4,4.7,9.3],[0.83,8.0,10.9],'orange')
+        cube('left_ink_cartridge_rail',[0.44,8.1,7.15],[1.3,8.45,11.3],'steel')
+        cube('rear_sheet_service_panel',[3,3.2,14.4],[13,10.8,14.7],'dark')
+        cube('back_ventilation_grill',[4.6,4.8,14.71],[11.4,8.8,14.88],'vent')
+        cube('corner_steel_bolt_fl',[2.3,3.0,2.39],[2.78,3.48,2.72],'steel')
+        cube('corner_steel_bolt_fr',[13.2,3.0,2.39],[13.68,3.48,2.72],'steel')
+        cube('panel_steel_bolt_l',[2.5,10.6,2.40],[2.98,11.08,2.72],'steel')
+        cube('panel_steel_bolt_r',[13,10.6,2.40],[13.48,11.08,2.72],'steel')
+        cube('right_side_rib_top',[14.48,11.2,4],[14.75,11.55,13.7],'steel')
+        cube('right_side_rib_bottom',[14.48,2.8,4],[14.75,3.15,13.7],'steel')
+        assert elements.size()>=35
+
+        Map texturesMap=[:]
+        tones.keySet().each{name->texturesMap[name]='cardboardstealth:block/printer_'+name}
+        Map model=[
+            parent:'minecraft:block/block',
+            ambientocclusion:true,
+            textures:texturesMap,
+            elements:elements,
+            display:[
+                thirdperson_righthand:[rotation:[70,45,0],translation:[0,2.0,0],scale:[0.54,0.54,0.54]],
+                thirdperson_lefthand:[rotation:[70,225,0],translation:[0,2.0,0],scale:[0.54,0.54,0.54]],
+                firstperson_righthand:[rotation:[0,45,0],translation:[0,0,0],scale:[0.66,0.66,0.66]],
+                firstperson_lefthand:[rotation:[0,225,0],translation:[0,0,0],scale:[0.66,0.66,0.66]],
+                gui:[rotation:[26,145,0],translation:[0,0,0],scale:[0.72,0.72,0.72]],
+                ground:[rotation:[0,0,0],translation:[0,2.6,0],scale:[0.49,0.49,0.49]],
+                fixed:[rotation:[0,180,0],translation:[0,0,0],scale:[0.82,0.82,0.82]]
+            ]
+        ]
+        def json={File out,Object value->
+            out.text=JsonOutput.prettyPrint(JsonOutput.toJson(value))+'\n'
+        }
+        json(new File(models,'sticker_printer.json'),model)
+        json(new File(items,'sticker_printer.json'),[parent:'cardboardstealth:block/sticker_printer'])
+        json(new File(states,'sticker_printer.json'),[variants:[
+            'facing=north':[model:'cardboardstealth:block/sticker_printer'],
+            'facing=east':[model:'cardboardstealth:block/sticker_printer',y:90],
+            'facing=south':[model:'cardboardstealth:block/sticker_printer',y:180],
+            'facing=west':[model:'cardboardstealth:block/sticker_printer',y:270]
+        ]])
+        println 'Generated high-detail 39-part sticker printer machine, 10 original industrial textures, model and four-direction blockstate.'
+    }
+}
+tasks.named('processResources') {
+    dependsOn tasks.named('generateIndustrialStickerPrinter')
+    from(industrialPrinterOutput)
+}
