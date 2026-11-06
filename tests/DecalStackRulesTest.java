@@ -58,18 +58,18 @@ public final class DecalStackRulesTest {
             int art=DecalStackRules.nextArt(DecalStackRules.LIGHT_GRAY,v,1,slot);
             check(art>=0 && art<6,"light gray art is from the six finished stickers");
         }
-        int gray=DecalStackRules.pack(DecalStackRules.GRAY,4,4);
+        int grayNew=DecalStackRules.pack(DecalStackRules.GRAY,4,4);
         int lightGray=DecalStackRules.pack(DecalStackRules.LIGHT_GRAY,3,4);
         int whiteLast=DecalStackRules.pack(DecalStackRules.WHITE,0,4);
         int[] tricolor=DecalStackRules.append(
-                DecalStackRules.append(DecalStackRules.append(new int[0],gray),lightGray),whiteLast);
-        check(Arrays.equals(tricolor,new int[]{gray,lightGray,whiteLast}),
+                DecalStackRules.append(DecalStackRules.append(new int[0],grayNew),lightGray),whiteLast);
+        check(Arrays.equals(tricolor,new int[]{grayNew,lightGray,whiteLast}),
                 "three carpet families preserve oldest-to-newest order on shared face");
-        check(Arrays.equals(DecalStackRules.peel(tricolor),new int[]{gray,lightGray}),
+        check(Arrays.equals(DecalStackRules.peel(tricolor),new int[]{grayNew,lightGray}),
                 "slime removes the last white decal from tricolor box");
-        check(Arrays.equals(DecalStackRules.peel(DecalStackRules.peel(tricolor)),new int[]{gray}),
+        check(Arrays.equals(DecalStackRules.peel(DecalStackRules.peel(tricolor)),new int[]{grayNew}),
                 "two peels leave original gray paint intact");
-        check(DecalStackRules.append(tricolor,gray).length==3,"cannot exceed three tricolor layers");
+        check(DecalStackRules.append(tricolor,grayNew).length==3,"cannot exceed three tricolor layers");
         for(int v=1;v<=19;v++) for(int slot=0;slot<9;slot++) {
             int art=DecalStackRules.nextArt(DecalStackRules.GRAY,v,2,slot);
             check(art>=0 && art<6,"gray carpet resolves a supported high quality decal");
