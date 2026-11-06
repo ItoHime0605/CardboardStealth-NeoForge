@@ -5,7 +5,7 @@
     "parent": "minecraft:item/generated",
     "gui_light": "front",
     "textures": {
-      "layer0": "cardboardstealth:item/straight/gray_cardboard_box"
+      "layer0": "cardboardstealth:item/colored/gray_cardboard_box"
     }
   },
   "perspectives": {
