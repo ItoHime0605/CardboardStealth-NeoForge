@@ -16,7 +16,6 @@ public final class StickerPrinterMenu extends AbstractContainerMenu {
     public static final int PRINT=100;
     private final Container inventory;
     private final ContainerData data;
-    private final ContainerLevelAccess access;
     private final StickerPrinterBlockEntity machine;
 
     public StickerPrinterMenu(int containerId,Inventory playerInventory){
@@ -35,7 +34,6 @@ public final class StickerPrinterMenu extends AbstractContainerMenu {
         checkContainerDataCount(data,1);
         this.inventory=inventory;
         this.data=data;
-        this.access=access;
         this.machine=machine;
         addSlot(new Slot(inventory,0,24,52){
             @Override public boolean mayPlace(ItemStack stack){
@@ -69,14 +67,24 @@ public final class StickerPrinterMenu extends AbstractContainerMenu {
                 dyeCount(),color(),pattern(),inventory.getItem(2).isEmpty());
     }
     @Override public boolean clickMenuButton(Player player,int id){
-        if(machine==null || !stillValid(player))return false;
-        if(id>=0&&id<6){
+        // The client has a SimpleContainer, not the actual BlockEntity.
+        // Minecraft only sends a menu-button packet when the local menu
+        // accepts the click. Rejecting "machine == null" here prevented
+        // ALL six pattern buttons and PRINT from reaching the server.
+        if(id>=0 && id<StickerPrinterRules.PATTERNS) {
+            if(machine==null) {
+                data.set(0,id); // local preview; server separately validates
+                return true;
+            }
+            if(!stillValid(player))return false;
             machine.choosePattern(id);
             broadcastChanges();
             return true;
         }
-        if(id==PRINT&&machine.print()){
-            broadcastChanges();
+        if(id==PRINT) {
+            if(machine==null)return printEnabled(); // packet authorization only
+            if(!stillValid(player) || !machine.print())return false;
+            broadcastChanges(); // every cost/output mutation is on the server
             return true;
         }
         return false;
