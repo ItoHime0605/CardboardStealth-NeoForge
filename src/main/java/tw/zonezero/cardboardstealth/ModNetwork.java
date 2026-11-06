@@ -1,7 +1,6 @@
 package tw.zonezero.cardboardstealth;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -13,15 +12,23 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import tw.zonezero.cardboardstealth.client.ClientBoxState;
 
 public final class ModNetwork {
-    public record BoxPayload(int entityId, int variant, boolean rested) implements CustomPacketPayload {
-        public static final Type<BoxPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID, "state"));
-        public static final StreamCodec<RegistryFriendlyByteBuf, BoxPayload> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.VAR_INT, BoxPayload::entityId,
-                ByteBufCodecs.VAR_INT, BoxPayload::variant,
-                ByteBufCodecs.BOOL, BoxPayload::rested, BoxPayload::new);
+    /** All decals are synced on activation, tracking and decoration changes. */
+    public record BoxPayload(int entityId, int variant, boolean rested,
+                             int decal0, int decal1, int decal2) implements CustomPacketPayload {
+        public static final Type<BoxPayload> TYPE =
+                new Type<>(ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID, "state"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, BoxPayload> STREAM_CODEC =
+                StreamCodec.of((buf, payload) -> {
+                    buf.writeVarInt(payload.entityId());
+                    buf.writeVarInt(payload.variant());
+                    buf.writeBoolean(payload.rested());
+                    buf.writeVarInt(payload.decal0());
+                    buf.writeVarInt(payload.decal1());
+                    buf.writeVarInt(payload.decal2());
+                }, buf -> new BoxPayload(buf.readVarInt(), buf.readVarInt(), buf.readBoolean(),
+                        buf.readVarInt(), buf.readVarInt(), buf.readVarInt()));
         @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     }
-    /** Client indicates an empty-air melee swing; server rechecks the actual held item. */
     public record MeleePayload() implements CustomPacketPayload {
         public static final Type<MeleePayload> TYPE =
                 new Type<>(ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID, "melee_swing"));
@@ -30,10 +37,12 @@ public final class ModNetwork {
         @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     }
     public static void register(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("3");
+        var registrar = event.registrar("4");
         registrar.playToClient(BoxPayload.TYPE, BoxPayload.STREAM_CODEC, (payload, context) -> {
             context.enqueueWork(() -> {
-                if (FMLEnvironment.dist == Dist.CLIENT) ClientBoxState.receive(payload.entityId(), payload.variant(), payload.rested());
+                if (FMLEnvironment.dist == Dist.CLIENT)
+                    ClientBoxState.receive(payload.entityId(), payload.variant(), payload.rested(),
+                            payload.decal0(), payload.decal1(), payload.decal2());
             });
         });
         registrar.playToServer(MeleePayload.TYPE, MeleePayload.STREAM_CODEC, (payload, context) -> {
@@ -45,12 +54,18 @@ public final class ModNetwork {
             });
         });
     }
+    private static BoxPayload create(ServerPlayer subject, int variant) {
+        int[] decals = variant != 0 ? DecalItemData.get(BoxState.equippedStack(subject)) : new int[0];
+        return new BoxPayload(subject.getId(), variant,
+                variant != 0 && BoxState.rested(subject),
+                decals.length > 0 ? decals[0] : 0,
+                decals.length > 1 ? decals[1] : 0,
+                decals.length > 2 ? decals[2] : 0);
+    }
     public static void broadcast(ServerPlayer player, int variant) {
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
-                new BoxPayload(player.getId(), variant, variant != 0 && BoxState.rested(player)));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, create(player, variant));
     }
     public static void send(ServerPlayer viewer, ServerPlayer subject, int variant) {
-        PacketDistributor.sendToPlayer(viewer,
-                new BoxPayload(subject.getId(), variant, variant != 0 && BoxState.rested(subject)));
+        PacketDistributor.sendToPlayer(viewer, create(subject, variant));
     }
 }

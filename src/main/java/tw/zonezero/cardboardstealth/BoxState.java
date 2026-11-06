@@ -10,6 +10,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.item.ItemStack;
+import java.util.Arrays;
 import net.minecraft.world.entity.player.Player;
 import top.theillusivec4.curios.api.CuriosApi;
 
@@ -34,11 +36,14 @@ public final class BoxState {
     private static final TagKey<EntityType<?>> FOOLED = TagKey.create(
             Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID, "fooled_by_box"));
 
-    public static int equippedVariant(Player player) {
+    public static ItemStack equippedStack(Player player) {
         return CuriosApi.getCuriosInventory(player).flatMap(inv -> inv.getStacksHandler("cardboard"))
                 .map(slot -> slot.getStacks().getSlots() > 0
-                        ? ModItems.variant(slot.getStacks().getStackInSlot(0).getItem()) : 0)
-                .orElse(0);
+                        ? slot.getStacks().getStackInSlot(0) : ItemStack.EMPTY)
+                .orElse(ItemStack.EMPTY);
+    }
+    public static int equippedVariant(Player player) {
+        return ModItems.variant(equippedStack(player).getItem());
     }
     public static boolean active(Player player) {
         return player.getPersistentData().getBoolean(ACTIVE);
@@ -76,6 +81,16 @@ public final class BoxState {
             data.putBoolean(RESTED, rested);
             if (active(player)) ModNetwork.broadcast(player, variant(player));
         }
+        // Equipping a different decoration while crouched must not keep stale
+        // stickers on other players' screens. Only send a packet on change.
+        if (active(player)) {
+            int[] decals = DecalItemData.get(equippedStack(player));
+            int fingerprint = Arrays.hashCode(decals);
+            if (data.getInt("cardboardstealth_last_decal_hash") != fingerprint) {
+                data.putInt("cardboardstealth_last_decal_hash", fingerprint);
+                ModNetwork.broadcast(player, variant(player));
+            }
+        }
     }
 
     /** Moving = detection up to 3.5 blocks, five-tick rested = 1.25 blocks. */
@@ -109,6 +124,7 @@ public final class BoxState {
             player.getPersistentData().remove(MOVE_TICK);
             player.getPersistentData().remove(MOVING_UNTIL);
             player.getPersistentData().remove(RESTED);
+            player.getPersistentData().remove("cardboardstealth_last_decal_hash");
         }
         if (oldVariant != newVariant) ModNetwork.broadcast(player, newVariant);
         // IMPORTANT: never clear an existing mob target or stop its navigation here.
