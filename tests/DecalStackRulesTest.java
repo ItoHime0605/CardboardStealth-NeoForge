@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=10;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=11;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=11;col<16;col++){
+        for(int col=12;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -301,6 +301,35 @@ public final class DecalStackRulesTest {
             check(chosen>=0&&chosen<6,
                   "all cardboard variants and nine anchors select completed green print");
         }
-        System.out.println("PASS: "+count+"/"+count+" eleven-carpet decal stack, peeling and ID tests");
+
+        // Cyan is saved as a new color code: previously existing 0..10 untouched.
+        int cyan=DecalStackRules.pack(DecalStackRules.CYAN,5,4);
+        check(DecalStackRules.supportedColor(DecalStackRules.CYAN),
+                "only finished cyan weather designs can be used");
+        check(DecalStackRules.artCount(DecalStackRules.CYAN)==6,
+                "exactly six cyan weather observatory diagrams");
+        check(DecalStackRules.isValid(cyan) && DecalStackRules.color(cyan)==11,
+                "cyan receives next independent encoded color without colliding");
+        check(!DecalStackRules.isValid(DecalStackRules.pack(DecalStackRules.CYAN,6,4)),
+                "missing cyan art cannot become an invisible saved layer");
+        int originalGreen=DecalStackRules.pack(DecalStackRules.GREEN,5,4);
+        int[] mixed=DecalStackRules.append(
+                DecalStackRules.append(
+                DecalStackRules.append(new int[0],white),originalGreen),cyan);
+        check(Arrays.equals(mixed,new int[]{white,originalGreen,cyan}),
+                "cyan lies above saved white and green in paint order");
+        check(Arrays.equals(DecalStackRules.peel(mixed),
+                new int[]{white,originalGreen}),
+                "peeling cyan preserves the older green and white data");
+        check(Arrays.equals(DecalStackRules.sanitized(mixed),mixed),
+                "three mixed save entries survive decoding");
+        check(DecalStackRules.append(mixed,cyan).length==3,
+                "cyan cannot bypass the existing three-layer cap");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int chosen=DecalStackRules.nextArt(DecalStackRules.CYAN,variant,2,slot);
+            check(chosen>=0&&chosen<6,
+                  "every cardboard variant and crafting anchor picks a real cyan image");
+        }
+        System.out.println("PASS: "+count+"/"+count+" twelve-carpet decal stack, peeling and ID tests");
     }
 }
