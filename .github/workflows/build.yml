@@ -510,6 +510,23 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/CardboardAssetIntegrityTest.java
           java -cp build/rule-tests CardboardAssetIntegrityTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
+      - name: Confirm final JAR packs bottom Curios slot and no client player-render Mixins
+        run: |
+          python3 - <<'PY'
+          import json,zipfile,glob
+          jar=glob.glob('build/libs/cardboardstealth-neoforge-*.jar')[0]
+          with zipfile.ZipFile(jar) as archive:
+              curios=json.loads(archive.read('data/cardboardstealth/curios/slots/cardboard.json'))
+              assert curios['order']==1000000
+              assert curios['size']==1
+              assert 'data/cardboardstealth/curios/entities/players.json' in archive.namelist()
+              mixins=json.loads(archive.read('cardboardstealth.mixins.json'))
+              assert not mixins.get('client',[])
+              # Deleted render-control classes must not survive in the binary:
+              for ended in ('/ClientLayerRenderControl.class','/BoxLayerMasking.class'):
+                  assert not any(name.endswith(ended) for name in archive.namelist()),ended
+          print('PASS: packed JAR contains lower Curios slot, no reflective player-layer filter classes or client Mixins')
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: cardboardstealth-neoforge-1.21.1-0.1.43-alpha
