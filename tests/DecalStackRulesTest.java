@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=6;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=7;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=7;col<16;col++){
+        for(int col=8;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -184,6 +184,36 @@ public final class DecalStackRulesTest {
             check(selected>=0 && selected<6,
                     "all cardboard variants and 9 anchors select a valid yellow drawing");
         }
-        System.out.println("PASS: "+count+"/"+count+" seven-carpet decal stack, peeling and ID tests");
+
+        // Lime is family #8 and must not rewrite any old colored decoration.
+        int lime=DecalStackRules.pack(DecalStackRules.LIME,4,4);
+        check(DecalStackRules.supportedColor(DecalStackRules.LIME),
+                "lime only activates when six botanical paintings are available");
+        check(DecalStackRules.artCount(DecalStackRules.LIME)==6,
+                "exactly six new lime drawings");
+        check(DecalStackRules.isValid(lime)&&DecalStackRules.color(lime)==7,
+                "lime uses a unique eighth stored color code");
+        check(!DecalStackRules.isValid(
+                DecalStackRules.pack(DecalStackRules.LIME,6,4)),
+                "invalid lime index is not a stored invisible decal");
+        int savedYellow=DecalStackRules.pack(DecalStackRules.YELLOW,1,4);
+        int[] eightMixed=DecalStackRules.append(DecalStackRules.append(
+                DecalStackRules.append(new int[0],white),
+                savedYellow),lime);
+        check(Arrays.equals(eightMixed,new int[]{white,savedYellow,lime}),
+                "new lime layer stays on top without changing older art");
+        check(Arrays.equals(DecalStackRules.peel(eightMixed),
+                new int[]{white,savedYellow}),
+                "peeling lime keeps old yellow and white art byte-for-byte");
+        check(Arrays.equals(DecalStackRules.sanitized(eightMixed),eightMixed),
+                "saved three-color stack survives decoding");
+        check(DecalStackRules.append(eightMixed,lime).length==3,
+                "no fourth lime decoration allowed");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int chosen=DecalStackRules.nextArt(DecalStackRules.LIME,variant,2,slot);
+            check(chosen>=0 && chosen<6,
+                "every paper-box variant and attachment anchor selects botanical art");
+        }
+        System.out.println("PASS: "+count+"/"+count+" eight-carpet decal stack, peeling and ID tests");
     }
 }
