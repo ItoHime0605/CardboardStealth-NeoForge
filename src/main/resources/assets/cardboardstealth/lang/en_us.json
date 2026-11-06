@@ -32,5 +32,11 @@
   "tooltip.cardboardstealth.light_gray_2": "Layer %s: Worn Tamper-Evident Seal",
   "tooltip.cardboardstealth.light_gray_3": "Layer %s: Returned Depot Shipment",
   "tooltip.cardboardstealth.light_gray_4": "Layer %s: Cracked Stack-Limit Stencil",
-  "tooltip.cardboardstealth.light_gray_5": "Layer %s: Recovered Field Manifest"
+  "tooltip.cardboardstealth.light_gray_5": "Layer %s: Recovered Field Manifest",
+  "tooltip.cardboardstealth.gray_0": "Layer %s: Restricted Zone Stencil",
+  "tooltip.cardboardstealth.gray_1": "Layer %s: Bunker Thirteen Seal",
+  "tooltip.cardboardstealth.gray_2": "Layer %s: Repainted Crate Number",
+  "tooltip.cardboardstealth.gray_3": "Layer %s: Condemned Cargo Cross",
+  "tooltip.cardboardstealth.gray_4": "Layer %s: Wasteland Street Tag",
+  "tooltip.cardboardstealth.gray_5": "Layer %s: Abandoned Mill Warehouse Mark"
 }

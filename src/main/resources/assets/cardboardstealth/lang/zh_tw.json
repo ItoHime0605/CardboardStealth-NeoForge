@@ -32,5 +32,11 @@
   "tooltip.cardboardstealth.light_gray_2": "第 %s 層：破舊封箱檢查條",
   "tooltip.cardboardstealth.light_gray_3": "第 %s 層：倉庫退貨轉運單",
   "tooltip.cardboardstealth.light_gray_4": "第 %s 層：堆疊上限噴印",
-  "tooltip.cardboardstealth.light_gray_5": "第 %s 層：野外物資清冊"
+  "tooltip.cardboardstealth.light_gray_5": "第 %s 層：野外物資清冊",
+  "tooltip.cardboardstealth.gray_0": "第 %s 層：禁區警示噴印",
+  "tooltip.cardboardstealth.gray_1": "第 %s 層：十三號地下倉章",
+  "tooltip.cardboardstealth.gray_2": "第 %s 層：塗改過的貨箱編號",
+  "tooltip.cardboardstealth.gray_3": "第 %s 層：報廢物資叉號標記",
+  "tooltip.cardboardstealth.gray_4": "第 %s 層：廢土街頭噴漆字樣",
+  "tooltip.cardboardstealth.gray_5": "第 %s 層：舊工業區倉儲封印"
 }

@@ -88,6 +88,7 @@ public final class ClientInit {
             String group = switch (DecalStackRules.color(code)) {
                 case DecalStackRules.WHITE -> "white_";
                 case DecalStackRules.LIGHT_GRAY -> "light_gray_";
+                case DecalStackRules.GRAY -> "gray_";
                 default -> null;
             };
             if (group != null) event.getToolTip().add(Component.translatable(
