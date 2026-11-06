@@ -104,5 +104,11 @@
   "tooltip.cardboardstealth.purple_2": "Layer %s: Damaged Underground Route Map",
   "tooltip.cardboardstealth.purple_3": "Layer %s: One-Way Fare Ticket",
   "tooltip.cardboardstealth.purple_4": "Layer %s: Disabled Tunnel Ventilation Fan",
-  "tooltip.cardboardstealth.purple_5": "Layer %s: Unmarked Station Exit"
+  "tooltip.cardboardstealth.purple_5": "Layer %s: Unmarked Station Exit",
+  "tooltip.cardboardstealth.magenta_0": "Layer %s: Emergency Triage Tag",
+  "tooltip.cardboardstealth.magenta_1": "Layer %s: Portable Vital Signs Monitor",
+  "tooltip.cardboardstealth.magenta_2": "Layer %s: Field Medical Supply Bag",
+  "tooltip.cardboardstealth.magenta_3": "Layer %s: Last Emergency Rescue Van",
+  "tooltip.cardboardstealth.magenta_4": "Layer %s: Improvised Infusion Station",
+  "tooltip.cardboardstealth.magenta_5": "Layer %s: Folding Evacuation Stretcher"
 }
