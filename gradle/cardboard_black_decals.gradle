@@ -50,7 +50,7 @@ tasks.register('generateBlackCardboardDecals') {
             Polygon silhouette=new Polygon()
             int[] upper=[8,5,7,4,9,7,3,6,10,8,7,5,8,4]
             for(int x=5;x<=122;x+=9)
-                silhouette.addPoint(x,upper[(x/9)%upper.length])
+                silhouette.addPoint(x,upper[Math.floorDiv(x,9)%upper.length])
             silhouette.addPoint(123,15);silhouette.addPoint(120,22)
             silhouette.addPoint(125,35);silhouette.addPoint(121,48)
             silhouette.addPoint(124,67);silhouette.addPoint(120,72)
