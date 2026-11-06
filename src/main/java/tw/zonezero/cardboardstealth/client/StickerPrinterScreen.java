@@ -144,6 +144,13 @@ public final class StickerPrinterScreen extends AbstractContainerScreen<StickerP
         renderBackground(g,mouseX,mouseY,partialTick);
         super.render(g,mouseX,mouseY,partialTick);
         renderTooltip(g,mouseX,mouseY);
+        // Disabled printing should say WHY: missing paper, short dye count,
+        // no dye, or an occupied output. No guessing in the machine GUI.
+        int localX=mouseX-leftPos,localY=mouseY-topPos;
+        if(localX>=80&&localX<219&&localY>=121&&localY<141){
+            g.renderTooltip(font,Component.translatable(menu.printStatusKey()),
+                    mouseX,mouseY);
+        }
         // A Chinese design title may be longer than the miniature monitor.
         // Hovering the live proof print OR any numbered key reveals the
         // complete illustrated subject, never an ellipsis-only name.
