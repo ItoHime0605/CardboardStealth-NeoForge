@@ -153,10 +153,10 @@ tasks.register('generateOrangeCardboardDecals') {
             }
             // Right-side type, with two bands and prominent poster hierarchy.
             g.setColor(id==3?WHITE:DARK)
-            g.setFont(new Font('SansSerif',Font.BOLD,id==4?14:16))
+            g.setFont(new Font('SansSerif',Font.BOLD,TITLES[id][0].length()>8?9:13))
             g.drawString(TITLES[id][0],70,33)
             g.setColor(id==3?AMBER:RUST)
-            g.setFont(new Font('Monospaced',Font.BOLD,9))
+            g.setFont(new Font('Monospaced',Font.BOLD,TITLES[id][1].length()>9?7:8))
             g.drawString(TITLES[id][1],70,49)
             g.setColor(id==3?TEAL:ORANGE)
             g.fillRect(70,54,45,3)
