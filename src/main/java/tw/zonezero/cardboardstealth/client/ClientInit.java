@@ -31,6 +31,8 @@ import tw.zonezero.cardboardstealth.BoxSoundRules;
 import net.neoforged.neoforge.common.NeoForge;
 import tw.zonezero.cardboardstealth.CardboardStealth;
 import tw.zonezero.cardboardstealth.ModItems;
+import tw.zonezero.cardboardstealth.ModMachines;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 public final class ClientInit {
     public static final ModelLayerLocation BOX_LAYER = new ModelLayerLocation(
@@ -39,6 +41,7 @@ public final class ClientInit {
 
     public static void register(IEventBus bus) {
         bus.addListener(ClientInit::registerLayer);
+        bus.addListener(ClientInit::registerPrinterScreen);
         bus.addListener(ClientInit::addLayers);
         bus.addListener(ClientInit::registerDecalItemIcons);
         bus.addListener(BoxViewOverlay::register);
@@ -125,6 +128,9 @@ public final class ClientInit {
                     "tooltip.cardboardstealth." + group + DecalStackRules.art(code),
                     i + 1));
         }
+    }
+    public static void registerPrinterScreen(RegisterMenuScreensEvent event) {
+        event.register(ModMachines.PRINTER_MENU.get(), StickerPrinterScreen::new);
     }
     public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(BOX_LAYER, CardboardLayer::createBodyLayer);

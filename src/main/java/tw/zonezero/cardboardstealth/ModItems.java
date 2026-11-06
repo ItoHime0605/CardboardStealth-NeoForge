@@ -10,6 +10,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ModItems {
     private ModItems() {}
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(CardboardStealth.MOD_ID);
+    public static final net.neoforged.neoforge.registries.DeferredItem<net.minecraft.world.item.BlockItem> STICKER_PRINTER =
+            ITEMS.registerSimpleBlockItem(ModMachines.PRINTER, new Item.Properties());
     // Retain the original three IDs so existing worlds never lose their old boxes.
     public static final DeferredItem<Item> CARDBOARD = ITEMS.registerSimpleItem("cardboard_box", new Item.Properties().stacksTo(1));
     public static final DeferredItem<Item> DELIVERY = ITEMS.registerSimpleItem("delivery_box", new Item.Properties().stacksTo(1));

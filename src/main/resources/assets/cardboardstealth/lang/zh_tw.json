@@ -313,5 +313,15 @@
   "item.cardboardstealth.sticker_subject_light_blue_5": "熄滅的跑道指示燈",
   "item.cardboardstealth.sticker_light_blue_5": "淺藍色 5 號圖樣貼紙｜熄滅的跑道指示燈",
   "item.cardboardstealth.sticker_subject_light_blue_6": "失聯航班飛行紀錄器",
-  "item.cardboardstealth.sticker_light_blue_6": "淺藍色 6 號圖樣貼紙｜失聯航班飛行紀錄器"
+  "item.cardboardstealth.sticker_light_blue_6": "淺藍色 6 號圖樣貼紙｜失聯航班飛行紀錄器",
+  "block.cardboardstealth.sticker_printer": "工業貼紙列印機",
+  "item.cardboardstealth.sticker_printer": "工業貼紙列印機",
+  "gui.cardboardstealth.printer.print": "開始列印",
+  "gui.cardboardstealth.printer.blank": "原紙",
+  "gui.cardboardstealth.printer.dye": "染料",
+  "gui.cardboardstealth.printer.output": "成品",
+  "gui.cardboardstealth.printer.no_dye": "未選擇顏色",
+  "gui.cardboardstealth.printer.insert_dye": "放入同色染料後選擇圖案",
+  "gui.cardboardstealth.printer.cost": "染料需求：%s／現有：%s",
+  "tooltip.cardboardstealth.printer": "投入空白貼紙與同色染料，選擇 1～6 號圖案後列印成品。"
 }

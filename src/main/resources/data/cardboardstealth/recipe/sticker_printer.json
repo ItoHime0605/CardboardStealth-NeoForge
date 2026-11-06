@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IGI",
+    "RPR",
+    "IHI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:glass_pane",
+    "R": "minecraft:redstone",
+    "P": "minecraft:paper",
+    "H": "minecraft:hopper"
+  },
+  "result": {
+    "id": "cardboardstealth:sticker_printer",
+    "count": 1
+  }
+}

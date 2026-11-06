@@ -313,5 +313,15 @@
   "item.cardboardstealth.sticker_subject_light_blue_5": "Darkened Runway Guide Lights",
   "item.cardboardstealth.sticker_light_blue_5": "Light Blue Sticker No. 5 | Darkened Runway Guide Lights",
   "item.cardboardstealth.sticker_subject_light_blue_6": "Recovered Flight Data Recorder",
-  "item.cardboardstealth.sticker_light_blue_6": "Light Blue Sticker No. 6 | Recovered Flight Data Recorder"
+  "item.cardboardstealth.sticker_light_blue_6": "Light Blue Sticker No. 6 | Recovered Flight Data Recorder",
+  "block.cardboardstealth.sticker_printer": "Industrial Sticker Printer",
+  "item.cardboardstealth.sticker_printer": "Industrial Sticker Printer",
+  "gui.cardboardstealth.printer.print": "PRINT STICKER",
+  "gui.cardboardstealth.printer.blank": "Paper",
+  "gui.cardboardstealth.printer.dye": "Dye",
+  "gui.cardboardstealth.printer.output": "Output",
+  "gui.cardboardstealth.printer.no_dye": "No dye loaded",
+  "gui.cardboardstealth.printer.insert_dye": "Insert dye to preview patterns",
+  "gui.cardboardstealth.printer.cost": "Dye needed: %s / loaded: %s",
+  "tooltip.cardboardstealth.printer": "Insert blank adhesive and one dye color, select a design from 1–6, then print."
 }

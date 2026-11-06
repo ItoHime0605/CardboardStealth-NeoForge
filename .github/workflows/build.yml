@@ -72,6 +72,43 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/DecalStackRules.java tests/DecalStackRulesTest.java
           java -cp build/rule-tests DecalStackRulesTest
+      - name: Test 96 sticker printer choices, exact dye consumption and output safety
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/StickerPrinterRules.java tests/StickerPrinterRulesTest.java
+          java -cp build/rule-tests StickerPrinterRulesTest
+      - name: Verify industrial machine class and server-authoritative GUI wiring
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('src/main/java/tw/zonezero/cardboardstealth')
+          block=(root/'StickerPrinterBlock.java').read_text()
+          be=(root/'StickerPrinterBlockEntity.java').read_text()
+          menu=(root/'StickerPrinterMenu.java').read_text()
+          screen=(root/'client/StickerPrinterScreen.java').read_text()
+          reg=(root/'ModMachines.java').read_text()
+          entry=(root/'CardboardStealth.java').read_text()
+          assert 'server.openMenu(printer)' in block
+          assert 'Containers.dropContents(level,pos,printer)' in block
+          assert 'BlockStateProperties.HORIZONTAL_FACING' in block
+          assert 'ContainerHelper.saveAllItems' in be and 'ContainerHelper.loadAllItems' in be
+          assert 'StickerPrinterRules.canPrint(' in be and 'removeItem(DYE,cost)' in be
+          assert 'removeItem(BLANK,1)' in be
+          assert 'if(level==null||level.isClientSide||!canPrint())return false' in be
+          assert 'if(!state.is(next.getBlock()))' in block
+          assert 'case DYE' in be and 'case BLANK' in be
+          assert 'StickerPrinterRules.outputId(' in be
+          assert 'clickMenuButton(Player player,int id)' in menu
+          assert 'machine.print()' in menu and 'broadcastChanges()' in menu
+          assert 'new SimpleContainerData(1)' in menu
+          assert 'StickerPrinterMenu.PRINT' in screen
+          assert 'handleInventoryButtonClick' in screen
+          assert 'textures/decals/' in screen and 'item.cardboardstealth.sticker_subject_' in screen
+          assert 'PRINTER_MENU' in reg and 'PRINTER_ENTITY' in reg
+          assert 'ModMachines.BLOCKS.register(modBus)' in entry
+          assert 'ModMachines.MENUS.register(modBus)' in entry
+          assert "apply from: 'gradle/cardboard_printer_art.gradle'" in Path('build.gradle').read_text()
+          print('PASS: 19/19 server-authoritative printing, persistence, GUI and 3D machine integration checks')
+          PY
       - name: Check 16 dye colors and model movement
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxColors.java src/main/java/tw/zonezero/cardboardstealth/BoxModelPose.java tests/BoxColorsAndPoseTest.java
@@ -261,6 +298,46 @@ jobs:
               assert 'data/cardboardstealth/recipe/decal_peel_slime.json' in z.namelist()
           print('PASS: one blank recipe, 96 exact dye-count recipes, 96 unique real-art icons, 96 localized subjects, no carpet lottery')
           PY
+      - name: Validate high-detail printable machine model, art and survival resources in JAR
+        run: |
+          python3 - <<'PY'
+          import glob,json,struct,zipfile
+          jar=glob.glob('build/libs/cardboardstealth-neoforge-*.jar')[0]
+          with zipfile.ZipFile(jar) as z:
+              root='assets/cardboardstealth/'
+              read=lambda path: json.loads(z.read(path))
+              block=read(root+'models/block/sticker_printer.json')
+              assert block['parent']=='minecraft:block/block'
+              assert len(block['elements'])>=35,'Expected raised 3D parts, not a single flat cube'
+              names=[e['name'] for e in block['elements']]
+              for part in ('rear_paper_input_feeder','inserted_blank_paper','paper_exit_dark_slot',
+                           'output_tray_flat','printed_sticker_on_tray','left_cyan_ink_cartridge',
+                           'left_orange_ink_cartridge','illuminated_design_screen',
+                           'right_side_service_vent','corner_steel_bolt_fl'):
+                  assert part in names,'3D machine part absent: '+part
+              states=read(root+'blockstates/sticker_printer.json')['variants']
+              for d in ('north','south','east','west'):
+                  assert 'facing='+d in states
+              assert read(root+'models/item/sticker_printer.json')['parent']=='cardboardstealth:block/sticker_printer'
+              for name in ('metal','dark','steel','panel','screen','paper',
+                           'teal','orange','vent','warning'):
+                  p=root+'textures/block/printer_'+name+'.png'
+                  raw=z.read(p)
+                  assert raw[:8]==bytes.fromhex('89504e470d0a1a0a')
+                  assert struct.unpack_from('>II',raw,16)==(64,64),p
+              recipe=read('data/cardboardstealth/recipe/sticker_printer.json')
+              assert recipe['type']=='minecraft:crafting_shaped'
+              assert recipe['pattern']==['IGI','RPR','IHI']
+              assert recipe['result']['id']=='cardboardstealth:sticker_printer'
+              loot=read('data/cardboardstealth/loot_table/blocks/sticker_printer.json')
+              assert loot['type']=='minecraft:block'
+              assert 'cardboardstealth:sticker_printer' in str(loot)
+              assert 'cardboardstealth:sticker_printer' in read(
+                  'data/minecraft/tags/block/mineable/pickaxe.json')['values']
+              assert 'block.cardboardstealth.sticker_printer' in read(
+                  root+'lang/zh_tw.json')
+          print('PASS: 35+ independent 3D parts, ten 64px material atlases, all facings, survival crafting and drops')
+          PY
       - name: Check generated Minecraft box textures are in the final JAR
         run: |
           python3 - <<'PY'
@@ -371,5 +448,5 @@ jobs:
           java -cp build/rule-tests CardboardAssetIntegrityTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.40-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.41-alpha
           path: build/libs/*.jar
