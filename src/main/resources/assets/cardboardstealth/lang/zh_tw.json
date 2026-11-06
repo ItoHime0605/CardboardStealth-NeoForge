@@ -38,5 +38,11 @@
   "tooltip.cardboardstealth.gray_2": "第 %s 層：塗改過的貨箱編號",
   "tooltip.cardboardstealth.gray_3": "第 %s 層：報廢物資叉號標記",
   "tooltip.cardboardstealth.gray_4": "第 %s 層：廢土街頭噴漆字樣",
-  "tooltip.cardboardstealth.gray_5": "第 %s 層：舊工業區倉儲封印"
+  "tooltip.cardboardstealth.gray_5": "第 %s 層：舊工業區倉儲封印",
+  "tooltip.cardboardstealth.black_0": "第 %s 層：街頭噴字「無王之地」",
+  "tooltip.cardboardstealth.black_1": "第 %s 層：廢墟骷髏貼畫",
+  "tooltip.cardboardstealth.black_2": "第 %s 層：第十三街區噴漆",
+  "tooltip.cardboardstealth.black_3": "第 %s 層：黑市路線塗鴉",
+  "tooltip.cardboardstealth.black_4": "第 %s 層：幽靈街頭標籤",
+  "tooltip.cardboardstealth.black_5": "第 %s 層：破牆箭頭與噴字"
 }

@@ -32,12 +32,17 @@ public final class CardboardDecalRenderer {
             ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID,
                     "textures/decals/gray_atlas.png");
 
+    public static final ResourceLocation BLACK_ATLAS =
+            ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID,
+                    "textures/decals/black_atlas.png");
+
     /** Finished art families only; unfinished carpets must never render blank. */
     public static ResourceLocation atlasFor(int carpetColor) {
         return switch (carpetColor) {
             case DecalStackRules.WHITE -> WHITE_ATLAS;
             case DecalStackRules.LIGHT_GRAY -> LIGHT_GRAY_ATLAS;
             case DecalStackRules.GRAY -> GRAY_ATLAS;
+            case DecalStackRules.BLACK -> BLACK_ATLAS;
             default -> null;
         };
     }
@@ -54,9 +59,8 @@ public final class CardboardDecalRenderer {
             int packed = ordered[index];
             ResourceLocation atlas = atlasFor(DecalStackRules.color(packed));
             if (atlas == null) continue;
-            // Depth offset is determined by the GLOBAL layer index, rather
-            // than the decal family. A later gray label therefore covers an
-            // earlier white one, and vice versa, on a shared anchor.
+            // The global layer index sets depth; black/gray/white decals
+            // retain exact oldest-to-newest order on a shared anchor.
             VertexConsumer buffer = buffers.getBuffer(RenderType.entityCutoutNoCull(atlas));
             drawDecal(pose, buffer, light, DecalStackRules.anchor(packed),
                     DecalStackRules.art(packed), index);

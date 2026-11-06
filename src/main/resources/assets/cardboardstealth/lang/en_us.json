@@ -38,5 +38,11 @@
   "tooltip.cardboardstealth.gray_2": "Layer %s: Repainted Crate Number",
   "tooltip.cardboardstealth.gray_3": "Layer %s: Condemned Cargo Cross",
   "tooltip.cardboardstealth.gray_4": "Layer %s: Wasteland Street Tag",
-  "tooltip.cardboardstealth.gray_5": "Layer %s: Abandoned Mill Warehouse Mark"
+  "tooltip.cardboardstealth.gray_5": "Layer %s: Abandoned Mill Warehouse Mark",
+  "tooltip.cardboardstealth.black_0": "Layer %s: NO KINGS Street Tag",
+  "tooltip.cardboardstealth.black_1": "Layer %s: Ruins Skull Graffiti",
+  "tooltip.cardboardstealth.black_2": "Layer %s: District Thirteen Spray",
+  "tooltip.cardboardstealth.black_3": "Layer %s: Black-Market Route Tag",
+  "tooltip.cardboardstealth.black_4": "Layer %s: GHOST WAVE Paste-Up",
+  "tooltip.cardboardstealth.black_5": "Layer %s: Broken Wall Arrow Tag"
 }

@@ -89,6 +89,7 @@ public final class ClientInit {
                 case DecalStackRules.WHITE -> "white_";
                 case DecalStackRules.LIGHT_GRAY -> "light_gray_";
                 case DecalStackRules.GRAY -> "gray_";
+                case DecalStackRules.BLACK -> "black_";
                 default -> null;
             };
             if (group != null) event.getToolTip().add(Component.translatable(
