@@ -52,6 +52,10 @@ public final class CardboardDecalRenderer {
             ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID,
                     "textures/decals/lime_atlas.png");
 
+    public static final ResourceLocation PINK_ATLAS =
+            ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID,
+                    "textures/decals/pink_atlas.png");
+
     /** Finished art families only; unfinished carpets must never render blank. */
     public static ResourceLocation atlasFor(int carpetColor) {
         return switch (carpetColor) {
@@ -63,6 +67,7 @@ public final class CardboardDecalRenderer {
             case DecalStackRules.ORANGE -> ORANGE_ATLAS;
             case DecalStackRules.YELLOW -> YELLOW_ATLAS;
             case DecalStackRules.LIME -> LIME_ATLAS;
+            case DecalStackRules.PINK -> PINK_ATLAS;
             default -> null;
         };
     }
