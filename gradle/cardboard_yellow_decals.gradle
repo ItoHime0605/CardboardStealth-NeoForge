@@ -65,7 +65,7 @@ tasks.register('generateYellowCardboardDecals') {
             g.fillRect(6,66,116,5)
             g.setColor(GOLD);g.fillRect(6,13,116,4)
             for(int i=-11;i<139;i+=14) {
-                g.setColor((i/14)%2==0?BLACK:RUST)
+                g.setColor(Math.floorDiv(i,14)%2==0?BLACK:RUST)
                 g.fillPolygon([i,i+7,i+13,i+6] as int[],
                               [9,9,18,18] as int[],4)
             }
@@ -106,8 +106,8 @@ tasks.register('generateYellowCardboardDecals') {
                 }
                 case 3: { // Damaged transformer mast and huge lightning cut.
                     g.setColor(GOLD)
-                    g.fillPolygon([40,27,30,41,38,42,30,58,53,37,43,37,49,27] as int[],
-                                  [23,23,39,39,46,60,60,40,40,32,32,23] as int[],7)
+                    g.fillPolygon([39,24,35,31,51,41,47] as int[],
+                                  [22,42,42,61,38,38,22] as int[],7)
                     g.setColor(PALE);g.setStroke(new BasicStroke(2F))
                     g.drawLine(17,26,56,26);g.drawLine(20,31,53,31)
                     g.setStroke(new BasicStroke(1F))
