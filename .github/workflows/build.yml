@@ -3,6 +3,9 @@ on:
   workflow_dispatch:
   push:
     branches: [main, 'development/**']
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main, 'development/**']
 concurrency:
   group: cardboardstealth-${{ github.ref }}
   cancel-in-progress: true
