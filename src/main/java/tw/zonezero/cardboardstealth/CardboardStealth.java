@@ -12,6 +12,9 @@ import tw.zonezero.cardboardstealth.client.ClientInit;
 public final class CardboardStealth {
     public static final String MOD_ID = "cardboardstealth";
     public CardboardStealth(IEventBus modBus) {
+        ModMachines.BLOCKS.register(modBus);
+        ModMachines.BLOCK_ENTITIES.register(modBus);
+        ModMachines.MENUS.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModRecipes.SERIALIZERS.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
