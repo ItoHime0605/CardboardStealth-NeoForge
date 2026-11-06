@@ -1,0 +1,222 @@
+import java.awt.image.BufferedImage
+import java.awt.Color
+import java.awt.Font
+import java.awt.BasicStroke
+import java.awt.Polygon
+import java.awt.AlphaComposite
+import java.awt.RenderingHints
+import javax.imageio.ImageIO
+
+/**
+ * MAGENTA / family #15: six ORIGINAL discarded emergency-medical field cards.
+ * Every print shows a different pictorial subject:
+ * triage tag, heartbeat monitor, medical supply bag, rescue van, saline
+ * stand, folding evacuation stretcher. Drawn in pure Java2D; no copied logos,
+ * external artwork, downloaded imagery, or bundled font files.
+ *
+ * Source PNGs 128x80, atlas 256x240 (two columns, three rows).
+ */
+def magentaDecalOutput=layout.buildDirectory.dir('generated/cardboard-magenta-decals')
+tasks.register('generateMagentaCardboardDecals') {
+    inputs.property('magenta-original-medical-art-revision','2026-11-06-six-field-medical-posters-v1')
+    outputs.dir(magentaDecalOutput)
+    doLast {
+        File dir=new File(magentaDecalOutput.get().asFile,
+                'assets/cardboardstealth/textures/decals')
+        dir.mkdirs()
+        final int W=128,H=80
+        final Color BURGUNDY=new Color(91,46,83)
+        final Color MAGENTA=new Color(190,66,136)
+        final Color ROSE=new Color(230,117,169)
+        final Color VIOLET=new Color(137,86,136)
+        final Color PALE=new Color(241,214,209)
+        final Color WHITE=new Color(248,230,215)
+        final Color INK=new Color(47,46,65)
+        final Color STEEL=new Color(111,120,128)
+        final Color MINT=new Color(107,173,160)
+        final Color GOLD=new Color(231,176,99)
+        final Color RUST=new Color(158,91,76)
+        final String[][] TITLES=[
+            ['TRIAGE','TAG','ZONE 03'],
+            ['PULSE','TRACE','NO SIGNAL'],
+            ['MED','SUPPLY','KIT 08'],
+            ['RESCUE','UNIT','LAST RUN'],
+            ['DRIP','STATION','WARD 02'],
+            ['LIFT','CAREFUL','EVAC-06']
+        ] as String[][]
+        BufferedImage atlas=new BufferedImage(256,240,BufferedImage.TYPE_INT_ARGB)
+        for(int id=0;id<6;id++) {
+            java.util.Random rnd=new java.util.Random(203017L+17317L*id)
+            BufferedImage img=new BufferedImage(W,H,BufferedImage.TYPE_INT_ARGB)
+            def g=img.createGraphics()
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF)
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF)
+            g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,RenderingHints.VALUE_FRACTIONALMETRICS_OFF)
+
+            // Irregular torn paper means the outer 3..6 px are truly transparent.
+            Polygon torn=new Polygon()
+            for(int x=5;x<=122;x+=7)torn.addPoint(x,4+rnd.nextInt(6))
+            torn.addPoint(123,17);torn.addPoint(121,32)
+            torn.addPoint(125,47);torn.addPoint(122,63)
+            for(int x=117;x>=6;x-=7)torn.addPoint(x,70+rnd.nextInt(6))
+            torn.addPoint(4,62);torn.addPoint(7,45);torn.addPoint(3,27)
+            g.setColor(id%2==0?new Color(225,196,199):new Color(222,191,198))
+            g.fillPolygon(torn)
+            g.setClip(torn)
+
+            // Faded letterpress frame, offset ink, and tiny print registration.
+            g.setColor(BURGUNDY);g.fillRect(6,9,116,4);g.fillRect(6,68,116,4)
+            g.setColor(MAGENTA);g.fillRect(8,13,111,3)
+            g.setColor(id==1?INK:PALE);g.fillRect(8,17,55,48)
+            g.setColor(VIOLET);g.fillRect(65,18,2,47)
+            g.setColor(ROSE)
+            for(int x=11;x<61;x+=9)g.fillRect(x,17,3,3)
+
+            // Subtle weathering first, then foreground hand-drawn icon.
+            for(int j=0;j<880;j++) {
+                int x=7+rnd.nextInt(115),y=9+rnd.nextInt(63)
+                int alpha=7+rnd.nextInt(54)
+                g.setColor(j%4==0?new Color(62,46,67,alpha):
+                           j%4==1?new Color(249,223,202,alpha):
+                           j%4==2?new Color(188,71,134,alpha):
+                           new Color(128,146,136,alpha))
+                g.fillRect(x,y,1+(j%13==0?2:0),1)
+            }
+
+            switch(id) {
+                case 0: { // Punch-holed triage card, priority bands, ankle strap.
+                    g.setColor(INK);g.fillRoundRect(17,20,42,44,4,4)
+                    g.setColor(WHITE);g.fillRoundRect(20,22,36,39,2,2)
+                    g.setColor(BURGUNDY);g.fillOval(35,24,7,7)
+                    g.setColor(PALE);g.fillOval(37,26,3,3)
+                    g.setColor(MAGENTA);g.fillRect(23,34,30,7)
+                    g.setColor(GOLD);g.fillRect(23,43,30,6)
+                    g.setColor(MINT);g.fillRect(23,51,30,6)
+                    g.setColor(INK);g.fillRect(26,38,8,2)
+                    g.fillRect(38,38,12,2)
+                    g.setColor(VIOLET);g.fillRect(27,59,24,2)
+                    g.setColor(RUST);g.drawLine(38,18,45,11)
+                    break
+                }
+                case 1: { // Portable pulse waveform monitor, cables and buttons.
+                    g.setColor(BURGUNDY);g.fillRoundRect(11,21,54,41,5,5)
+                    g.setColor(INK);g.fillRoundRect(15,25,42,29,3,3)
+                    g.setColor(MINT)
+                    g.setStroke(new BasicStroke(2F))
+                    g.drawLine(17,41,25,41);g.drawLine(25,41,28,35)
+                    g.drawLine(28,35,33,49);g.drawLine(33,49,39,30)
+                    g.drawLine(39,30,43,41);g.drawLine(43,41,54,41)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(ROSE);g.fillRect(18,29,7,2)
+                    g.setColor(WHITE);g.fillRect(19,56,24,3)
+                    g.setColor(GOLD);g.fillOval(51,56,5,5)
+                    g.setColor(STEEL);g.drawLine(51,60,61,65)
+                    break
+                }
+                case 2: { // Old rugged medical supply bag with buckle and cross.
+                    g.setColor(INK);g.setStroke(new BasicStroke(4F))
+                    g.drawArc(23,16,31,25,0,180)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(BURGUNDY);g.fillRoundRect(12,30,53,34,5,5)
+                    g.setColor(MAGENTA);g.fillRoundRect(16,33,45,27,3,3)
+                    g.setColor(WHITE);g.fillRect(34,38,10,20)
+                    g.fillRect(29,43,20,10)
+                    g.setColor(INK);g.drawRect(30,42,16,13)
+                    g.setColor(GOLD);g.fillRect(19,36,8,6)
+                    g.fillRect(51,36,7,6)
+                    g.setColor(RUST);g.fillRect(25,60,28,4)
+                    break
+                }
+                case 3: { // Boxy rescue van, roof beacon, rear medical supplies.
+                    g.setColor(INK);g.fillRoundRect(10,31,55,30,4,4)
+                    g.setColor(WHITE);g.fillRect(13,33,50,22)
+                    g.setColor(MAGENTA);g.fillRect(14,47,48,7)
+                    g.setColor(BURGUNDY);g.fillRect(37,35,23,11)
+                    g.setColor(MINT);g.fillRect(40,37,9,8)
+                    g.fillRect(51,37,7,8)
+                    g.setColor(ROSE);g.fillRect(20,36,7,12)
+                    g.setColor(WHITE);g.fillRect(16,40,15,4)
+                    g.setColor(GOLD);g.fillRect(33,27,11,5)
+                    g.setColor(RUST);g.fillRect(44,29,5,3)
+                    g.setColor(INK);g.fillOval(17,52,14,14)
+                    g.fillOval(47,52,14,14)
+                    g.setColor(STEEL);g.fillOval(21,56,6,6)
+                    g.fillOval(51,56,6,6)
+                    break
+                }
+                case 4: { // Hanging field-fluid bag on a portable metal stand.
+                    g.setColor(INK);g.setStroke(new BasicStroke(3F))
+                    g.drawLine(42,19,42,65);g.drawLine(27,64,56,64)
+                    g.drawLine(42,21,57,21)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(WHITE);g.fillRoundRect(17,23,21,29,4,4)
+                    g.setColor(ROSE);g.fillRect(20,32,15,14)
+                    g.setColor(MAGENTA);g.fillRect(22,25,11,4)
+                    g.setColor(VIOLET);g.fillRect(25,47,6,6)
+                    g.setColor(INK);g.drawLine(28,53,28,59)
+                    g.setColor(MINT);g.drawLine(28,59,53,59)
+                    g.setColor(GOLD);g.fillRect(55,20,6,5)
+                    g.setColor(BURGUNDY);g.fillOval(16,60,6,6)
+                    break
+                }
+                case 5: { // Collapsible evacuation stretcher and woven straps.
+                    g.setColor(INK);g.setStroke(new BasicStroke(3F))
+                    g.drawLine(10,35,63,48);g.drawLine(13,47,62,60)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(STEEL);g.fillPolygon([14,54,62,20] as int[],
+                        [36,46,55,45] as int[],4)
+                    g.setColor(MAGENTA);g.fillPolygon([17,52,57,22] as int[],
+                        [37,45,52,44] as int[],4)
+                    g.setColor(WHITE);g.fillPolygon([22,34,38,27] as int[],
+                        [38,40,44,42] as int[],4)
+                    g.setColor(BURGUNDY)
+                    g.setStroke(new BasicStroke(2F))
+                    g.drawLine(27,41,26,51);g.drawLine(48,46,45,57)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(GOLD);g.fillOval(13,32,7,7)
+                    g.fillOval(56,55,8,8)
+                    g.setColor(INK);g.fillRect(24,54,4,6)
+                    break
+                }
+            }
+
+            // Identity, status and local field record imprint.
+            g.setColor(BURGUNDY)
+            g.setFont(new Font('SansSerif',Font.BOLD,TITLES[id][0].length()>6?11:15))
+            g.drawString(TITLES[id][0],69,33)
+            g.setColor(MAGENTA)
+            g.setFont(new Font('SansSerif',Font.BOLD,TITLES[id][1].length()>6?10:12))
+            g.drawString(TITLES[id][1],69,49)
+            g.setColor(VIOLET);g.fillRect(69,54,46,3)
+            g.setColor(INK);g.setFont(new Font('Monospaced',Font.BOLD,8))
+            g.drawString(TITLES[id][2],69,65)
+
+            // Light ink scuffs, transparent pinholes for actual wear.
+            for(int j=0;j<150;j++) {
+                int x=6+rnd.nextInt(115),y=8+rnd.nextInt(64)
+                g.setColor(j%3==0?new Color(247,224,211,70):
+                           j%3==1?new Color(70,43,74,49):
+                           new Color(164,88,77,60))
+                g.fillRect(x,y,1+(j%17==0?2:0),1)
+            }
+            g.setComposite(AlphaComposite.Clear)
+            for(int j=0;j<101;j++) {
+                int x=6+rnd.nextInt(115),y=9+rnd.nextInt(63)
+                g.fillRect(x,y,j%19==0?3:1,1)
+            }
+            g.setComposite(AlphaComposite.SrcOver)
+            g.setClip(null);g.dispose()
+
+            ImageIO.write(img,'png',new File(dir,'magenta_'+id+'.png'))
+            def composite=atlas.createGraphics()
+            composite.drawImage(img,(id%2)*W,Math.floorDiv(id,2)*H,null)
+            composite.dispose()
+        }
+        ImageIO.write(atlas,'png',new File(dir,'magenta_atlas.png'))
+        println 'Generated six original magenta field-medical decals and atlas.'
+    }
+}
+tasks.named('processResources') {
+    dependsOn tasks.named('generateMagentaCardboardDecals')
+    from(magentaDecalOutput)
+}
