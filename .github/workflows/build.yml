@@ -185,7 +185,7 @@ jobs:
           mini=(r/'client/CardboardLayer.java').read_text()
           assert 'CardboardDecalRenderer.render(' in mini
           assert "CardboardDecalRenderer.render(" not in (r/'client/BoxViewOverlay.java').read_text()
-          print('PASS: 16/16 six-family sticker, ordered layering, GUI and recipe checks')
+          print('PASS: 19/19 six-family sticker, ordered layering, GUI and recipe checks')
           PY
       - name: Validate assets and Curios data JSON
         run: |
