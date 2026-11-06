@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.43-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.44-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.43-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.44-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -607,7 +607,7 @@ GitHub Actions 編譯成功只代表資源／程式碼檢查通過；Minecraft 1
 
 **CI 成功不代表 Minecraft 實機合成、配方瀏覽器或 3D 渲染已實測**。需要進入遊戲檢查配方數量、創造分頁、各張貼紙圖案文字、合成結果及跨色貼紙順序。
 
-## 0.1.43-alpha｜工業貼紙列印機（Sticker Printer）
+## 0.1.44-alpha｜工業貼紙列印機（Sticker Printer）
 
 新增真正可在 Minecraft 世界中放置的 **「工業貼紙列印機」** 1×1 方塊，並非裝飾品。美術為獨立立體的廢土現代工業機具：消光深色金屬外殼、抬起的操作面板、顯示螢幕、進紙滾輪、兩側導紙片、紙張進料槽、前方出紙托盤、側面墨水匣與散熱柵欄、小型指示燈、機殼金屬螺栓及機身折線，共 39 個專用模型部件、10 組 64px 原創金屬／紙張／螢幕材質。模型可朝東南西北四方向擺放，也有背包物品模型。
 
@@ -626,7 +626,7 @@ GitHub Actions 編譯成功只代表資源／程式碼檢查通過；Minecraft 1
 
 專用 CI 新增列印規則單元測試（96 款產物與成本／無染料／不足材料／輸出未領取）、模型與 10 張原創材質實際 JAR 封包驗證、程式註冊與菜單邏輯檢查。GitHub Actions 成功不等於 Minecraft 客戶端／專用伺服器實機驗收；實機需驗證機器面板、GUI 按鈕、染料消耗、材料持久化與拆除掉落。
 
-## 0.1.43-alpha｜工業貼紙列印機驗收前可靠性修正
+## 0.1.44-alpha｜工業貼紙列印機驗收前可靠性修正
 
 根據 0.1.41-alpha 的程式碼稽核，修復數個自動化編譯不一定發現的實際遊戲操作缺陷：
 
@@ -640,7 +640,7 @@ GitHub Actions 編譯成功只代表資源／程式碼檢查通過；Minecraft 1
 
 **本修正仍需 Minecraft 1.21.1 NeoForge 單人與伺服器實際驗收。**
 
-## 0.1.43-alpha｜玩家 SKIN / RGB 異常渲染相容性修正，以及 Curios 紙箱槽排序
+## 0.1.44-alpha｜玩家 SKIN / RGB 異常渲染相容性修正，以及 Curios 紙箱槽排序
 
 本版處理使用者實際回報的全身 RGB 閃爍、玩家 SKIN 異常、移除 Cardboard Stealth 後恢復正常的問題所對應的**具體程式風險**。沒有自行假定 RGB 原因已經完全確認。
 
@@ -652,3 +652,20 @@ GitHub Actions 編譯成功只代表資源／程式碼檢查通過；Minecraft 1
 - **新增迴歸驗證**：CI 禁止再次加入反射共享圖層、`RenderPlayerEvent.Pre/Post` 與 `PlayerModel.visible` 修改，驗證紙箱自有 `PoseStack` 和折葉角度 `finally` 還原，以及 Curios 排序、註冊、尺寸、圖示與驗證器正確。16 色 96 款貼花、工業貼紙列印機、原始道具欄 2D 紙箱、紙箱觀察孔黑色遮罩和原有偽裝與技能機制保持不變。
 
 **注意：CI 無法模擬搭配 Iris、TaCZ、Curios、其他玩家 SKIN／附加模型時的圖形驅動程式相容性，也無法保證 RGB 問題在所有客戶端已完全消失。** 必須在真實 Minecraft 1.21.1 NeoForge 客戶端及伺服器重新驗收，包括不穿紙箱／穿紙箱、其他玩家、原版與自訂 SKIN、槍械腰掛、飾品顯示、Iris 開與關、Curios 槽位置。
+
+## 0.1.44-alpha｜穿紙箱隱藏原本角色/飾品，脫下立即恢復——無共享狀態污染
+
+依使用者驗收需求，在 0.1.43-alpha 的安全修正上恢復「穿著紙箱期間隱藏玩家原始 SKIN、第三人稱裝備、Curios 飾品與 TaCZ 武器附加渲染層」的效果，但**完全不恢復上一代高風險的共享列表反射刪除或 PlayerModel.visible 修改**。
+
+### 安全的新方式
+- 新增客戶端專用 `CardboardScopedRenderMixin`，透過 NeoForge 1.21.1 既有的 MixinExtras `@WrapOperation` 在 **LivingEntityRenderer.render 本次渲染呼叫**中，當本次玩家具有伺服器同步的紙箱狀態時，跳過**該玩家**除 `CardboardLayer` 外的其他 `RenderLayer.render` 呼叫。Minecraft 額外圖層清單本身不變，沒有任何刪除、隱藏／恢復共享物件或 SKIN 狀態旗標。
+- 在 `LivingEntityRenderer.getRenderType` 回傳階段，針對本次穿紙箱的玩家回傳 null，使原始玩家本體貼圖不被提交；沒有任何全域 shader/RGB 改動，其他玩家與其他生物完全不受影響。
+- **退出紙箱即刻恢復**：渲染政策完全沒有保存狀態，不需等 RenderPlayerEvent.Post；每一個繪製操作都檢查玩家當下的紙箱狀態。當下一次渲染不是紙箱狀態，原始 SKIN、裝備、Curios、TaCZ 等正常呼叫即自然恢復。即使渲染過程被取消、其他模組中途例外或 RenderPlayerEvent.Post 未執行，也**沒有需要手動還原的共享模型或渲染清單**。
+- **玩家／實體 ID 重用防護**：ClientBoxState 原本僅在收到解除封包或登出時清理，如某玩家中途離開視距、世界或維度，舊 entity id 被重用有機會錯隱另一個玩家。本版使用客戶端的 EntityLeaveLevelEvent 刪除離場玩家的暫存狀態。伺服器解除紙箱仍透過原有封包立即設為未穿著。
+- CardboardLayer 本身的 `try/finally` 恢復自身四片折葉角度與 PoseStack，沿用 0.1.43-alpha 不會污染共用玩家模型的安全設計。
+- 維持 Curios 專用紙箱槽 **order=1000000** 靠下排序、所有 16 色 96 款紙箱貼紙、貼紙列印機及 0.1.42-alpha 的其他功能。
+
+### 可靠性與限制
+- 新渲染過濾只在 `LivingEntityRenderer` **原有 render layer 呼叫**生效。像是特定模組在另外的 GUI、世界事件或獨立 renderer 裡繪製的裝備／特效不一定會被過濾，因此仍需在使用者的 TaCZ、Curios、Iris、SKIN 環境實際檢查。
+- 機制**不是關閉後再恢復共享旗標**；而是對每次渲染作出允許／跳過判斷，因而不存在忘記還原的視覺狀態。
+- CI 加入跨玩家交錯渲染、紙箱裝上／卸下後的第一幀恢復、解除封包／重新使用實體 ID 清理回歸測試，以及 Mixin 原始碼與 JAR 的接線驗證。**GitHub 編譯不等於遊戲內模組衝突已實測**。實測需檢查二人以上同時存在、單人 SKIN、卸下紙箱瞬間、Curios、TaCZ 腰掛、Iris 等。
