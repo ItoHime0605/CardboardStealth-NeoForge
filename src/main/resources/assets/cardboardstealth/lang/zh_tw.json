@@ -104,5 +104,11 @@
   "tooltip.cardboardstealth.purple_2": "第 %s 層：損毀的地下鐵路線圖",
   "tooltip.cardboardstealth.purple_3": "第 %s 層：無法返程的單程車票",
   "tooltip.cardboardstealth.purple_4": "第 %s 層：停轉的隧道通風機",
-  "tooltip.cardboardstealth.purple_5": "第 %s 層：不知通往何處的出口"
+  "tooltip.cardboardstealth.purple_5": "第 %s 層：不知通往何處的出口",
+  "tooltip.cardboardstealth.magenta_0": "第 %s 層：災區傷患檢傷標籤",
+  "tooltip.cardboardstealth.magenta_1": "第 %s 層：攜帶式生命徵象監測器",
+  "tooltip.cardboardstealth.magenta_2": "第 %s 層：野戰醫療補給包",
+  "tooltip.cardboardstealth.magenta_3": "第 %s 層：末班緊急救援車",
+  "tooltip.cardboardstealth.magenta_4": "第 %s 層：臨時輸液觀測站",
+  "tooltip.cardboardstealth.magenta_5": "第 %s 層：折疊式傷患搬運擔架"
 }
