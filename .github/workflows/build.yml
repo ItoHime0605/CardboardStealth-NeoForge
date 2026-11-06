@@ -153,12 +153,12 @@ jobs:
           assert len(miniature['elements'])>=15
           assert any(e.get('name')=='recycle_symbol' for e in miniature['elements'])
           assert any(e.get('name')=='eye_shadow' for e in miniature['elements'])
-          for recipe in ('decal_white_carpet','decal_light_gray_carpet','decal_gray_carpet','decal_black_carpet','decal_red_carpet','decal_orange_carpet','decal_yellow_carpet','decal_lime_carpet','decal_pink_carpet','decal_brown_carpet','decal_green_carpet','decal_cyan_carpet','decal_blue_carpet','decal_purple_carpet','decal_magenta_carpet','decal_peel_slime'):
+          for recipe in ('decal_white_carpet','decal_light_gray_carpet','decal_gray_carpet','decal_black_carpet','decal_red_carpet','decal_orange_carpet','decal_yellow_carpet','decal_lime_carpet','decal_pink_carpet','decal_brown_carpet','decal_green_carpet','decal_cyan_carpet','decal_blue_carpet','decal_purple_carpet','decal_magenta_carpet','decal_light_blue_carpet','decal_peel_slime'):
               data=json.loads((ns/'data/cardboardstealth/recipe'/f'{recipe}.json').read_text())
               assert data['type']==f'cardboardstealth:{recipe}'
-          print('PASS: 19 2D/3D split item models, 16 dyes, 16 recolor serializers and sixteen decal crafting recipes')
+          print('PASS: 19 2D/3D split item models, 16 dyes, 16 recolor serializers and seventeen decal crafting recipes')
           PY
-      - name: Verify ordered fifteen-carpet decal rendering paths
+      - name: Verify ordered sixteen-carpet decal rendering paths
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -167,11 +167,11 @@ jobs:
           gui=(r/'client/ClientInit.java').read_text()
           stack=(r/'DecalStackRules.java').read_text()
           recipes=(r/'ModRecipes.java').read_text()
-          assert 'LIGHT_GRAY_ATLAS' in art and 'GRAY_ATLAS' in art and 'BLACK_ATLAS' in art and 'RED_ATLAS' in art and 'ORANGE_ATLAS' in art and 'YELLOW_ATLAS' in art and 'LIME_ATLAS' in art and 'PINK_ATLAS' in art and 'BROWN_ATLAS' in art and 'GREEN_ATLAS' in art and 'CYAN_ATLAS' in art and 'BLUE_ATLAS' in art and 'PURPLE_ATLAS' in art and 'MAGENTA_ATLAS' in art
+          assert 'LIGHT_GRAY_ATLAS' in art and 'GRAY_ATLAS' in art and 'BLACK_ATLAS' in art and 'RED_ATLAS' in art and 'ORANGE_ATLAS' in art and 'YELLOW_ATLAS' in art and 'LIME_ATLAS' in art and 'PINK_ATLAS' in art and 'BROWN_ATLAS' in art and 'GREEN_ATLAS' in art and 'CYAN_ATLAS' in art and 'BLUE_ATLAS' in art and 'PURPLE_ATLAS' in art and 'MAGENTA_ATLAS' in art and 'LIGHT_BLUE_ATLAS' in art
           assert 'getBuffer(RenderType.entityCutoutNoCull(atlas))' in art
           assert '0.16F + layer * 0.035F' in art
           assert 'ResourceLocation atlas = CardboardDecalRenderer.atlasFor' in gui
-          assert '"light_gray_"' in gui and '"gray_"' in gui and '"black_"' in gui and '"red_"' in gui and '"orange_"' in gui and '"yellow_"' in gui and '"lime_"' in gui and '"pink_"' in gui and '"brown_"' in gui and '"green_"' in gui and '"cyan_"' in gui and '"blue_"' in gui and '"purple_"' in gui and '"magenta_"' in gui
+          assert '"light_gray_"' in gui and '"gray_"' in gui and '"black_"' in gui and '"red_"' in gui and '"orange_"' in gui and '"yellow_"' in gui and '"lime_"' in gui and '"pink_"' in gui and '"brown_"' in gui and '"green_"' in gui and '"cyan_"' in gui and '"blue_"' in gui and '"purple_"' in gui and '"magenta_"' in gui and '"light_blue_"' in gui
           assert '"tooltip.cardboardstealth."' in gui
           assert 'DecalStackRules.LIGHT_GRAY' in recipes
           assert 'DecalStackRules.GRAY' in recipes
@@ -187,6 +187,7 @@ jobs:
           assert 'DecalStackRules.BLUE' in recipes
           assert 'DecalStackRules.PURPLE' in recipes
           assert 'DecalStackRules.MAGENTA' in recipes
+          assert 'DecalStackRules.LIGHT_BLUE' in recipes
           assert 'supportedColor(color(value))' in stack
           craft=(r/'DecalCraftingRecipe.java').read_text()
           assert 'case DecalStackRules.LIGHT_GRAY ->' in craft
@@ -203,10 +204,11 @@ jobs:
           assert 'case DecalStackRules.BLUE ->' in craft
           assert 'case DecalStackRules.PURPLE ->' in craft
           assert 'case DecalStackRules.MAGENTA ->' in craft
+          assert 'case DecalStackRules.LIGHT_BLUE ->' in craft
           mini=(r/'client/CardboardLayer.java').read_text()
           assert 'CardboardDecalRenderer.render(' in mini
           assert "CardboardDecalRenderer.render(" not in (r/'client/BoxViewOverlay.java').read_text()
-          print('PASS: 37/37 fifteen-family sticker, ordered layering, GUI and recipe checks')
+          print('PASS: 39/39 sixteen-family sticker, ordered layering, GUI and recipe checks')
           PY
       - name: Validate assets and Curios data JSON
         run: |
@@ -239,7 +241,7 @@ jobs:
               assert len(unique)==16, 'Some dyed sprites are identical'
               print('PASS: 16/16 distinct 64px dyed box item icons packed into JAR')
           PY
-      - name: Validate all 90 original white/light-gray/gray/black/red/orange/yellow/lime/pink/brown/green/cyan/blue/purple/magenta carpet art sprites in JAR
+      - name: Validate all 96 original white/light-gray/gray/black/red/orange/yellow/lime/pink/brown/green/cyan/blue/purple/magenta/light-blue carpet art sprites in JAR
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/DecalArtworkTest.java
           java -cp build/rule-tests DecalArtworkTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
@@ -291,11 +293,15 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/MagentaDecalArtTest.java
           java -cp build/rule-tests MagentaDecalArtTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
+      - name: Verify all six original light-blue lost-airfield sprites in packaged JAR
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests tests/LightBlueDecalArtTest.java
+          java -cp build/rule-tests LightBlueDecalArtTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - name: Decode final JAR pixels to verify real dyed icons and recycling mark
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/CardboardAssetIntegrityTest.java
           java -cp build/rule-tests CardboardAssetIntegrityTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.37-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.38-alpha
           path: build/libs/*.jar
