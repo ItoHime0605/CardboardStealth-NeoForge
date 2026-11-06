@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=7;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=8;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=8;col<16;col++){
+        for(int col=9;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -214,6 +214,35 @@ public final class DecalStackRulesTest {
             check(chosen>=0 && chosen<6,
                 "every paper-box variant and attachment anchor selects botanical art");
         }
-        System.out.println("PASS: "+count+"/"+count+" eight-carpet decal stack, peeling and ID tests");
+
+        // Ninth color expands family support without touching saved 0..7 tags.
+        int pink=DecalStackRules.pack(DecalStackRules.PINK,5,4);
+        check(DecalStackRules.supportedColor(DecalStackRules.PINK),
+                "pink only enabled after six graphics are implemented");
+        check(DecalStackRules.artCount(DecalStackRules.PINK)==6,
+                "six different pink street-culture artworks");
+        check(DecalStackRules.isValid(pink)&&DecalStackRules.color(pink)==8,
+                "pink has independent ninth encoded color index");
+        check(!DecalStackRules.isValid(DecalStackRules.pack(DecalStackRules.PINK,6,4)),
+                "unpainted pink sprite index rejected, not silently invisible");
+        int savedLime=DecalStackRules.pack(DecalStackRules.LIME,4,4);
+        int[] pinkOnTop=DecalStackRules.append(
+                DecalStackRules.append(DecalStackRules.append(new int[0],
+                white),savedLime),pink);
+        check(Arrays.equals(pinkOnTop,new int[]{white,savedLime,pink}),
+                "old white and lime art retained beneath the pink sticker");
+        check(Arrays.equals(DecalStackRules.peel(pinkOnTop),
+                new int[]{white,savedLime}),
+                "slime peels only new pink layer, not earlier decals");
+        check(Arrays.equals(DecalStackRules.sanitized(pinkOnTop),pinkOnTop),
+                "saved mixed pink color set passes data sanitization");
+        check(DecalStackRules.append(pinkOnTop,pink).length==3,
+                "fourth pink sticker cannot bypass original three-layer cap");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int art=DecalStackRules.nextArt(DecalStackRules.PINK,variant,2,slot);
+            check(art>=0 && art<6,
+                  "all paperbox variants and anchors select a real pink illustration");
+        }
+        System.out.println("PASS: "+count+"/"+count+" nine-carpet decal stack, peeling and ID tests");
     }
 }

@@ -12,7 +12,7 @@ public final class DecalArtworkTest {
         try(ZipFile z=new ZipFile(Path.of(args[0]).toFile())){
             String root="assets/cardboardstealth/textures/decals/";
             Set<Long> allArt = new HashSet<>();
-            for (String family : new String[]{"white","light_gray","gray","black","red","orange","yellow","lime"}) {
+            for (String family : new String[]{"white","light_gray","gray","black","red","orange","yellow","lime","pink"}) {
             var atlasEntry=z.getEntry(root+family+"_atlas.png");
             ok(atlasEntry!=null,family+" decal atlas included");
             BufferedImage atlas;
@@ -43,9 +43,9 @@ public final class DecalArtworkTest {
             }
             ok(signature.size()==6,"all six "+family+" carpet prints are different");
             }
-            ok(allArt.size()==48,"all 48 designs from eight carpet families are unique");
-            ok(z.getEntry(root+"pink_atlas.png")==null,"unfinished pink carpet art stays absent");
-            System.out.println("PASS: "+tests+"/"+tests+" WHITE + LIGHT GRAY + GRAY + BLACK + RED + ORANGE + YELLOW + LIME individual/atlas pixel checks");
+            ok(allArt.size()==54,"all 54 designs from nine carpet families are unique");
+            ok(z.getEntry(root+"brown_atlas.png")==null,"unfinished brown carpet art stays absent");
+            System.out.println("PASS: "+tests+"/"+tests+" WHITE + LIGHT GRAY + GRAY + BLACK + RED + ORANGE + YELLOW + LIME + PINK individual/atlas pixel checks");
         }
     }
 }
