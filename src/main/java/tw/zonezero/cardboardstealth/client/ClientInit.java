@@ -94,6 +94,7 @@ public final class ClientInit {
                 case DecalStackRules.ORANGE -> "orange_";
                 case DecalStackRules.YELLOW -> "yellow_";
                 case DecalStackRules.LIME -> "lime_";
+                case DecalStackRules.PINK -> "pink_";
                 default -> null;
             };
             if (group != null) event.getToolTip().add(Component.translatable(
