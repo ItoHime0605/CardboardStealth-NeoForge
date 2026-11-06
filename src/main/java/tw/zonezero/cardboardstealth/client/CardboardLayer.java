@@ -244,6 +244,10 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
         renderFaceBehindSlit(player, pose, buffers, light);
         tape.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TAPE)),
                 light, OverlayTexture.NO_OVERLAY);
+        // All painted/carpet-applied layers follow the same moving/resting
+        // cardboard transform, and are rendered on its actual outer faces.
+        CardboardDecalRenderer.render(pose, buffers, light,
+                ClientBoxState.decals(player.getId()));
         renderBackRecyclingStamp(pose, buffers, light);
         pose.popPose();
     }
