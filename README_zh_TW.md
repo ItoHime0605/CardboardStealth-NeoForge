@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.29-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.30-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.29-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.30-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -428,3 +428,20 @@ gradle --no-daemon build
 只在玩家穿戴的大型 3D 紙箱和物品欄 2D 縮圖渲染貼花，不在手持或掉落的小型 3D 模型上渲染；多人同步仍使用既有封包欄位。
 
 擴增七色 42 幅原創貼花完整像素比對、黃色六種圖案色彩／透明／唯一性測試、六組舊色新色混搭與三層上限測試。**自動建置、Minecraft 實機驗收結果須分開記錄。**
+
+## 0.1.30-alpha｜第八種羊毛地毯：淺綠色（異變植物與孢子標本）
+
+只新增淺綠色地毯六幅原創異變植物圖繪，與前七種地毯完全不同，前七種貼花資料色組 0～6 保持穩定；淺綠色使用色組 7。每張圖 128×80 像素、透明破損邊緣、獨立深淺套印、250+ 個細節像素，六張拼接為 256×240 圖集。
+
+1. **異變藤蔓蔓延標本**（GREEN RETURN / VINE NO.12）：攀爬鋼架的雙股粗藤、尖葉與異色果實
+2. **夜光孢子菌菇圖鑑**（SPORE LIGHT / GLOWCAP 08）：三叢大小不同的夜光菇、孢子光點
+3. **淹沒街道的螢光藻**（ALGAE TIDE / FLOOD ZONE）：水面波紋、發光藻粒與淹沒道路
+4. **晶刺之花植物觀察**（THORN BLOOM / NIGHT ROOT）：紫色晶刺花冠、帶刺花莖與銳角葉片
+5. **被藤蔓吞噬的溫室**（GLASS HOUSE / SITE 04）：廢棄溫室骨架、斷裂玻璃、攀爬的異變藤蔓
+6. **封存失敗的生長標本**（GROWTH SAMPLE / CONTAINED?）：玻璃採樣罐、發光植物與裂損標記
+
+素材在 `gradle/cardboard_lime_decals.gradle` 中由 Java2D 離線生成，不需外部下載、照片或字型檔。每張透明貼花可以透出 16 色染色紙箱底色，渲染與貼法仍遵守九個錨點與最多三層順序。
+
+紙箱＋淺綠色羊毛地毯增加一層；同紙箱最多 3 層，與前七色任意混合；史萊姆球只移除最後一層。再次染色保留其他 `custom_data` 與原有貼花。只有玩家穿戴的大型 3D 紙箱和物品欄 2D 顯示貼花；手持／掉落小型 3D 不顯示。觀察縫、回收圖章保持可見，既有 Curios、Zombie Awareness、TaCZ、速度與音效規則不改變。
+
+新增八種地毯 48 幅圖像／圖集像素對比、淺綠色獨立原圖色彩及差異性檢驗、八色三層混搭與舊色編碼不變測試。**須以 GitHub Actions 真正編譯後的結論確認 JAR 是否完成；Minecraft 客戶端與專用伺服器實機驗收仍獨立進行。**
