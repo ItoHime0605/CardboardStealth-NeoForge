@@ -18,6 +18,7 @@ import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
@@ -41,6 +42,7 @@ public final class ClientInit {
         bus.addListener(BoxViewOverlay::register);
         NeoForge.EVENT_BUS.addListener(ClientInit::nameplate);
         NeoForge.EVENT_BUS.addListener(ClientInit::logout);
+        NeoForge.EVENT_BUS.addListener(ClientInit::entityLeftClientLevel);
         NeoForge.EVENT_BUS.addListener(ClientInit::jump);
         NeoForge.EVENT_BUS.addListener(ClientInit::clientSounds);
         NeoForge.EVENT_BUS.addListener(ClientInit::emptySwing);
@@ -169,6 +171,12 @@ public final class ClientInit {
         if (event.getEntity() instanceof LocalPlayer player &&
                 ClientBoxState.variant(player.getId()) != 0) {
             PacketDistributor.sendToServer(new ModNetwork.MeleePayload());
+        }
+    }
+    /** Prevent entity-ID reuse from making a newly spawned player invisible. */
+    public static void entityLeftClientLevel(EntityLeaveLevelEvent event) {
+        if (event.getLevel().isClientSide() && event.getEntity() instanceof Player) {
+            ClientBoxState.forget(event.getEntity().getId());
         }
     }
     public static void logout(ClientPlayerNetworkEvent.LoggingOut event) {
