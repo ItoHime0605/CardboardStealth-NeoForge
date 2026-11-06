@@ -7,16 +7,26 @@ public final class BoxRenderRulesTest {
         if (!pass) throw new AssertionError(label);
     }
     public static void main(String[] args) {
-        check(BoxRenderRules.renderAttachedLayer(false, false), "normal hand item visible");
-        check(BoxRenderRules.renderAttachedLayer(false, true), "normal cardboard layer is allowed");
-        check(!BoxRenderRules.renderAttachedLayer(true, false), "boxed hand item hidden");
-        check(BoxRenderRules.renderAttachedLayer(true, true), "boxed cardboard visible");
-        check(!BoxRenderRules.renderAttachedLayer(true, false), "boxed armor hidden");
-        check(!BoxRenderRules.renderAttachedLayer(true, false), "boxed wings hidden");
-        check(!BoxRenderRules.renderAttachedLayer(true, false), "boxed cape hidden");
-        check(!BoxRenderRules.renderAttachedLayer(true, false), "boxed Curios accessory hidden");
-        check(BoxRenderRules.showPlayerNameplate(false), "normally visible nameplate");
-        check(!BoxRenderRules.showPlayerNameplate(true), "boxed player nameplate hidden");
-        System.out.println("PASS: " + checks + "/10 cardboard render and nameplate rules");
+        check(BoxRenderRules.renderAttachedLayer(false, false),
+                "normal player skin and hand rendering is untouched");
+        check(BoxRenderRules.renderAttachedLayer(false, true),
+                "independent cardboard renderer can render");
+        check(BoxRenderRules.renderAttachedLayer(true, false),
+                "disguised player's vanilla skin layers are NOT forcibly removed");
+        check(BoxRenderRules.renderAttachedLayer(true, true),
+                "cardboard overlay still renders for disguised player");
+        check(BoxRenderRules.renderAttachedLayer(true, false),
+                "other players' armor renderer state never changed");
+        check(BoxRenderRules.renderAttachedLayer(true, false),
+                "custom wings and capes still belong to the host mods");
+        check(BoxRenderRules.renderAttachedLayer(true, false),
+                "Curios render layer remains under Curios control");
+        check(BoxRenderRules.renderAttachedLayer(true, false),
+                "TaCZ weapon and holster rendering remains under TaCZ control");
+        check(BoxRenderRules.showPlayerNameplate(false),
+                "normal nameplate remains visible");
+        check(!BoxRenderRules.showPlayerNameplate(true),
+                "disguised nameplate is hidden without touching shared models");
+        System.out.println("PASS: "+checks+"/10 safe player rendering policy checks");
     }
 }

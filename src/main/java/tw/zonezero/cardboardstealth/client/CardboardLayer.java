@@ -216,51 +216,61 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
                        float netHeadYaw, float headPitch) {
         int variant = ClientBoxState.variant(player.getId());
         if (variant == 0) return;
+
+        // Only the layer's OWN model parts are adjusted, never the shared
+        // PlayerModel or renderer list. Both model angles and PoseStack must
+        // be restored even if another rendering component throws an exception.
+        ModelPart front = foldedEdges.getChild("front_flap");
+        ModelPart rear = foldedEdges.getChild("rear_flap");
+        ModelPart left = foldedEdges.getChild("left_flap");
+        ModelPart right = foldedEdges.getChild("right_flap");
+        float oldFrontX = front.xRot, oldRearX = rear.xRot;
+        float oldLeftZ = left.zRot, oldRightZ = right.zRot;
+
         boolean resting = ClientBoxState.rested(player.getId());
         float lift = BoxModelPose.liftPixels(resting);
         float flap = BoxModelPose.flapAngle(resting);
-        foldedEdges.getChild("front_flap").xRot = -flap;
-        foldedEdges.getChild("rear_flap").xRot = flap;
-        foldedEdges.getChild("left_flap").zRot = flap;
-        foldedEdges.getChild("right_flap").zRot = -flap;
         int dye = BoxColors.rgb(variant);
-        var paperBuffer = buffers.getBuffer(RenderType.entityCutoutNoCull(PAPER));
-
         pose.pushPose();
-        // PlayerRenderer has already rotated to body yaw. Correct only the
-        // difference, so the box front follows the player's actual look yaw.
-        float bodyYaw = Mth.rotLerp(partialTick, player.yBodyRotO, player.yBodyRot);
-        float headYaw = Mth.rotLerp(partialTick, player.yHeadRotO, player.yHeadRot);
-        pose.mulPose(Axis.YP.rotationDegrees(BoxModelPose.lookRelativeYaw(bodyYaw, headYaw)));
-        // Local model Y is inverted by the vanilla LivingEntityRenderer setup:
-        // +8px lower at rest brings the body hinge to the ground (Y24).
-        pose.translate(0D, -lift / 16D, 0D);
+        try {
+            front.xRot = -flap;
+            rear.xRot = flap;
+            left.zRot = flap;
+            right.zRot = -flap;
 
-        body.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
-                BoxModelGeometry.multiplyTint(dye, 1.0F));
-        sideShade.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
-                BoxModelGeometry.multiplyTint(dye, 0.88F));
-        foldedEdges.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
-                BoxModelGeometry.multiplyTint(dye, 0.95F));
-        // The liner is independent of dye color: it represents the darkness
-        // inside a box, not another dyed outer panel. Fully opaque; no alpha.
-        undersideShade.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
-                BoxModelGeometry.UNDERMOUTH_DARK_ARGB);
-        shadowInk.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
-                BoxModelGeometry.multiplyTint(dye, 0.58F));
-        eyeCavity.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
-                BoxModelGeometry.multiplyTint(dye, 0.42F));
-        // No artificial or sampled face in the narrow peep slot.
-        slitBlackout.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
-                BoxModelGeometry.UNDERMOUTH_DARK_ARGB);
-        tape.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TAPE)),
-                light, OverlayTexture.NO_OVERLAY);
-        // All painted/carpet-applied layers follow the same moving/resting
-        // cardboard transform, and are rendered on its actual outer faces.
-        CardboardDecalRenderer.render(pose, buffers, light,
-                ClientBoxState.decals(player.getId()));
-        renderBackRecyclingStamp(pose, buffers, light);
-        pose.popPose();
+            var paperBuffer = buffers.getBuffer(RenderType.entityCutoutNoCull(PAPER));
+            // Vanilla player renderer has already rotated to body yaw.
+            float bodyYaw = Mth.rotLerp(partialTick, player.yBodyRotO, player.yBodyRot);
+            float headYaw = Mth.rotLerp(partialTick, player.yHeadRotO, player.yHeadRot);
+            pose.mulPose(Axis.YP.rotationDegrees(BoxModelPose.lookRelativeYaw(bodyYaw, headYaw)));
+            pose.translate(0D, -lift / 16D, 0D);
+
+            body.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
+                    BoxModelGeometry.multiplyTint(dye, 1.0F));
+            sideShade.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
+                    BoxModelGeometry.multiplyTint(dye, 0.88F));
+            foldedEdges.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
+                    BoxModelGeometry.multiplyTint(dye, 0.95F));
+            undersideShade.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
+                    BoxModelGeometry.UNDERMOUTH_DARK_ARGB);
+            shadowInk.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
+                    BoxModelGeometry.multiplyTint(dye, 0.58F));
+            eyeCavity.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
+                    BoxModelGeometry.multiplyTint(dye, 0.42F));
+            slitBlackout.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
+                    BoxModelGeometry.UNDERMOUTH_DARK_ARGB);
+            tape.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TAPE)),
+                    light, OverlayTexture.NO_OVERLAY);
+            CardboardDecalRenderer.render(pose, buffers, light,
+                    ClientBoxState.decals(player.getId()));
+            renderBackRecyclingStamp(pose, buffers, light);
+        } finally {
+            front.xRot = oldFrontX;
+            rear.xRot = oldRearX;
+            left.zRot = oldLeftZ;
+            right.zRot = oldRightZ;
+            pose.popPose();
+        }
     }
 
     /**
