@@ -215,11 +215,11 @@ jobs:
       - name: Validate all 18 original white/light gray/gray carpet images in final JAR
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/DecalArtworkTest.java
-          java -cp build/rule-tests DecalArtworkTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.25-alpha.jar
+          java -cp build/rule-tests DecalArtworkTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - name: Decode final JAR pixels to verify real dyed icons and recycling mark
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/CardboardAssetIntegrityTest.java
-          java -cp build/rule-tests CardboardAssetIntegrityTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.24-alpha.jar
+          java -cp build/rule-tests CardboardAssetIntegrityTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - uses: actions/upload-artifact@v4
         with:
           name: cardboardstealth-neoforge-1.21.1-0.1.25-alpha
