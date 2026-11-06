@@ -313,17 +313,17 @@ public final class DecalStackRulesTest {
         check(!DecalStackRules.isValid(DecalStackRules.pack(DecalStackRules.CYAN,6,4)),
                 "missing cyan art cannot become an invisible saved layer");
         int originalGreen=DecalStackRules.pack(DecalStackRules.GREEN,5,4);
-        int[] mixed=DecalStackRules.append(
+        int[] cyanMixed=DecalStackRules.append(
                 DecalStackRules.append(
                 DecalStackRules.append(new int[0],white),originalGreen),cyan);
-        check(Arrays.equals(mixed,new int[]{white,originalGreen,cyan}),
+        check(Arrays.equals(cyanMixed,new int[]{white,originalGreen,cyan}),
                 "cyan lies above saved white and green in paint order");
-        check(Arrays.equals(DecalStackRules.peel(mixed),
+        check(Arrays.equals(DecalStackRules.peel(cyanMixed),
                 new int[]{white,originalGreen}),
                 "peeling cyan preserves the older green and white data");
-        check(Arrays.equals(DecalStackRules.sanitized(mixed),mixed),
+        check(Arrays.equals(DecalStackRules.sanitized(cyanMixed),cyanMixed),
                 "three mixed save entries survive decoding");
-        check(DecalStackRules.append(mixed,cyan).length==3,
+        check(DecalStackRules.append(cyanMixed,cyan).length==3,
                 "cyan cannot bypass the existing three-layer cap");
         for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
             int chosen=DecalStackRules.nextArt(DecalStackRules.CYAN,variant,2,slot);
