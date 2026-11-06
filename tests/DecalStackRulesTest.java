@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=9;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=10;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=10;col<16;col++){
+        for(int col=11;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -273,6 +273,34 @@ public final class DecalStackRulesTest {
             check(art>=0 && art<6,
                     "every box variant and each anchor selects a brown artwork");
         }
-        System.out.println("PASS: "+count+"/"+count+" ten-carpet decal stack, peeling and ID tests");
+
+        // The eleventh decal family gets a fresh color index, no old IDs move.
+        int green=DecalStackRules.pack(DecalStackRules.GREEN,5,4);
+        check(DecalStackRules.supportedColor(DecalStackRules.GREEN),
+                "finished green family is supported");
+        check(DecalStackRules.artCount(DecalStackRules.GREEN)==6,
+                "exactly six finished green outpost drawings");
+        check(DecalStackRules.isValid(green) && DecalStackRules.color(green)==10,
+                "green uses reserved color 10, previously saved 0..9 unchanged");
+        check(!DecalStackRules.isValid(DecalStackRules.pack(DecalStackRules.GREEN,6,4)),
+                "unknown green decal art rejected without invisible layer");
+        int savedBrown=DecalStackRules.pack(DecalStackRules.BROWN,5,4);
+        int[] three=DecalStackRules.append(
+            DecalStackRules.append(
+            DecalStackRules.append(new int[0],white),savedBrown),green);
+        check(Arrays.equals(three,new int[]{white,savedBrown,green}),
+                "new green decal lies above old white and brown layers");
+        check(Arrays.equals(DecalStackRules.peel(three),new int[]{white,savedBrown}),
+                "peeling green leaves old brown/white data untouched");
+        check(Arrays.equals(DecalStackRules.sanitized(three),three),
+                "old and new decal order survives sanitation");
+        check(DecalStackRules.append(three,green).length==3,
+                "fourth green layer still rejected");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int chosen=DecalStackRules.nextArt(DecalStackRules.GREEN,variant,2,slot);
+            check(chosen>=0&&chosen<6,
+                  "all cardboard variants and nine anchors select completed green print");
+        }
+        System.out.println("PASS: "+count+"/"+count+" eleven-carpet decal stack, peeling and ID tests");
     }
 }
