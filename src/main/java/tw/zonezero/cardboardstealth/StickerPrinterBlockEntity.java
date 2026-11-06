@@ -63,7 +63,7 @@ public final class StickerPrinterBlockEntity extends BlockEntity
     }
     /** Must only be called in the server menu click callback. */
     public boolean print(){
-        if(level==null||level.isClientSide||!canPrint())return false;
+        if(level==null||level.isClientSide||level.getBlockEntity(worldPosition)!=this||!canPrint())return false;
         int color=dyeColor(getItem(DYE));
         int cost=StickerPrinterRules.requiredDye(pattern);
         String id=StickerPrinterRules.outputId(ModItems.STICKER_COLORS,color,pattern);
@@ -125,7 +125,12 @@ public final class StickerPrinterBlockEntity extends BlockEntity
         };
     }
     @Override public boolean stillValid(Player player){
-        return Container.stillValidBlockEntity(this,player);
+        // Reject late, forged or stale GUI packets after the physical machine
+        // has been broken/replaced. Being near the old coordinates is not enough.
+        return level!=null && level.getBlockEntity(worldPosition)==this
+                && level.getBlockState(worldPosition).is(ModMachines.PRINTER.get())
+                && player.distanceToSqr(worldPosition.getX()+0.5,
+                        worldPosition.getY()+0.5,worldPosition.getZ()+0.5)<=64.0;
     }
     @Override public void clearContent(){
         for(int i=0;i<SLOTS;i++)inventory.set(i,ItemStack.EMPTY);
