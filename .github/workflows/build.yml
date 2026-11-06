@@ -65,6 +65,10 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxMotionRules.java tests/BoxMotionRulesTest.java
           java -cp build/rule-tests BoxMotionRulesTest
+      - name: Test 3-layer decal stack, newest-first peeling and color preservation
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/DecalStackRules.java tests/DecalStackRulesTest.java
+          java -cp build/rule-tests DecalStackRulesTest
       - name: Check 16 dye colors and model movement
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxColors.java src/main/java/tw/zonezero/cardboardstealth/BoxModelPose.java tests/BoxColorsAndPoseTest.java
@@ -125,7 +129,7 @@ jobs:
               assert data['key']['D']==f'minecraft:{color}_dye'
               assert data['result']['id']==f'cardboardstealth:{name}'
               re=json.loads((ns/'data/cardboardstealth/recipe'/f'recolor_{name}.json').read_text())
-              assert '#curios:cardboard' in re['ingredients']
+              assert re['type']==f'cardboardstealth:recolor_{color}'
               model=json.loads((ns/'assets/cardboardstealth/models/item'/f'{name}.json').read_text())
               assert model['loader']=='neoforge:separate_transforms'
               assert model['gui_light']=='front'
@@ -146,7 +150,10 @@ jobs:
           assert len(miniature['elements'])>=15
           assert any(e.get('name')=='recycle_symbol' for e in miniature['elements'])
           assert any(e.get('name')=='eye_shadow' for e in miniature['elements'])
-          print('PASS: 19 2D/3D split item models, 16 dye recipes, 16 recolor recipes, mini box geometry')
+          for recipe in ('decal_white_carpet','decal_peel_slime'):
+              data=json.loads((ns/'data/cardboardstealth/recipe'/f'{recipe}.json').read_text())
+              assert data['type']==f'cardboardstealth:{recipe}'
+          print('PASS: 19 2D/3D split item models, 16 dyes, 16 recolor serializers and two decal crafting recipes')
           PY
       - name: Validate assets and Curios data JSON
         run: |
@@ -179,11 +186,15 @@ jobs:
               assert len(unique)==16, 'Some dyed sprites are identical'
               print('PASS: 16/16 distinct 64px dyed box item icons packed into JAR')
           PY
+      - name: Validate first carpet's six real deco PNGs in final JAR
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests tests/DecalArtworkTest.java
+          java -cp build/rule-tests DecalArtworkTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.23-alpha.jar
       - name: Decode final JAR pixels to verify real dyed icons and recycling mark
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/CardboardAssetIntegrityTest.java
-          java -cp build/rule-tests CardboardAssetIntegrityTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.22-alpha.jar
+          java -cp build/rule-tests CardboardAssetIntegrityTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.23-alpha.jar
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.22-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.23-alpha
           path: build/libs/*.jar
