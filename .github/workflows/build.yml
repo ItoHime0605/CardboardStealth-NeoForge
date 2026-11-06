@@ -150,10 +150,31 @@ jobs:
           assert len(miniature['elements'])>=15
           assert any(e.get('name')=='recycle_symbol' for e in miniature['elements'])
           assert any(e.get('name')=='eye_shadow' for e in miniature['elements'])
-          for recipe in ('decal_white_carpet','decal_peel_slime'):
+          for recipe in ('decal_white_carpet','decal_light_gray_carpet','decal_peel_slime'):
               data=json.loads((ns/'data/cardboardstealth/recipe'/f'{recipe}.json').read_text())
               assert data['type']==f'cardboardstealth:{recipe}'
-          print('PASS: 19 2D/3D split item models, 16 dyes, 16 recolor serializers and two decal crafting recipes')
+          print('PASS: 19 2D/3D split item models, 16 dyes, 16 recolor serializers and three decal crafting recipes')
+          PY
+      - name: Verify mixed white/light gray decal rendering paths
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          r=Path('src/main/java/tw/zonezero/cardboardstealth')
+          art=(r/'client/CardboardDecalRenderer.java').read_text()
+          gui=(r/'client/ClientInit.java').read_text()
+          stack=(r/'DecalStackRules.java').read_text()
+          recipes=(r/'ModRecipes.java').read_text()
+          assert 'LIGHT_GRAY_ATLAS' in art
+          assert 'getBuffer(RenderType.entityCutoutNoCull(atlas))' in art
+          assert '0.16F + layer * 0.035F' in art
+          assert 'ResourceLocation atlas = CardboardDecalRenderer.atlasFor' in gui
+          assert 'tooltip.cardboardstealth.light_gray_' in gui
+          assert 'DecalStackRules.LIGHT_GRAY' in recipes
+          assert 'supportedColor(color(value))' in stack
+          assert 'case DecalStackRules.LIGHT_GRAY ->' in (r/'DecalCraftingRecipe.java').read_text()
+          mini=(r/'client/CardboardLayer.java').read_text()
+          assert 'CardboardDecalRenderer.render(' in mini
+          print('PASS: 9/9 light-gray family, ordered layer render and GUI checks')
           PY
       - name: Validate assets and Curios data JSON
         run: |
@@ -186,15 +207,15 @@ jobs:
               assert len(unique)==16, 'Some dyed sprites are identical'
               print('PASS: 16/16 distinct 64px dyed box item icons packed into JAR')
           PY
-      - name: Validate first carpet's six real deco PNGs in final JAR
+      - name: Validate WHITE and LIGHT GRAY carpet's twelve pixel-art textures in final JAR
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/DecalArtworkTest.java
-          java -cp build/rule-tests DecalArtworkTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.23-alpha.jar
+          java -cp build/rule-tests DecalArtworkTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.24-alpha.jar
       - name: Decode final JAR pixels to verify real dyed icons and recycling mark
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/CardboardAssetIntegrityTest.java
           java -cp build/rule-tests CardboardAssetIntegrityTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.23-alpha.jar
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.23-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.24-alpha
           path: build/libs/*.jar

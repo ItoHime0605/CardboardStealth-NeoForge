@@ -11,14 +11,15 @@ public final class DecalArtworkTest {
     public static void main(String[] args) throws Exception {
         try(ZipFile z=new ZipFile(Path.of(args[0]).toFile())){
             String root="assets/cardboardstealth/textures/decals/";
-            var atlasEntry=z.getEntry(root+"white_atlas.png");
-            ok(atlasEntry!=null,"white decal atlas included");
+            for (String family : new String[]{"white","light_gray"}) {
+            var atlasEntry=z.getEntry(root+family+"_atlas.png");
+            ok(atlasEntry!=null,family+" decal atlas included");
             BufferedImage atlas;
             try(var in=z.getInputStream(atlasEntry)){atlas=ImageIO.read(in);}
             ok(atlas.getWidth()==256 && atlas.getHeight()==240,"two by three decal atlas");
             Set<Long> signature=new HashSet<>();
             for(int i=0;i<6;i++){
-                String path=root+"white_"+i+".png";
+                String path=root+family+"_"+i+".png";
                 var entry=z.getEntry(path);
                 ok(entry!=null,"art "+i+" exists");
                 BufferedImage img;
@@ -38,8 +39,10 @@ public final class DecalArtworkTest {
                 ok(transparent>120,"true transparent torn edge");
                 signature.add(sum);
             }
-            ok(signature.size()==6,"all six white carpet prints are different");
-            System.out.println("PASS: "+tests+"/"+tests+" generated individual/atlas art pixel checks");
+            ok(signature.size()==6,"all six "+family+" carpet prints are different");
+            }
+            ok(z.getEntry(root+"gray_atlas.png")==null,"unimplemented gray carpet stays absent");
+            System.out.println("PASS: "+tests+"/"+tests+" WHITE + LIGHT GRAY individual/atlas art pixel checks");
         }
     }
 }
