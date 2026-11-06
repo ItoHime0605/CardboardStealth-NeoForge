@@ -1,0 +1,211 @@
+import java.awt.image.BufferedImage
+import java.awt.Color
+import java.awt.Font
+import java.awt.BasicStroke
+import java.awt.Polygon
+import java.awt.AlphaComposite
+import java.awt.RenderingHints
+import javax.imageio.ImageIO
+
+/**
+ * Wool carpet #4: BLACK / WASTELAND HIP-HOP / high-contrast paste-ups.
+ *
+ * Six original transparent 128x80 pixel designs. Bold silhouettes, offset
+ * hand-painted lettering, scratched skull icon, fractured arrows, neon pink
+ * spray accents and rough stencil ink. Deliberately NOT monochrome recolors
+ * of the previous white/gray warehouse paperwork families.
+ *
+ * Built offline with Java2D from this editable source. No fonts shipped.
+ */
+def blackDecalOutput=layout.buildDirectory.dir('generated/cardboard-black-decals')
+tasks.register('generateBlackCardboardDecals') {
+    inputs.property('black-decals-art-direction','2026-11-06-wasteland-hiphop-original-six-v1')
+    outputs.dir(blackDecalOutput)
+    doLast {
+        File dir=new File(blackDecalOutput.get().asFile,
+                'assets/cardboardstealth/textures/decals')
+        dir.mkdirs()
+        final int W=128,H=80
+        final Color BLACK=new Color(25,25,30)
+        final Color COAL=new Color(42,39,45)
+        final Color BONE=new Color(235,221,190)
+        final Color SILVER=new Color(174,178,171)
+        final Color MAGENTA=new Color(197,72,126)
+        final Color RUST=new Color(159,76,57)
+        final Color YELLOW=new Color(223,180,74)
+        final Color CYAN=new Color(66,169,171)
+        final Color WHITE=new Color(238,226,211)
+        BufferedImage atlas=new BufferedImage(256,240,BufferedImage.TYPE_INT_ARGB)
+
+        for(int id=0;id<6;id++) {
+            java.util.Random rnd=new java.util.Random(1272026L+9283L*id)
+            BufferedImage img=new BufferedImage(W,H,BufferedImage.TYPE_INT_ARGB)
+            java.awt.Graphics2D g=img.createGraphics()
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF)
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF)
+            g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,RenderingHints.VALUE_FRACTIONALMETRICS_OFF)
+
+            // Irregular paint/paste-up footprint: ripped at corners, ragged
+            // along both lateral edges and enough body to survive tiny UV.
+            Polygon silhouette=new Polygon()
+            int[] upper=[8,5,7,4,9,7,3,6,10,8,7,5,8,4]
+            for(int x=5;x<=122;x+=9)
+                silhouette.addPoint(x,upper[(x/9)%upper.length])
+            silhouette.addPoint(123,15);silhouette.addPoint(120,22)
+            silhouette.addPoint(125,35);silhouette.addPoint(121,48)
+            silhouette.addPoint(124,67);silhouette.addPoint(120,72)
+            for(int x=115;x>=5;x-=9)
+                silhouette.addPoint(x,73-rnd.nextInt(6))
+            silhouette.addPoint(4,60);silhouette.addPoint(7,49)
+            silhouette.addPoint(3,36);silhouette.addPoint(5,18)
+
+            g.setColor(id==1 ? new Color(45,42,48) :
+                    id==4 ? new Color(48,41,55) : BLACK)
+            g.fillPolygon(silhouette)
+            g.setClip(silhouette)
+            // Spray mottling, ink bleeds and paper abrasion.
+            for(int k=0;k<950;k++){
+                int x=6+rnd.nextInt(116), y=7+rnd.nextInt(67)
+                int alpha=13+rnd.nextInt(57)
+                g.setColor((k%5==0) ? new Color(255,231,207,alpha) :
+                    (k%5==1) ? new Color(104,79,71,alpha) :
+                    new Color(4,5,11,alpha))
+                g.fillRect(x,y,1+rnd.nextInt(3),1+rnd.nextInt(2))
+            }
+            // Each print has a unique HAND-PAINTED main icon/composition.
+            switch(id){
+                case 0: {
+                    // "NO KINGS": original chunky anti-authority street tag,
+                    // layered lettering, outlined diagonal arrows and drips.
+                    g.setFont(new Font('SansSerif',Font.BOLD,25))
+                    g.setColor(MAGENTA);g.drawString('NO KINGS',9,37)
+                    g.setColor(BONE);g.drawString('NO KINGS',7,35)
+                    g.setColor(YELLOW);g.fillRect(13,45,101,4)
+                    g.setColor(SILVER);g.setFont(new Font('Monospaced',Font.BOLD,11))
+                    g.drawString('NO CROWN. NO CHAIN.',8,64)
+                    g.setColor(MAGENTA)
+                    for(int x : [15,31,52,77,99])g.fillRect(x,49,2,2+rnd.nextInt(10))
+                    g.setColor(BONE);g.drawLine(104,11,119,11)
+                    g.drawLine(119,11,114,6);g.drawLine(119,11,114,16)
+                    break
+                }
+                case 1: {
+                    // Hand-drawn bone skull with fractured eye sockets,
+                    // scratches, angled crossed-out crown and the word RUINS.
+                    g.setColor(BONE)
+                    Polygon head=new Polygon([25,33,40,47,50,52,50,43,43,41,26,21] as int[],
+                        [14,10,14,23,31,42,51,59,66,67,58,45] as int[],12)
+                    g.fillPolygon(head)
+                    g.setColor(BLACK);g.fillRect(29,33,8,9);g.fillRect(41,33,7,9)
+                    g.fillRect(38,44,4,5)
+                    for(int x=31;x<=46;x+=5)g.fillRect(x,57,2,7)
+                    g.setColor(RUST);g.setStroke(new BasicStroke(3F))
+                    g.drawLine(19,8,53,18);g.drawLine(21,18,52,8)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(MAGENTA);g.setFont(new Font('SansSerif',Font.BOLD,23))
+                    g.drawString('RUINS',60,42)
+                    g.setColor(SILVER);g.setFont(new Font('Monospaced',Font.BOLD,10))
+                    g.drawString('STAY DEAD?',57,58)
+                    g.setColor(YELLOW);g.fillRect(58,63,58,3)
+                    break
+                }
+                case 2: {
+                    // District 13 stencil tag with violent angular underpaint.
+                    g.setColor(MAGENTA);g.setStroke(new BasicStroke(5F))
+                    g.drawLine(12,59,45,14);g.drawLine(45,14,57,23)
+                    g.setColor(CYAN);g.drawLine(76,58,111,15)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(BONE);g.setFont(new Font('SansSerif',Font.BOLD,45))
+                    g.drawString('13',22,55)
+                    g.setColor(SILVER);g.setFont(new Font('Monospaced',Font.BOLD,12))
+                    g.drawString('DISTRICT',70,34)
+                    g.setColor(YELLOW);g.fillRect(70,39,43,4)
+                    g.setColor(WHITE);g.setFont(new Font('Monospaced',Font.BOLD,10))
+                    g.drawString('KEEP MOVING',50,69)
+                    break
+                }
+                case 3: {
+                    // Black market map: branching street route, crossed
+                    // checkpoint and worn directional arrowheads.
+                    g.setColor(SILVER);g.setStroke(new BasicStroke(5F))
+                    g.drawLine(14,57,43,57);g.drawLine(43,57,57,38)
+                    g.drawLine(57,38,86,38);g.drawLine(86,38,102,19)
+                    g.setStroke(new BasicStroke(2F))
+                    g.drawLine(102,19,91,23);g.drawLine(102,19,102,31)
+                    g.setColor(MAGENTA);g.setStroke(new BasicStroke(4F))
+                    g.drawLine(49,21,64,34);g.drawLine(64,21,49,34)
+                    g.setColor(CYAN);g.drawLine(78,47,94,64)
+                    g.setColor(BONE);g.setFont(new Font('Monospaced',Font.BOLD,12))
+                    g.drawString('BACK ROUTE',10,18)
+                    g.setFont(new Font('Monospaced',Font.BOLD,10))
+                    g.drawString('NO CHECKPOINT',9,72)
+                    g.setStroke(new BasicStroke(1F))
+                    break
+                }
+                case 4: {
+                    // Spectral face silhouette, distinct from previous
+                    // industrial warning labels. Abstract street ghost emblem.
+                    g.setColor(CYAN)
+                    Polygon ghost=new Polygon([18,22,29,43,50,57,57,53,48,43,37,32,26,18] as int[],
+                       [48,21,15,12,19,26,60,57,64,58,63,57,65,58] as int[],14)
+                    g.fillPolygon(ghost)
+                    g.setColor(BLACK);g.fillRect(30,31,8,10);g.fillRect(43,31,7,10)
+                    g.setColor(MAGENTA);g.fillRect(35,49,13,3)
+                    g.setColor(BONE);g.setFont(new Font('SansSerif',Font.BOLD,21))
+                    g.drawString('GHOST',63,38)
+                    g.setColor(MAGENTA);g.setFont(new Font('Monospaced',Font.BOLD,11))
+                    g.drawString('WAVE // 07',60,55)
+                    g.setColor(CYAN)
+                    for(int x : [30,42,53])g.fillRect(x,64,2,3+rnd.nextInt(6))
+                    break
+                }
+                case 5: {
+                    // Sharp broken-wall arrow, overpainted "MOVE" tag and
+                    // angular spray geometry. No real gang insignia.
+                    g.setColor(BONE);g.setStroke(new BasicStroke(8F))
+                    g.drawLine(13,53,54,53);g.drawLine(54,53,74,30)
+                    g.drawLine(74,30,60,30)
+                    g.drawLine(74,30,73,44)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(MAGENTA);g.setFont(new Font('SansSerif',Font.BOLD,29))
+                    g.drawString('MOVE',20,31)
+                    g.setColor(WHITE);g.drawLine(24,34,100,34)
+                    g.setColor(CYAN);g.fillRect(85,43,30,5)
+                    g.fillRect(96,50,19,5)
+                    g.setColor(SILVER);g.setFont(new Font('Monospaced',Font.BOLD,10))
+                    g.drawString('NO WAY BACK',37,68)
+                    break
+                }
+            }
+            // Pixel-perfect spray specks, varying density around silhouette.
+            for(int j=0;j<155;j++){
+                int x=4+rnd.nextInt(120),y=5+rnd.nextInt(71)
+                g.setColor(j%11==0 ? new Color(225,190,88,115) :
+                    j%4==0 ? new Color(215,94,142,99) :
+                    new Color(216,211,202,28+rnd.nextInt(50)))
+                g.fillRect(x,y,1+(j%23==0?2:0),1)
+            }
+            // Transparent scratches *through* ink, not just faux gray wear;
+            // preserve main artwork by keeping clear-pixel loss below 2%.
+            g.setComposite(AlphaComposite.Clear)
+            for(int j=0;j<85;j++){
+                int x=6+rnd.nextInt(116),y=7+rnd.nextInt(65)
+                g.fillRect(x,y,1+(j%13==0?2:0),1)
+            }
+            g.setComposite(AlphaComposite.SrcOver)
+            g.setClip(null)
+            g.dispose()
+
+            ImageIO.write(img,'png',new File(dir,'black_'+id+'.png'))
+            java.awt.Graphics2D out=atlas.createGraphics()
+            out.drawImage(img,(id%2)*128,(int)(id/2)*80,null)
+            out.dispose()
+        }
+        ImageIO.write(atlas,'png',new File(dir,'black_atlas.png'))
+        println 'Generated 6 original black hip-hop wasteland decal sprites, and 256x240 atlas.'
+    }
+}
+tasks.named('processResources') {
+    dependsOn tasks.named('generateBlackCardboardDecals')
+    from(blackDecalOutput)
+}
