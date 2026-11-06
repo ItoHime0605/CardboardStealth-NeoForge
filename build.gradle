@@ -35,3 +35,4 @@ tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 // Pixel-art resources are generated from checked-in source during the build.
 apply from: 'gradle/cardboard_textures.gradle'
 apply from: 'gradle/cardboard_decals.gradle'
+apply from: 'gradle/cardboard_light_gray_decals.gradle'
