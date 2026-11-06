@@ -26,5 +26,11 @@
   "tooltip.cardboardstealth.white_2": "第 %s 層：貨運編號貼紙",
   "tooltip.cardboardstealth.white_3": "第 %s 層：破損條碼標籤",
   "tooltip.cardboardstealth.white_4": "第 %s 層：資源分類標籤",
-  "tooltip.cardboardstealth.white_5": "第 %s 層：維修整備標籤"
+  "tooltip.cardboardstealth.white_5": "第 %s 層：維修整備標籤",
+  "tooltip.cardboardstealth.light_gray_0": "第 %s 層：廢土倉庫儲位牌",
+  "tooltip.cardboardstealth.light_gray_1": "第 %s 層：手寫批次盤點單",
+  "tooltip.cardboardstealth.light_gray_2": "第 %s 層：破舊封箱檢查條",
+  "tooltip.cardboardstealth.light_gray_3": "第 %s 層：倉庫退貨轉運單",
+  "tooltip.cardboardstealth.light_gray_4": "第 %s 層：堆疊上限噴印",
+  "tooltip.cardboardstealth.light_gray_5": "第 %s 層：野外物資清冊"
 }

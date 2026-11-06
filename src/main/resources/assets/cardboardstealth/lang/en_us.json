@@ -26,5 +26,11 @@
   "tooltip.cardboardstealth.white_2": "Layer %s: Shipping Code",
   "tooltip.cardboardstealth.white_3": "Layer %s: Distressed Barcode",
   "tooltip.cardboardstealth.white_4": "Layer %s: Resource Sorting",
-  "tooltip.cardboardstealth.white_5": "Layer %s: Repair Notice"
+  "tooltip.cardboardstealth.white_5": "Layer %s: Repair Notice",
+  "tooltip.cardboardstealth.light_gray_0": "Layer %s: Wasteland Storage Bay",
+  "tooltip.cardboardstealth.light_gray_1": "Layer %s: Hand-marked Lot Audit",
+  "tooltip.cardboardstealth.light_gray_2": "Layer %s: Worn Tamper-Evident Seal",
+  "tooltip.cardboardstealth.light_gray_3": "Layer %s: Returned Depot Shipment",
+  "tooltip.cardboardstealth.light_gray_4": "Layer %s: Cracked Stack-Limit Stencil",
+  "tooltip.cardboardstealth.light_gray_5": "Layer %s: Recovered Field Manifest"
 }

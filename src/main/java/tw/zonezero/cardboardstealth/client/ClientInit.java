@@ -61,11 +61,12 @@ public final class ClientInit {
             int[] decals = DecalItemData.get(stack);
             for (int i=0;i<decals.length;i++) {
                 int code=decals[i];
-                if (DecalStackRules.color(code) != 0) continue;
+                ResourceLocation atlas = CardboardDecalRenderer.atlasFor(DecalStackRules.color(code));
+                if (atlas == null) continue;
                 int art=DecalStackRules.art(code);
                 // Minecraft GUI rendering crops the specified 128x80 pixel
                 // portion of the 256x240 texture to a readable 10x6 stamp.
-                graphics.blit(CardboardDecalRenderer.WHITE_ATLAS,
+                graphics.blit(atlas,
                         x + 2 + 2*i, y + 7 - i, 10, 6,
                         (art%2)*128F, (art/2)*80F,
                         128, 80, 256, 240);
@@ -84,10 +85,14 @@ public final class ClientInit {
                 layers.length, DecalStackRules.MAX_LAYERS));
         for (int i=0;i<layers.length;i++) {
             int code=layers[i];
-            if (DecalStackRules.color(code)==0)
-                event.getToolTip().add(Component.translatable(
-                        "tooltip.cardboardstealth.white_" + DecalStackRules.art(code),
-                        i + 1));
+            String group = switch (DecalStackRules.color(code)) {
+                case DecalStackRules.WHITE -> "white_";
+                case DecalStackRules.LIGHT_GRAY -> "light_gray_";
+                default -> null;
+            };
+            if (group != null) event.getToolTip().add(Component.translatable(
+                    "tooltip.cardboardstealth." + group + DecalStackRules.art(code),
+                    i + 1));
         }
     }
     public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {

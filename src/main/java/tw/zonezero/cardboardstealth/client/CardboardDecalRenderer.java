@@ -24,24 +24,37 @@ public final class CardboardDecalRenderer {
     public static final ResourceLocation WHITE_ATLAS =
             ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID,
                     "textures/decals/white_atlas.png");
+    public static final ResourceLocation LIGHT_GRAY_ATLAS =
+            ResourceLocation.fromNamespaceAndPath(CardboardStealth.MOD_ID,
+                    "textures/decals/light_gray_atlas.png");
+
+    /** Finished art families only; unfinished carpets must never render blank. */
+    public static ResourceLocation atlasFor(int carpetColor) {
+        return switch (carpetColor) {
+            case DecalStackRules.WHITE -> WHITE_ATLAS;
+            case DecalStackRules.LIGHT_GRAY -> LIGHT_GRAY_ATLAS;
+            default -> null;
+        };
+    }
 
     private static final int[] FACES = {0,0,1,1,2,2,3,3,4};
-    private static final float[] CENTER_A = {-4.4F,4.4F,-4.4F,4.4F,-4.4F,4.4F,-3.6F,3.6F,0F};
+    private static final float[] CENTER_A = {-4.4F,4.4F,-4.4F,4.4F,-4.4F,4.4F,-3.6F,3.6F,-4.5F};
     private static final float[] CENTER_Y = {8.4F,8.4F,3.6F,10F,3.6F,10F,3.1F,3.1F,-5.23F};
     private static final float[] CENTER_Z = {0F,0F,-3.5F,3.5F,-3.5F,3.5F,0F,0F,0F};
 
     public static void render(PoseStack pose, MultiBufferSource buffers, int light, int[] layers) {
         int[] ordered = DecalStackRules.sanitized(layers);
         if (ordered.length == 0) return;
-        VertexConsumer buffer = buffers.getBuffer(RenderType.entityCutoutNoCull(WHITE_ATLAS));
-        for (int index=0; index<ordered.length;index++) {
+        for (int index = 0; index < ordered.length; index++) {
             int packed = ordered[index];
-            // Additional carpet families can be appended to this renderer
-            // when their art atlas is finalized, one color at a time.
-            if (DecalStackRules.color(packed) != 0) continue;
-            int placement = DecalStackRules.anchor(packed);
-            int art = DecalStackRules.art(packed);
-            drawDecal(pose, buffer, light, placement, art, index);
+            ResourceLocation atlas = atlasFor(DecalStackRules.color(packed));
+            if (atlas == null) continue;
+            // Depth offset is determined by the GLOBAL layer index, rather
+            // than the decal family. A later gray label therefore covers an
+            // earlier white one, and vice versa, on a shared anchor.
+            VertexConsumer buffer = buffers.getBuffer(RenderType.entityCutoutNoCull(atlas));
+            drawDecal(pose, buffer, light, DecalStackRules.anchor(packed),
+                    DecalStackRules.art(packed), index);
         }
     }
 
@@ -51,7 +64,8 @@ public final class CardboardDecalRenderer {
         float offset = 0.16F + layer * 0.035F;
         float x=CENTER_A[anchor], y=CENTER_Y[anchor], z=CENTER_Z[anchor];
         int face=FACES[anchor];
-        final float halfWidth = anchor == 8 ? 4.8F : 4.15F;
+        // Roof decal stays beside, NEVER over, the central 1.4px tape strip.
+        final float halfWidth = anchor == 8 ? 3.0F : 4.15F;
         final float halfHeight = anchor == 8 ? 3.5F : 2.65F;
         final float tilt = (art%3-1)*0.065F;
         float sn=(float)Math.sin(tilt),cs=(float)Math.cos(tilt);
@@ -80,7 +94,7 @@ public final class CardboardDecalRenderer {
                     px=x-a;py=y+b;pz=BoxModelGeometry.BACK_Z+offset;nz=1F;
                 }
                 default -> { // ROOF, not touching the taped central ridge
-                    px=a;py=-5F-offset;pz=b;ny=-1F;
+                    px=x+a;py=-5F-offset;pz=b;ny=-1F;
                 }
             }
             out.addVertex(last,px/16F,py/16F,pz/16F)
