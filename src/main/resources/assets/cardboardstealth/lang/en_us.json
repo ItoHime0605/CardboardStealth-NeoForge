@@ -98,5 +98,11 @@
   "tooltip.cardboardstealth.blue_2": "Layer %s: Battered Navigation Buoy",
   "tooltip.cardboardstealth.blue_3": "Layer %s: Abandoned Harbor Cargo Crane",
   "tooltip.cardboardstealth.blue_4": "Layer %s: No-Return Sea Chart",
-  "tooltip.cardboardstealth.blue_5": "Layer %s: Antique Deepwater Diving Helmet"
+  "tooltip.cardboardstealth.blue_5": "Layer %s: Antique Deepwater Diving Helmet",
+  "tooltip.cardboardstealth.purple_0": "Layer %s: Last Underground Train",
+  "tooltip.cardboardstealth.purple_1": "Layer %s: Sealed Platform Turnstiles",
+  "tooltip.cardboardstealth.purple_2": "Layer %s: Damaged Underground Route Map",
+  "tooltip.cardboardstealth.purple_3": "Layer %s: One-Way Fare Ticket",
+  "tooltip.cardboardstealth.purple_4": "Layer %s: Disabled Tunnel Ventilation Fan",
+  "tooltip.cardboardstealth.purple_5": "Layer %s: Unmarked Station Exit"
 }
