@@ -80,5 +80,11 @@
   "tooltip.cardboardstealth.brown_2": "第 %s 層：手製淨水濾器圖解",
   "tooltip.cardboardstealth.brown_3": "第 %s 層：荒野指北針與路線圖",
   "tooltip.cardboardstealth.brown_4": "第 %s 層：縫補防潮行囊圖樣",
-  "tooltip.cardboardstealth.brown_5": "第 %s 層：廢鐵拾荒手推車"
+  "tooltip.cardboardstealth.brown_5": "第 %s 層：廢鐵拾荒手推車",
+  "tooltip.cardboardstealth.green_0": "第 %s 層：荒地瞭望哨塔",
+  "tooltip.cardboardstealth.green_1": "第 %s 層：臨時路障防線",
+  "tooltip.cardboardstealth.green_2": "第 %s 層：野戰防毒面罩",
+  "tooltip.cardboardstealth.green_3": "第 %s 層：緊急求救訊號塔",
+  "tooltip.cardboardstealth.green_4": "第 %s 層：避難所加固入口",
+  "tooltip.cardboardstealth.green_5": "第 %s 層：夜間巡邏探照燈"
 }
