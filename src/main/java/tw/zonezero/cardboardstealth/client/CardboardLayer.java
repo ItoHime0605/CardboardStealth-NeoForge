@@ -179,13 +179,20 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
         tape.addOrReplaceChild("seal_edge_right", CubeListBuilder.create().texOffs(12, 15)
                 .addBox(1.46F, -5.23F, -10.7F, 0.13F, 0.10F, 21.4F), PartPose.ZERO);
 
-        // From outside, the slit has a shadowed inner cavity and a subtle
-        // head-shaped silhouette behind the cut. No actual player face clips out.
+        // The box's real front opening is now COMPLETELY OPEN. The previous
+        // two opaque recess/head-shadow cuboids filled the hole and hid the
+        // player's face. Only four slim rims remain along its edges.
+        // Behind them we draw a narrow strip of the actual player's face skin,
+        // not a generic black head painted over the viewing slot.
         PartDefinition eye = root.addOrReplaceChild("eye_cavity", CubeListBuilder.create(), PartPose.ZERO);
-        eye.addOrReplaceChild("inside_recess", CubeListBuilder.create().texOffs(100, 65)
-                .addBox(-5.0F, -0.85F, -8.40F, 10.0F, 1.65F, 0.20F), PartPose.ZERO);
-        eye.addOrReplaceChild("head_shadow", CubeListBuilder.create().texOffs(100, 70)
-                .addBox(-2.45F, -0.55F, -8.50F, 4.90F, 1.12F, 0.10F), PartPose.ZERO);
+        eye.addOrReplaceChild("inner_lip_above", CubeListBuilder.create().texOffs(100, 65)
+                .addBox(-5.25F, slitTop - 0.22F, -10.45F, 10.5F, 0.20F, 1.6F), PartPose.ZERO);
+        eye.addOrReplaceChild("inner_lip_below", CubeListBuilder.create().texOffs(100, 65)
+                .addBox(-5.25F, slitBottom + 0.02F, -10.45F, 10.5F, 0.20F, 1.6F), PartPose.ZERO);
+        eye.addOrReplaceChild("inner_lip_left", CubeListBuilder.create().texOffs(100, 65)
+                .addBox(-5.35F, slitTop, -10.45F, 0.10F, slitBottom - slitTop, 1.6F), PartPose.ZERO);
+        eye.addOrReplaceChild("inner_lip_right", CubeListBuilder.create().texOffs(100, 65)
+                .addBox(5.25F, slitTop, -10.45F, 0.10F, slitBottom - slitTop, 1.6F), PartPose.ZERO);
 
         // The rear recycle logo is rendered as a single UV-controlled 2D print
         // instead of a CubeListBuilder cube (which used to crop/tile its logo).
@@ -231,11 +238,44 @@ public final class CardboardLayer extends RenderLayer<AbstractClientPlayer, Play
         shadowInk.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
                 BoxModelGeometry.multiplyTint(dye, 0.58F));
         eyeCavity.render(pose, paperBuffer, light, OverlayTexture.NO_OVERLAY,
-                BoxModelGeometry.multiplyTint(dye, 0.24F));
+                BoxModelGeometry.multiplyTint(dye, 0.42F));
+        // The actual player skin is visible as a dim strip behind the slit.
+        // The entire player head remains hidden behind the roof and wall.
+        renderFaceBehindSlit(player, pose, buffers, light);
         tape.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TAPE)),
                 light, OverlayTexture.NO_OVERLAY);
         renderBackRecyclingStamp(pose, buffers, light);
         pose.popPose();
+    }
+
+    /**
+     * Draw a small strip of the owner's own face (eyes/bridge-of-nose area).
+     * The front wall is at Z=-11px, the face is recessed at Z=-8.2px. There
+     * are no opaque face/backing panels between the slit and this texture.
+     * The black floor lining sits far below at Y=15px and cannot cover it.
+     */
+    private static void renderFaceBehindSlit(AbstractClientPlayer player, PoseStack pose,
+                                             MultiBufferSource buffers, int light) {
+        VertexConsumer out = buffers.getBuffer(RenderType.entityCutoutNoCull(player.getSkin().texture()));
+        PoseStack.Pose transform = pose.last();
+        float left=-3.2F/16.0F, right=3.2F/16.0F;
+        float top=-0.68F/16.0F, bottom=0.56F/16.0F, z=-8.2F/16.0F;
+        // Player skin's main front face occupies UV 8..16,8..16 on 64px.
+        // Sampling y=11..13 retains the eyes for most player skins.
+        facePixel(out,transform,left,bottom,z,8F/64F,13F/64F,light);
+        facePixel(out,transform,right,bottom,z,16F/64F,13F/64F,light);
+        facePixel(out,transform,right,top,z,16F/64F,11F/64F,light);
+        facePixel(out,transform,left,top,z,8F/64F,11F/64F,light);
+    }
+
+    private static void facePixel(VertexConsumer out, PoseStack.Pose transform,
+                                  float x, float y, float z, float u, float v, int light) {
+        out.addVertex(transform,x,y,z)
+                .setColor(150,140,125,255)
+                .setUv(u,v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(transform,0F,0F,-1F);
     }
 
     /**
