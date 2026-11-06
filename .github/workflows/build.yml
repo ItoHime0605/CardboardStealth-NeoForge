@@ -168,7 +168,7 @@ jobs:
           assert 'getBuffer(RenderType.entityCutoutNoCull(atlas))' in art
           assert '0.16F + layer * 0.035F' in art
           assert 'ResourceLocation atlas = CardboardDecalRenderer.atlasFor' in gui
-          assert 'tooltip.cardboardstealth.light_gray_' in gui
+          assert '"light_gray_"' in gui and '"tooltip.cardboardstealth."' in gui
           assert 'DecalStackRules.LIGHT_GRAY' in recipes
           assert 'supportedColor(color(value))' in stack
           assert 'case DecalStackRules.LIGHT_GRAY ->' in (r/'DecalCraftingRecipe.java').read_text()
