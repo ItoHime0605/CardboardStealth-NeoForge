@@ -323,5 +323,10 @@
   "gui.cardboardstealth.printer.no_dye": "No dye loaded",
   "gui.cardboardstealth.printer.insert_dye": "Insert dye to preview patterns",
   "gui.cardboardstealth.printer.cost": "Dye needed: %s / loaded: %s",
-  "tooltip.cardboardstealth.printer": "Insert blank adhesive and one dye color, select a design from 1–6, then print."
+  "tooltip.cardboardstealth.printer": "Insert blank adhesive and one dye color, select a design from 1–6, then print.",
+  "gui.cardboardstealth.printer.missing_blank": "Insert a blank adhesive sticker first.",
+  "gui.cardboardstealth.printer.missing_dye": "Insert dye of one color first.",
+  "gui.cardboardstealth.printer.insufficient_dye": "Not enough dye for the selected pattern.",
+  "gui.cardboardstealth.printer.take_output": "Take the finished sticker out of the output tray.",
+  "gui.cardboardstealth.printer.ready": "Ready to print the selected design."
 }
