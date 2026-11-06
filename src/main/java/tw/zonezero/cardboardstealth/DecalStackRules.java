@@ -17,13 +17,15 @@ public final class DecalStackRules {
     public static final int LIGHT_GRAY_ART_COUNT = 6;
     public static final int GRAY_ART_COUNT = 6;
     public static final int BLACK_ART_COUNT = 6;
+    public static final int RED_ART_COUNT = 6;
     public static final int WHITE = 0;
     public static final int LIGHT_GRAY = 1;
     public static final int GRAY = 2;
     public static final int BLACK = 3;
+    public static final int RED = 4;
     /** Only finished artwork families may be added to a box. */
     public static boolean supportedColor(int color) {
-        return color == WHITE || color == LIGHT_GRAY || color == GRAY || color == BLACK;
+        return color == WHITE || color == LIGHT_GRAY || color == GRAY || color == BLACK || color == RED;
     }
     public static int artCount(int color) {
         return switch (color) {
@@ -31,6 +33,7 @@ public final class DecalStackRules {
             case LIGHT_GRAY -> LIGHT_GRAY_ART_COUNT;
             case GRAY -> GRAY_ART_COUNT;
             case BLACK -> BLACK_ART_COUNT;
+            case RED -> RED_ART_COUNT;
             default -> 0;
         };
     }
