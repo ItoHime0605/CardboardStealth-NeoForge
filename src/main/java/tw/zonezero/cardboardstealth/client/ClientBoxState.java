@@ -32,5 +32,7 @@ public final class ClientBoxState {
         BoxVisual v = VISUALS.get(entityId);
         return v == null ? new int[0] : Arrays.copyOf(v.decals(), v.decals().length);
     }
+    /** Erase stale state when an entity leaves the client level; IDs get reused. */
+    public static void forget(int entityId) { VISUALS.remove(entityId); }
     public static void clear() { VISUALS.clear(); }
 }
