@@ -5,9 +5,9 @@
   "textures": {
     "particle": "#paper",
     "paper": "minecraft:block/oak_planks",
-    "tape": "cardboardstealth:entity/tape_refined",
+    "tape": "cardboardstealth:item/mini/packing_tape",
     "shadow": "minecraft:block/black_concrete",
-    "mark": "cardboardstealth:entity/recycle_stamp"
+    "mark": "cardboardstealth:item/mini/recycle_stamp"
   },
   "elements": [
     {
@@ -925,30 +925,30 @@
       "from": [
         7.3,
         12.2,
-        2.15
+        2
       ],
       "to": [
         8.7,
         12.36,
-        13.85
+        14.02
       ],
       "faces": {
         "north": {
           "texture": "#tape",
           "uv": [
+            6.6,
             0,
-            0,
-            16,
-            16
+            9.4,
+            1.5
           ]
         },
         "south": {
           "texture": "#tape",
           "uv": [
+            6.6,
             0,
-            0,
-            16,
-            16
+            9.4,
+            1.5
           ]
         },
         "east": {
@@ -957,7 +957,7 @@
             0,
             0,
             16,
-            16
+            1.5
           ]
         },
         "west": {
@@ -966,24 +966,24 @@
             0,
             0,
             16,
-            16
+            1.5
           ]
         },
         "up": {
           "texture": "#tape",
           "uv": [
+            6.6,
             0,
-            0,
-            16,
+            9.4,
             16
           ]
         },
         "down": {
           "texture": "#tape",
           "uv": [
+            6.6,
             0,
-            0,
-            16,
+            9.4,
             16
           ]
         }
@@ -994,67 +994,67 @@
       "name": "front_tape_fold",
       "from": [
         7.3,
-        10.8,
+        10.68,
         1.84
       ],
       "to": [
         8.7,
-        12.16,
-        2.01
+        12.24,
+        2.03
       ],
       "faces": {
         "north": {
           "texture": "#tape",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            6.6,
+            1.4,
+            9.4,
+            5.1
           ]
         },
         "south": {
           "texture": "#tape",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            6.6,
+            1.4,
+            9.4,
+            5.1
           ]
         },
         "east": {
           "texture": "#tape",
           "uv": [
             0,
-            0,
-            16,
-            16
+            1.4,
+            1.5,
+            5.1
           ]
         },
         "west": {
           "texture": "#tape",
           "uv": [
             0,
-            0,
-            16,
-            16
+            1.4,
+            1.5,
+            5.1
           ]
         },
         "up": {
           "texture": "#tape",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            6.6,
+            1.4,
+            9.4,
+            3
           ]
         },
         "down": {
           "texture": "#tape",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            6.6,
+            1.4,
+            9.4,
+            3
           ]
         }
       },
@@ -1064,67 +1064,67 @@
       "name": "rear_tape_fold",
       "from": [
         7.3,
-        10.8,
-        13.99
+        10.68,
+        13.97
       ],
       "to": [
         8.7,
-        12.16,
+        12.24,
         14.16
       ],
       "faces": {
         "north": {
           "texture": "#tape",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            6.6,
+            1.4,
+            9.4,
+            5.1
           ]
         },
         "south": {
           "texture": "#tape",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            6.6,
+            1.4,
+            9.4,
+            5.1
           ]
         },
         "east": {
           "texture": "#tape",
           "uv": [
             0,
-            0,
-            16,
-            16
+            1.4,
+            1.5,
+            5.1
           ]
         },
         "west": {
           "texture": "#tape",
           "uv": [
             0,
-            0,
-            16,
-            16
+            1.4,
+            1.5,
+            5.1
           ]
         },
         "up": {
           "texture": "#tape",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            6.6,
+            1.4,
+            9.4,
+            3
           ]
         },
         "down": {
           "texture": "#tape",
           "uv": [
-            0,
-            0,
-            16,
-            16
+            6.6,
+            1.4,
+            9.4,
+            3
           ]
         }
       },
@@ -1154,75 +1154,775 @@
         }
       },
       "shade": false
+    },
+    {
+      "name": "lid_fold_edge_left",
+      "from": [
+        3.4,
+        12.18,
+        2.03
+      ],
+      "to": [
+        7.17,
+        12.28,
+        13.96
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        }
+      },
+      "shade": true
+    },
+    {
+      "name": "lid_fold_edge_right",
+      "from": [
+        8.83,
+        12.18,
+        2.03
+      ],
+      "to": [
+        12.6,
+        12.28,
+        13.96
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        }
+      },
+      "shade": true
+    },
+    {
+      "name": "front_lower_fold",
+      "from": [
+        3.25,
+        3.88,
+        1.92
+      ],
+      "to": [
+        12.75,
+        4.03,
+        2.3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        }
+      },
+      "shade": true
+    },
+    {
+      "name": "rear_lower_fold",
+      "from": [
+        3.25,
+        3.88,
+        13.72
+      ],
+      "to": [
+        12.75,
+        4.03,
+        14.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        }
+      },
+      "shade": true
+    },
+    {
+      "name": "front_left_corrugated_edge",
+      "from": [
+        3.45,
+        4.1,
+        1.87
+      ],
+      "to": [
+        3.58,
+        11.48,
+        2.15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        }
+      },
+      "shade": true
+    },
+    {
+      "name": "front_right_corrugated_edge",
+      "from": [
+        12.42,
+        4.1,
+        1.87
+      ],
+      "to": [
+        12.55,
+        11.48,
+        2.15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        }
+      },
+      "shade": true
+    },
+    {
+      "name": "rear_left_corrugated_edge",
+      "from": [
+        3.45,
+        4.1,
+        13.85
+      ],
+      "to": [
+        3.58,
+        11.48,
+        14.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        }
+      },
+      "shade": true
+    },
+    {
+      "name": "rear_right_corrugated_edge",
+      "from": [
+        12.42,
+        4.1,
+        13.85
+      ],
+      "to": [
+        12.55,
+        11.48,
+        14.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#paper",
+          "uv": [
+            4,
+            2,
+            12,
+            11
+          ]
+        }
+      },
+      "shade": true
+    },
+    {
+      "name": "tape_seal_left_raised_edge",
+      "from": [
+        7.22,
+        12.36,
+        2.06
+      ],
+      "to": [
+        7.37,
+        12.43,
+        13.96
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        }
+      },
+      "shade": true
+    },
+    {
+      "name": "tape_seal_right_raised_edge",
+      "from": [
+        8.63,
+        12.36,
+        2.06
+      ],
+      "to": [
+        8.78,
+        12.43,
+        13.96
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#tape",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        }
+      },
+      "shade": true
     }
   ],
   "display": {
     "firstperson_righthand": {
       "rotation": [
-        0,
-        -45,
-        0
+        28,
+        166,
+        -8
       ],
       "translation": [
-        0,
-        1.2,
-        0
+        0.15,
+        -0.9,
+        0.5
       ],
       "scale": [
-        0.72,
-        0.72,
-        0.72
+        0.58,
+        0.58,
+        0.58
       ]
     },
     "firstperson_lefthand": {
       "rotation": [
-        0,
-        45,
-        0
+        28,
+        -166,
+        8
       ],
       "translation": [
-        0,
-        1.2,
-        0
+        -0.15,
+        -0.9,
+        0.5
       ],
       "scale": [
-        0.72,
-        0.72,
-        0.72
+        0.58,
+        0.58,
+        0.58
       ]
     },
     "thirdperson_righthand": {
       "rotation": [
-        65,
-        35,
-        0
+        48,
+        162,
+        -8
       ],
       "translation": [
-        0,
-        1.6,
-        0
+        0.2,
+        -1.25,
+        -0.7
       ],
       "scale": [
-        0.68,
-        0.68,
-        0.68
+        0.65,
+        0.65,
+        0.65
       ]
     },
     "thirdperson_lefthand": {
       "rotation": [
-        65,
-        -35,
-        0
+        48,
+        -162,
+        8
       ],
       "translation": [
-        0,
-        1.6,
-        0
+        -0.2,
+        -1.25,
+        -0.7
       ],
       "scale": [
-        0.68,
-        0.68,
-        0.68
+        0.65,
+        0.65,
+        0.65
       ]
     },
     "ground": {
@@ -1233,13 +1933,13 @@
       ],
       "translation": [
         0,
-        1.6,
+        1.1,
         0
       ],
       "scale": [
-        0.55,
-        0.55,
-        0.55
+        0.57,
+        0.57,
+        0.57
       ]
     },
     "fixed": {
