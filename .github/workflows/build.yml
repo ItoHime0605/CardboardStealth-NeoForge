@@ -172,7 +172,7 @@ jobs:
               assert data['type']==f'cardboardstealth:{recipe}'
           for color in 'white light_gray gray black red orange yellow lime pink brown green cyan blue purple magenta light_blue'.split():
               assert not (ns/'data/cardboardstealth/recipe'/f'decal_{color}_carpet.json').exists(), 'old random carpet recipe survived'
-          assert (ns/'../main/java/tw/zonezero/cardboardstealth/DecalStickerItem.java').is_file()
+          assert Path('src/main/java/tw/zonezero/cardboardstealth/DecalStickerItem.java').is_file()
           assert 'output.accept(ModItems.BLANK_STICKER.get())' in Path('src/main/java/tw/zonezero/cardboardstealth/ModCreativeTabs.java').read_text()
           print('PASS: restored box art, old carpet recipes fully retired, fixed-pattern sticker recipe registered')
           PY
