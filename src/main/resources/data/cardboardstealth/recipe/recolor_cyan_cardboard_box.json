@@ -1,11 +1,3 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    "#curios:cardboard",
-    "minecraft:cyan_dye"
-  ],
-  "result": {
-    "id": "cardboardstealth:cyan_cardboard_box",
-    "count": 1
-  }
+  "type": "cardboardstealth:recolor_cyan"
 }

@@ -1,11 +1,3 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    "#curios:cardboard",
-    "minecraft:brown_dye"
-  ],
-  "result": {
-    "id": "cardboardstealth:brown_cardboard_box",
-    "count": 1
-  }
+  "type": "cardboardstealth:recolor_brown"
 }

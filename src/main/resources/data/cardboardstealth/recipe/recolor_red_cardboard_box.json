@@ -1,11 +1,3 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    "#curios:cardboard",
-    "minecraft:red_dye"
-  ],
-  "result": {
-    "id": "cardboardstealth:red_cardboard_box",
-    "count": 1
-  }
+  "type": "cardboardstealth:recolor_red"
 }

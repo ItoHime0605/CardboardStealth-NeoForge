@@ -1,6 +1,9 @@
 package tw.zonezero.cardboardstealth;
 
 import net.minecraft.core.registries.Registries;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Collections;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -17,4 +20,17 @@ public final class ModRecipes {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DecalCraftingRecipe>> PEEL =
             SERIALIZERS.register("decal_peel_slime", () ->
                     new SimpleCraftingRecipeSerializer<>(cat -> new DecalCraftingRecipe(cat, true)));
+
+    /** Redyeing the old cardboard MUST retain decal custom data. */
+    public static final Map<String, DeferredHolder<RecipeSerializer<?>,RecipeSerializer<RecolorDecalRecipe>>> RECOLOR;
+    static {
+        Map<String, DeferredHolder<RecipeSerializer<?>,RecipeSerializer<RecolorDecalRecipe>>> serializers =
+                new LinkedHashMap<>();
+        for(String name : BoxColors.NAMES) {
+            serializers.put(name, SERIALIZERS.register("recolor_" + name,
+                    () -> new SimpleCraftingRecipeSerializer<>(
+                            category -> new RecolorDecalRecipe(category, name))));
+        }
+        RECOLOR = Collections.unmodifiableMap(serializers);
+    }
 }
