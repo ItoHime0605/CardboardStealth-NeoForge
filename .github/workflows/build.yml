@@ -94,7 +94,7 @@ jobs:
           assert 'StickerPrinterRules.canPrint(' in be and 'removeItem(DYE,cost)' in be
           assert 'removeItem(BLANK,1)' in be
           assert 'level==null||level.isClientSide||level.getBlockEntity(worldPosition)!=this||!canPrint()' in be
-          assert 'if(!state.is(next.getBlock()))' in block
+          assert 'if(!level.isClientSide && !state.is(next.getBlock()))' in block
           assert 'case DYE' in be and 'case BLANK' in be
           assert 'StickerPrinterRules.outputId(' in be
           assert 'clickMenuButton(Player player,int id)' in menu
