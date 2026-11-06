@@ -62,5 +62,11 @@
   "tooltip.cardboardstealth.yellow_2": "第 %s 層：生化隔離警示",
   "tooltip.cardboardstealth.yellow_3": "第 %s 層：高壓電危險標誌",
   "tooltip.cardboardstealth.yellow_4": "第 %s 層：廢棄礦井坍塌警告",
-  "tooltip.cardboardstealth.yellow_5": "第 %s 層：受污染水源警告"
+  "tooltip.cardboardstealth.yellow_5": "第 %s 層：受污染水源警告",
+  "tooltip.cardboardstealth.lime_0": "第 %s 層：異變藤蔓蔓延標本",
+  "tooltip.cardboardstealth.lime_1": "第 %s 層：夜光孢子菌菇圖鑑",
+  "tooltip.cardboardstealth.lime_2": "第 %s 層：淹沒街道的螢光藻",
+  "tooltip.cardboardstealth.lime_3": "第 %s 層：晶刺之花植物觀察",
+  "tooltip.cardboardstealth.lime_4": "第 %s 層：被藤蔓吞噬的溫室",
+  "tooltip.cardboardstealth.lime_5": "第 %s 層：封存失敗的生長標本"
 }
