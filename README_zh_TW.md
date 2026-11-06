@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.21-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.22-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.21-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.22-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -272,3 +272,13 @@ gradle --no-daemon build
 
 - 進一步確認 `LivingEntityRenderer` 預設 `scale(-1,-1,1)`，會先將 ModelPart 模型的 X 軸左右鏡像，再繪製紙箱。因此背後看得到的**右下方在模型座標其實是負 X**；原本 0.1.20 所使用的負 X 位置方向正確，這次保留負 X 並讓字面常數、註解與回歸測試一致。
 - 正式以**遊戲渲染後的右下角**而非模型未轉換前的座標作為標誌定位標準。
+
+
+## 0.1.22-alpha｜欄位 2D、手持 3D、掉落 3D、觀察孔露出玩家眼部（五項整合）
+
+- 紙箱的 **19 種物品（原色、兩款舊款、16 色）**全部改用 NeoForge 1.21.1 內建的 `neoforge:separate_transforms` 模型載入器：物品欄與創造模式採用**端正、正面、非等角視角** 64×64 PNG 2D 紙箱圖示，手持（第一／第三人稱）、地面掉落及物品展示框採用小型的 3D 紙箱模型。共用的 `mini_cardboard_base.json` 有空心面板、狹窄觀察縫、摺邊、封箱膠帶、四片小箱蓋與背面的綠色回收標誌。
+- 每色各自有 128×128 紙板材質，以及獨立的 64×64 平面圖示，均於 Gradle 由 Java ImageIO 自動生成，**不使用即時 tint**，避免之前在玩家電腦上發生圖示透明的問題。物品欄模型明確使用 `gui_light: front`，避開 NeoForge 1.21.1 `separate_transforms` GUI 光照過暗的已知問題。
+- **觀察孔不再被黑色板擋住**：移除外部縫隙後方的 `inside_recess` 與 `head_shadow` 兩塊實心幾何，改成四周細緻的紙板內折邊緣，留出真正空透的中間通道。
+- 在外部細縫後方約 2.8 模型像素的內側位置，透過玩家自己的 `PlayerSkin` 真實皮膚材質顯示非常窄的一條眼睛／鼻樑上緣，並略微壓暗。**不是另外生成一張臉，也不會把完整頭部伸出紙箱**。既有的箱底黑色遮光內襯仍只在底部，不會移到觀察孔。
+- 大型穿戴紙箱模型、靜止 5 tick 貼地、四片貼地箱蓋、Curios 專用槽、既有殭屍 AI、TaCZ 手槍及第一人稱視野 45%×31% 皆不改動。
+- CI 增加物品模型 2D／3D 顯示情境的 JSON 結構檢查、實際生成後 JAR 的像素級測試與觀察孔無實心遮板的回歸檢查。編譯完成仍須進入 Minecraft 客戶端確認渲染視角與手持比例。

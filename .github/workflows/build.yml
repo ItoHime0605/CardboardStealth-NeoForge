@@ -101,7 +101,9 @@ jobs:
           assert 'flapAngle(resting)' in render and 'liftPixels(resting)' in render
           assert 'lookRelativeYaw(bodyYaw, headYaw)' in render
           assert 'stepBackTilt' not in render and 'stepBackTilt' not in props
-          assert 'eye_cavity' in render and 'head_shadow' in render
+          assert 'eye_cavity' in render and 'inner_lip_above' in render
+          assert 'renderFaceBehindSlit(player, pose, buffers, light)' in render
+          assert 'inside_recess' not in render and 'head_shadow' not in render
           assert 'renderBackRecyclingStamp' in render and 'REAR_STAMP_LEFT_X' in render
           assert 'innerBase(variant)' in overlay and 'BoxViewGeometry.calculate' in overlay
           assert 'ModCreativeTabs.TABS.register(modBus)' in entry
@@ -125,13 +127,26 @@ jobs:
               re=json.loads((ns/'data/cardboardstealth/recipe'/f'recolor_{name}.json').read_text())
               assert '#curios:cardboard' in re['ingredients']
               model=json.loads((ns/'assets/cardboardstealth/models/item'/f'{name}.json').read_text())
-              assert model['textures']['layer0']==f'cardboardstealth:item/colored/{name}'
-              assert 'layer1' not in model
+              assert model['loader']=='neoforge:separate_transforms'
+              assert model['gui_light']=='front'
+              assert model['base']['textures']['layer0']==f'cardboardstealth:item/straight/{name}'
+              for perspective in ('firstperson_righthand','firstperson_lefthand',
+                                  'thirdperson_righthand','thirdperson_lefthand','ground'):
+                  assert model['perspectives'][perspective]['parent']==f'cardboardstealth:item/mini/{name}'
           for name in ['cardboard_box','box_dye_base','box_dye_details']:
               assert (ns/'assets/cardboardstealth/textures/item'/f'{name}.png').is_file()
           for name in ['paper','tape','recycle_logo']:
               assert (ns/'assets/cardboardstealth/textures/entity'/f'{name}.png').is_file()
-          print('PASS: 16/16 dye recipes, 16/16 recolor recipes, all textures')
+          for name in ('cardboard_box','delivery_box','supply_box'):
+              model=json.loads((ns/'assets/cardboardstealth/models/item'/f'{name}.json').read_text())
+              assert model['loader']=='neoforge:separate_transforms'
+              assert model['base']['textures']['layer0']==f'cardboardstealth:item/straight/{name}'
+          miniature=json.loads((ns/'assets/cardboardstealth/models/item/mini_cardboard_base.json').read_text())
+          assert miniature['gui_light']=='side'
+          assert len(miniature['elements'])>=15
+          assert any(e.get('name')=='recycle_symbol' for e in miniature['elements'])
+          assert any(e.get('name')=='eye_shadow' for e in miniature['elements'])
+          print('PASS: 19 2D/3D split item models, 16 dye recipes, 16 recolor recipes, mini box geometry')
           PY
       - name: Validate assets and Curios data JSON
         run: |
@@ -167,8 +182,8 @@ jobs:
       - name: Decode final JAR pixels to verify real dyed icons and recycling mark
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/CardboardAssetIntegrityTest.java
-          java -cp build/rule-tests CardboardAssetIntegrityTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.21-alpha.jar
+          java -cp build/rule-tests CardboardAssetIntegrityTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.22-alpha.jar
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.21-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.22-alpha
           path: build/libs/*.jar

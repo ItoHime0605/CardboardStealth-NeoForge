@@ -42,6 +42,11 @@ public final class BoxModelGeometryTest {
                 == 24F, "rested box wall hinge reaches ground plane");
         check(Math.abs(10D * Math.cos(tw.zonezero.cardboardstealth.BoxModelPose.flapAngle(true))) < 0.00001D,
                 "resting flap tips reach the ground without drooping below it");
-        System.out.println("PASS: " + checked + "/24 physical box, grounding and rear-logo checks");
+        check(BoxModelGeometry.LINER_TOP_Y >
+                BoxModelGeometry.SLIT_BOTTOM_Y + 10F,
+                "black underside liner remains far below the eye window");
+        check(BoxModelGeometry.SLIT_TOP_Y < BoxModelGeometry.SLIT_BOTTOM_Y,
+                "front slot stays physically open for owner's face skin");
+        System.out.println("PASS: " + checked + "/26 physical box, eye slit and under-mouth checks");
     }
 }

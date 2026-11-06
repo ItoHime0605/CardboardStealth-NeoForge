@@ -64,6 +64,34 @@ public final class CardboardAssetIntegrityTest {
             }
             check(stampPixels==602,"32x32 reference shape has exactly 602 opaque pixels");
             check(spill==0,"recycling print must not leak beyond its UV square");
+            // The actual selected GUI textures are now straight-on 2D sprites,
+            // while the held and dropped 3D models use their own paper atlases.
+            for (String name : new String[]{
+                    "cardboard_box","delivery_box","supply_box",
+                    "white_cardboard_box","orange_cardboard_box","magenta_cardboard_box",
+                    "light_blue_cardboard_box","yellow_cardboard_box","lime_cardboard_box",
+                    "pink_cardboard_box","gray_cardboard_box","light_gray_cardboard_box",
+                    "cyan_cardboard_box","purple_cardboard_box","blue_cardboard_box",
+                    "brown_cardboard_box","green_cardboard_box","red_cardboard_box",
+                    "black_cardboard_box"}) {
+                BufferedImage straight = read(jar,
+                        "assets/cardboardstealth/textures/item/straight/"+name+".png");
+                check(straight.getWidth()==64 && straight.getHeight()==64,
+                        name+" straight-on GUI texture size");
+                int solid = 0, greenInk = 0;
+                for (int y=0;y<64;y++) for (int x=0;x<64;x++) {
+                    int rgba=straight.getRGB(x,y);
+                    if ((rgba>>>24)==255) solid++;
+                    if (x>=36&&x<=48&&y>=33&&y<=45&&rgba==0xFF006600) greenInk++;
+                }
+                check(solid>=1800, name+" opaque full-color straight-on icon");
+                check(greenInk>=4, name+" back-right recycle mark must be legible");
+                BufferedImage mini=read(jar,
+                        "assets/cardboardstealth/textures/item/mini/"+name+"_paper.png");
+                check(mini.getWidth()==128 && mini.getHeight()==128,
+                        name+" mini 3D model paper texture size");
+                check((mini.getRGB(20,20)>>>24)==255,name+" mini 3D paper is not transparent");
+            }
             System.out.println("PASS: "+count+"/"+count+" decoded dyed-item and recycle-logo pixel checks");
         }
     }
