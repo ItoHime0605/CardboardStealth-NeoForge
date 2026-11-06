@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=13;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=14;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=14;col<16;col++){
+        for(int col=15;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -386,6 +386,36 @@ public final class DecalStackRulesTest {
             check(art>=0&&art<6,
                   "all cardboard shapes and nine anchors select a purple graphic");
         }
-        System.out.println("PASS: "+count+"/"+count+" fourteen-carpet decal stack, peeling and ID tests");
+
+        // Magenta is family 14; older color codes 0..13 remain frozen.
+        int magenta=DecalStackRules.pack(DecalStackRules.MAGENTA,5,4);
+        check(DecalStackRules.supportedColor(DecalStackRules.MAGENTA),
+                "finished magenta aid-station art is a supported family");
+        check(DecalStackRules.artCount(DecalStackRules.MAGENTA)==6,
+                "magenta family has six distinctive illustrations");
+        check(DecalStackRules.isValid(magenta)&&DecalStackRules.color(magenta)==14,
+                "magenta receives new saved color code 14 without collision");
+        check(!DecalStackRules.isValid(
+                DecalStackRules.pack(DecalStackRules.MAGENTA,6,4)),
+                "unpainted magenta index cannot become an invisible layer");
+        int previousPurple=DecalStackRules.pack(DecalStackRules.PURPLE,5,4);
+        int[] magentaMixed=DecalStackRules.append(
+                DecalStackRules.append(
+                DecalStackRules.append(new int[0],white),previousPurple),magenta);
+        check(Arrays.equals(magentaMixed,new int[]{white,previousPurple,magenta}),
+                "magenta lies above existing purple and white decals");
+        check(Arrays.equals(DecalStackRules.peel(magentaMixed),
+                new int[]{white,previousPurple}),
+                "slime removes only the magenta topmost layer");
+        check(Arrays.equals(DecalStackRules.sanitized(magentaMixed),magentaMixed),
+                "saved three-color stack passes sanitation unchanged");
+        check(DecalStackRules.append(magentaMixed,magenta).length==3,
+                "magenta cannot bypass the three-layer limit");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int selected=DecalStackRules.nextArt(DecalStackRules.MAGENTA,variant,2,slot);
+            check(selected>=0&&selected<6,
+                "every paper-box variant and anchor selects one of six magenta art tiles");
+        }
+        System.out.println("PASS: "+count+"/"+count+" fifteen-carpet decal stack, peeling and ID tests");
     }
 }
