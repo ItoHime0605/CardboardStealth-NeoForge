@@ -1,6 +1,31 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "cardboardstealth:item/supply_box"
+  "loader": "neoforge:separate_transforms",
+  "gui_light": "front",
+  "base": {
+    "parent": "minecraft:item/generated",
+    "gui_light": "front",
+    "textures": {
+      "layer0": "cardboardstealth:item/straight/supply_box"
+    }
+  },
+  "perspectives": {
+    "firstperson_righthand": {
+      "parent": "cardboardstealth:item/mini/supply_box"
+    },
+    "firstperson_lefthand": {
+      "parent": "cardboardstealth:item/mini/supply_box"
+    },
+    "thirdperson_righthand": {
+      "parent": "cardboardstealth:item/mini/supply_box"
+    },
+    "thirdperson_lefthand": {
+      "parent": "cardboardstealth:item/mini/supply_box"
+    },
+    "ground": {
+      "parent": "cardboardstealth:item/mini/supply_box"
+    },
+    "fixed": {
+      "parent": "cardboardstealth:item/mini/supply_box"
+    }
   }
 }

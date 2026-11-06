@@ -1,6 +1,31 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "cardboardstealth:item/colored/purple_cardboard_box"
+  "loader": "neoforge:separate_transforms",
+  "gui_light": "front",
+  "base": {
+    "parent": "minecraft:item/generated",
+    "gui_light": "front",
+    "textures": {
+      "layer0": "cardboardstealth:item/straight/purple_cardboard_box"
+    }
+  },
+  "perspectives": {
+    "firstperson_righthand": {
+      "parent": "cardboardstealth:item/mini/purple_cardboard_box"
+    },
+    "firstperson_lefthand": {
+      "parent": "cardboardstealth:item/mini/purple_cardboard_box"
+    },
+    "thirdperson_righthand": {
+      "parent": "cardboardstealth:item/mini/purple_cardboard_box"
+    },
+    "thirdperson_lefthand": {
+      "parent": "cardboardstealth:item/mini/purple_cardboard_box"
+    },
+    "ground": {
+      "parent": "cardboardstealth:item/mini/purple_cardboard_box"
+    },
+    "fixed": {
+      "parent": "cardboardstealth:item/mini/purple_cardboard_box"
+    }
   }
 }

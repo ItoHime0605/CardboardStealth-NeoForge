@@ -1,0 +1,7 @@
+{
+  "parent": "cardboardstealth:item/mini_cardboard_base",
+  "textures": {
+    "paper": "cardboardstealth:item/mini/cardboard_box_paper",
+    "particle": "cardboardstealth:item/mini/cardboard_box_paper"
+  }
+}
