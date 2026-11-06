@@ -8,7 +8,7 @@ import javax.imageio.ImageIO
 def generatedBoxTextures = layout.buildDirectory.dir('generated/cardboard-textures')
 
 tasks.register('generateCardboardTextures') {
-    inputs.property('texture-art-version', '2026-11-06-polygon-mini-icons-v5')
+    inputs.property('texture-art-version', '2026-11-06-restored-icon-mini-atlas-repair-v6')
     inputs.file(file('src/main/cardboard_art/recycle_mark_32.txt'))
     inputs.files(
         file('src/main/resources/assets/cardboardstealth/textures/item/box_dye_base.png'),
@@ -76,6 +76,23 @@ tasks.register('generateCardboardTextures') {
         ImageIO.write(tape,'png',new File(entityDir,'tape_refined.png'))
         ImageIO.write(stamp,'png',new File(entityDir,'recycle_stamp.png'))
 
+        // Item models use the Minecraft BLOCK/ITEM texture atlas. Entity-only
+        // textures are not guaranteed to stitch into that atlas, which caused
+        // the user's bright magenta/black missing-texture tape on held and
+        // dropped miniatures. Write separate, atlas-discoverable item copies;
+        // never point mini-model #tape/#mark to textures/entity.
+        BufferedImage miniTape=new BufferedImage(128,128,BufferedImage.TYPE_INT_ARGB)
+        for(int y=0;y<128;y++)for(int x=0;x<128;x++){
+            int px=tape.getRGB(x,y)
+            int wear=(x%17==0&&y%6<2)?-10:((x*19+y*7)%41==0?-7:0)
+            int rr=Math.max(0,Math.min(255,((px>>16)&255)+wear))
+            int gg=Math.max(0,Math.min(255,((px>>8)&255)+wear))
+            int bb=Math.max(0,Math.min(255,(px&255)+wear))
+            miniTape.setRGB(x,y,0xFF000000|(rr<<16)|(gg<<8)|bb)
+        }
+        ImageIO.write(miniTape,'png',new File(miniDir,'packing_tape.png'))
+        ImageIO.write(stamp,'png',new File(miniDir,'recycle_stamp.png'))
+
         // Read the user's original drawn cardboard icon's masks and outline.
         // Layer 0 (gray paper with lit/shaded faces) is baked into solid dye RGB;
         // layer 1 (original tape, outline, rear recycle logo) stays unchanged.
@@ -115,9 +132,10 @@ tasks.register('generateCardboardTextures') {
                     "Cardboard icon unexpectedly transparent: "+names[i]+" ("+opaque+" opaque pixels)")
             ImageIO.write(finalIcon,'png',new File(itemDir,names[i]+'_cardboard_box.png'))
         }
-        // Independent 2D sprites are FRONT-ON rather than the formerly angled
-        // icon. A 2D inventory sprite is different from the miniature 3D
-        // cardboard used in hands / as a dropped item.
+        // Retain these straight-on sprites solely as optional legacy assets.
+        // The GUI models now use the original user-supplied item icon (three
+        // base boxes) or the earlier 64px dyed art in textures/item/colored.
+        // The miniature 3D artwork is exclusively for held/dropped/fixed views.
         //
         // The same palette is baked into the 3D miniature's paper material:
         // no runtime item tint layer or custom BEWLR is involved.
@@ -198,7 +216,7 @@ tasks.register('generateCardboardTextures') {
             ImageIO.write(flat,'png',new File(flatDir,name+'.png'))
         }
 
-        println 'Generated 19 crisp straight-on 2D sprites, 19 mini 3D paper textures, 16 legacy dyed sprites and 3 worn-entity textures.'
+        println 'Restored original 2D item icons; generated 19 miniature paper textures and item-atlas-safe tape/recycle artwork.'
     }
 }
 
