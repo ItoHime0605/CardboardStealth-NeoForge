@@ -14,6 +14,20 @@ public final class DecalStackRules {
     public static final int MAX_LAYERS = 3;
     public static final int MAX_COLORS = 16;
     public static final int WHITE_ART_COUNT = 6;
+    public static final int LIGHT_GRAY_ART_COUNT = 6;
+    public static final int WHITE = 0;
+    public static final int LIGHT_GRAY = 1;
+    /** Only finished artwork families may be added to a box. */
+    public static boolean supportedColor(int color) {
+        return color == WHITE || color == LIGHT_GRAY;
+    }
+    public static int artCount(int color) {
+        return switch (color) {
+            case WHITE -> WHITE_ART_COUNT;
+            case LIGHT_GRAY -> LIGHT_GRAY_ART_COUNT;
+            default -> 0;
+        };
+    }
     public static final int ANCHORS = 9;
 
     public static int pack(int color, int art, int anchor) {
@@ -25,8 +39,8 @@ public final class DecalStackRules {
     public static int art(int value) { return ((value - 1) >>> 8) & 15; }
     public static int anchor(int value) { return (value - 1) & 255; }
     public static boolean isValid(int value) {
-        return value > 0 && color(value) < MAX_COLORS && anchor(value) < ANCHORS &&
-                (color(value) != 0 || art(value) < WHITE_ART_COUNT);
+        return value > 0 && supportedColor(color(value)) &&
+                art(value) < artCount(color(value)) && anchor(value) < ANCHORS;
     }
     public static int[] sanitized(int[] values) {
         if (values == null) return new int[0];
@@ -48,7 +62,14 @@ public final class DecalStackRules {
         int[] layers = sanitized(old);
         return layers.length == 0 ? layers : Arrays.copyOf(layers, layers.length - 1);
     }
-    /** Each white carpet stamp is chosen reproducibly, without server RNG. */
+    /** Different art per carpet family; deterministic and stable across restarts. */
+    public static int nextArt(int color, int originalVariant, int priorCount, int placement) {
+        int size = artCount(color);
+        if (size == 0) throw new IllegalArgumentException("Carpet artwork is not implemented");
+        return Math.floorMod(originalVariant + 2 * priorCount + (placement / 3)
+                + color * 3 + placement % 3, size);
+    }
+    /** Compatible with stacks crafted before the light-gray art expansion. */
     public static int nextWhiteArt(int originalVariant, int priorCount, int placement) {
         return Math.floorMod(originalVariant + 2 * priorCount + (placement / 3), WHITE_ART_COUNT);
     }

@@ -24,14 +24,22 @@ public final class DecalItemData {
         });
         return result;
     }
-    public static ItemStack addWhite(ItemStack box, int carpetSlot) {
+    public static ItemStack addCarpet(ItemStack box, int carpetColor, int placement) {
         int[] previous = get(box);
-        if (ModItems.variant(box.getItem()) == 0 ||
-                previous.length >= DecalStackRules.MAX_LAYERS) return ItemStack.EMPTY;
-        int art = DecalStackRules.nextWhiteArt(ModItems.variant(box.getItem()),
-                previous.length, carpetSlot);
-        int layer = DecalStackRules.pack(0, art, carpetSlot);
-        return withLayers(box, DecalStackRules.append(previous, layer));
+        if (!DecalStackRules.supportedColor(carpetColor)
+                || ModItems.variant(box.getItem()) == 0
+                || previous.length >= DecalStackRules.MAX_LAYERS
+                || placement < 0 || placement >= DecalStackRules.ANCHORS) return ItemStack.EMPTY;
+        // Keep all legacy white-carpet results stable. New light-gray carpet
+        // gets its own six-design warehouse label palette.
+        int art = carpetColor == DecalStackRules.WHITE
+                ? DecalStackRules.nextWhiteArt(ModItems.variant(box.getItem()), previous.length, placement)
+                : DecalStackRules.nextArt(carpetColor, ModItems.variant(box.getItem()), previous.length, placement);
+        int code = DecalStackRules.pack(carpetColor, art, placement);
+        return withLayers(box, DecalStackRules.append(previous, code));
+    }
+    public static ItemStack addWhite(ItemStack box, int carpetSlot) {
+        return addCarpet(box, DecalStackRules.WHITE, carpetSlot);
     }
     public static ItemStack peel(ItemStack box) {
         int[] previous = get(box);

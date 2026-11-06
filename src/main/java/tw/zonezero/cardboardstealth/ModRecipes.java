@@ -16,10 +16,15 @@ public final class ModRecipes {
             DeferredRegister.create(Registries.RECIPE_SERIALIZER, CardboardStealth.MOD_ID);
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DecalCraftingRecipe>> WHITE =
             SERIALIZERS.register("decal_white_carpet", () ->
-                    new SimpleCraftingRecipeSerializer<>(cat -> new DecalCraftingRecipe(cat, false)));
+                    new SimpleCraftingRecipeSerializer<>(cat -> new DecalCraftingRecipe(cat, DecalStackRules.WHITE)));
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DecalCraftingRecipe>> PEEL =
             SERIALIZERS.register("decal_peel_slime", () ->
-                    new SimpleCraftingRecipeSerializer<>(cat -> new DecalCraftingRecipe(cat, true)));
+                    new SimpleCraftingRecipeSerializer<>(cat -> new DecalCraftingRecipe(cat, DecalCraftingRecipe.PEEL)));
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DecalCraftingRecipe>> LIGHT_GRAY =
+            SERIALIZERS.register("decal_light_gray_carpet", () ->
+                    new SimpleCraftingRecipeSerializer<>(cat ->
+                            new DecalCraftingRecipe(cat, DecalStackRules.LIGHT_GRAY)));
 
     /** Redyeing the old cardboard MUST retain decal custom data. */
     public static final Map<String, DeferredHolder<RecipeSerializer<?>,RecipeSerializer<RecolorDecalRecipe>>> RECOLOR;
