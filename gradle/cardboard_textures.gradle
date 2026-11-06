@@ -142,7 +142,8 @@ tasks.register('generateCardboardTextures') {
                 int red=Math.round(((tint>>16)&255)*bright/255F)
                 int green=Math.round(((tint>>8)&255)*bright/255F)
                 int blue=Math.round((tint&255)*bright/255F)
-                paper3d.setRGB(x,y,0xFF000000|(red<<16)|(green<<8)|blue)
+                int argb = (int)(0xFF000000L | (red<<16) | (green<<8) | blue)
+                paper3d.setRGB(x,y,argb)
             }
             ImageIO.write(paper3d,'png',new File(miniDir,name+'_paper.png'))
 
@@ -165,7 +166,8 @@ tasks.register('generateCardboardTextures') {
                 int rr=Math.round(((ref>>16)&255)*shadow)
                 int gg=Math.round(((ref>>8)&255)*shadow)
                 int bb=Math.round((ref&255)*shadow)
-                flat.setRGB(x,y,0xFF000000|(rr<<16)|(gg<<8)|bb)
+                int argb = (int)(0xFF000000L | (rr<<16) | (gg<<8) | bb)
+                flat.setRGB(x,y,argb)
             }
             for(int x=10;x<54;x++){
                 flat.setRGB(x,48,fold) // fold where the lower closure begins
