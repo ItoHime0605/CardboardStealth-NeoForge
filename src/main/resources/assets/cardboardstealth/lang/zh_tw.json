@@ -98,5 +98,11 @@
   "tooltip.cardboardstealth.blue_2": "第 %s 層：失修的航道導航浮標",
   "tooltip.cardboardstealth.blue_3": "第 %s 層：廢棄碼頭貨櫃吊車",
   "tooltip.cardboardstealth.blue_4": "第 %s 層：無法返航的海圖",
-  "tooltip.cardboardstealth.blue_5": "第 %s 層：古式深水潛水頭盔"
+  "tooltip.cardboardstealth.blue_5": "第 %s 層：古式深水潛水頭盔",
+  "tooltip.cardboardstealth.purple_0": "第 %s 層：末班地下鐵列車",
+  "tooltip.cardboardstealth.purple_1": "第 %s 層：封鎖月臺驗票閘門",
+  "tooltip.cardboardstealth.purple_2": "第 %s 層：損毀的地下鐵路線圖",
+  "tooltip.cardboardstealth.purple_3": "第 %s 層：無法返程的單程車票",
+  "tooltip.cardboardstealth.purple_4": "第 %s 層：停轉的隧道通風機",
+  "tooltip.cardboardstealth.purple_5": "第 %s 層：不知通往何處的出口"
 }

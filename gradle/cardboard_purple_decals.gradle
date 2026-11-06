@@ -1,0 +1,195 @@
+import java.awt.image.BufferedImage
+import java.awt.Color
+import java.awt.Font
+import java.awt.BasicStroke
+import java.awt.Polygon
+import java.awt.AlphaComposite
+import java.awt.RenderingHints
+import javax.imageio.ImageIO
+
+/**
+ * PURPLE carpet family #14: six original forgotten underground-metro posters.
+ * Each icon is drawn from unique Java2D geometry: abandoned train,
+ * blocked turnstiles, damaged route map, old station ticket,
+ * disabled tunnel fan, and stairway exit. Not old art recolored.
+ *
+ * Deterministic 128x80 pixel transparent sprites ×6 and 256x240 atlas;
+ * no remote imagery or third-party fonts distributed.
+ */
+def purpleDecalOutput=layout.buildDirectory.dir('generated/cardboard-purple-decals')
+tasks.register('generatePurpleCardboardDecals') {
+    inputs.property('purple-forgotten-metro-art-revision','2026-11-06-six-original-railway-prints-v1')
+    outputs.dir(purpleDecalOutput)
+    doLast {
+        File dir=new File(purpleDecalOutput.get().asFile,
+                'assets/cardboardstealth/textures/decals')
+        dir.mkdirs()
+        final int W=128,H=80
+        final Color NIGHT=new Color(44,38,70)
+        final Color DEEP=new Color(69,50,105)
+        final Color PURPLE=new Color(117,78,145)
+        final Color VIOLET=new Color(160,112,182)
+        final Color LAVENDER=new Color(194,165,205)
+        final Color PALE=new Color(233,218,207)
+        final Color STEEL=new Color(93,102,120)
+        final Color RUST=new Color(163,92,72)
+        final Color LAMP=new Color(231,176,99)
+        final Color DUST=new Color(202,186,183)
+        final String[][] TITLES=[
+            ['LAST','TRAIN','23:59'],
+            ['PLATFORM','CLOSED','GATE 04'],
+            ['OLD','ROUTE','LINE 06'],
+            ['ONE','WAY','NO RETURN'],
+            ['TUNNEL','AIR','OFFLINE'],
+            ['EXIT','UNKNOWN','WAY OUT?']
+        ] as String[][]
+        BufferedImage atlas=new BufferedImage(256,240,BufferedImage.TYPE_INT_ARGB)
+        for(int id=0;id<6;id++){
+            java.util.Random rnd=new java.util.Random(361136L+17449L*id)
+            BufferedImage img=new BufferedImage(W,H,BufferedImage.TYPE_INT_ARGB)
+            def g=img.createGraphics()
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF)
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF)
+            g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,RenderingHints.VALUE_FRACTIONALMETRICS_OFF)
+            Polygon torn=new Polygon()
+            for(int x=5;x<=123;x+=7)torn.addPoint(x,4+rnd.nextInt(6))
+            torn.addPoint(122,17);torn.addPoint(125,30);torn.addPoint(121,47)
+            torn.addPoint(124,63)
+            for(int x=118;x>=7;x-=7)torn.addPoint(x,70+rnd.nextInt(6))
+            torn.addPoint(4,62);torn.addPoint(6,46);torn.addPoint(3,28)
+            g.setColor(id%2==0?new Color(211,196,205):new Color(202,192,205))
+            g.fillPolygon(torn)
+            g.setClip(torn)
+            g.setColor(NIGHT);g.fillRect(6,9,116,4);g.fillRect(6,68,116,4)
+            g.setColor(VIOLET);g.fillRect(7,13,114,3)
+            g.setColor(id==4?DEEP:PALE);g.fillRect(8,17,55,49)
+            g.setColor(PURPLE);g.fillRect(65,17,2,49)
+            // Tiny subway-tile seams and damaged newsprint beneath the art.
+            g.setColor(id==4?NIGHT:DUST)
+            for(int y=23;y<65;y+=10)g.drawLine(9,y,62,y)
+            for(int j=0;j<850;j++){
+                int x=6+rnd.nextInt(116),y=9+rnd.nextInt(63)
+                int a=6+rnd.nextInt(52)
+                g.setColor(j%4==0?new Color(48,39,71,a):
+                           j%4==1?new Color(236,220,207,a):
+                           j%4==2?new Color(141,95,171,a):
+                           new Color(171,97,71,a))
+                g.fillRect(x,y,1+(j%17==0?2:0),1)
+            }
+            switch(id){
+                case 0: { // Old subway carriage with window, headlights and rails.
+                    g.setColor(NIGHT);g.fillRoundRect(15,19,46,43,6,6)
+                    g.setColor(PURPLE);g.fillRoundRect(19,23,38,32,3,3)
+                    g.setColor(LAVENDER);g.fillRect(23,27,13,15);g.fillRect(40,27,13,15)
+                    g.setColor(NIGHT);g.fillRect(37,24,2,24)
+                    g.setColor(LAMP);g.fillOval(20,49,7,6);g.fillOval(50,49,7,6)
+                    g.setColor(STEEL);g.fillRect(23,56,30,5)
+                    g.setColor(NIGHT);g.fillRect(21,61,34,3)
+                    g.setColor(RUST);g.fillRect(12,64,51,2)
+                    break
+                }
+                case 1: { // Two barrier turnstiles on a blocked metro platform.
+                    g.setColor(STEEL);g.fillRect(12,58,52,7)
+                    g.setColor(NIGHT);g.fillRect(18,34,11,26);g.fillRect(48,34,11,26)
+                    g.setColor(PURPLE);g.fillRect(21,39,5,13);g.fillRect(51,39,5,13)
+                    g.setColor(NIGHT);g.setStroke(new BasicStroke(3F))
+                    g.drawLine(25,39,51,44);g.drawLine(25,43,48,37)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(RUST);g.fillRect(14,27,49,7)
+                    g.setColor(PALE);g.fillRect(17,29,44,3)
+                    g.setColor(LAMP);g.fillRect(24,36,4,4);g.fillRect(52,36,4,4)
+                    break
+                }
+                case 2: { // Original schematic line map with stations and broken route.
+                    g.setColor(PALE);g.fillRoundRect(11,19,53,46,3,3)
+                    g.setColor(NIGHT);g.drawRect(13,21,49,42)
+                    g.setColor(VIOLET);g.setStroke(new BasicStroke(4F))
+                    g.drawLine(19,51,30,51);g.drawLine(30,51,30,31)
+                    g.drawLine(30,31,46,31);g.drawLine(46,31,53,24)
+                    g.setColor(RUST);g.drawLine(30,51,52,56)
+                    g.setStroke(new BasicStroke(1F))
+                    g.setColor(NIGHT)
+                    for(int[] point : [[19,51],[30,51],[30,31],[46,31],[53,24]]){
+                        g.fillOval(point[0]-3,point[1]-3,7,7)
+                    }
+                    g.setColor(LAMP);g.fillOval(27,28,7,7)
+                    g.setColor(RUST);g.drawLine(44,50,56,61)
+                    g.drawLine(56,50,44,61)
+                    break
+                }
+                case 3: { // Faded punched one-way transport ticket.
+                    g.setColor(NIGHT);g.fillRect(12,22,52,37)
+                    g.setColor(LAVENDER);g.fillRect(15,24,45,33)
+                    g.setColor(PALE);g.fillRect(19,28,37,23)
+                    g.setColor(VIOLET);g.fillRect(22,32,30,4)
+                    g.setColor(STEEL);g.fillRect(22,39,25,2)
+                    g.setColor(RUST);g.fillRect(22,44,21,3)
+                    g.setColor(NIGHT)
+                    for(int i=0;i<6;i++)g.fillRect(17+i*8,53,3,3)
+                    g.setColor(PALE);g.fillOval(9,35,7,8);g.fillOval(59,35,7,8)
+                    g.setColor(LAMP);g.fillOval(48,40,5,5)
+                    break
+                }
+                case 4: { // Tunnel air-handling fan, six blades, dead warning lamp.
+                    g.setColor(NIGHT);g.fillOval(11,18,53,48)
+                    g.setColor(STEEL);g.fillOval(15,22,45,40)
+                    g.setColor(PALE);g.drawOval(19,26,37,32)
+                    g.setColor(PURPLE)
+                    for(int angle=0;angle<360;angle+=60)
+                        g.fillArc(21,27,33,30,angle,38)
+                    g.setColor(NIGHT);g.fillOval(32,36,12,12)
+                    g.setColor(LAVENDER);g.fillOval(35,39,6,6)
+                    g.setColor(RUST);g.fillRect(18,62,40,3)
+                    g.setColor(LAMP);g.fillRect(51,20,7,4)
+                    break
+                }
+                case 5: { // Stairs climbing to an exit with a worn arrow.
+                    g.setColor(DEEP);g.fillRect(12,19,53,45)
+                    g.setColor(NIGHT);g.fillRect(18,23,40,37)
+                    g.setColor(LAVENDER);g.fillRect(20,56,37,7)
+                    g.setColor(STEEL)
+                    for(int i=0;i<5;i++)g.fillRect(23+i*6,49-i*5,38-i*6,5)
+                    g.setColor(PALE)
+                    g.fillRect(30,28,24,5);g.fillRect(44,22,7,15)
+                    g.fillPolygon([52,61,51] as int[],[25,33,39] as int[],3)
+                    g.setColor(LAMP);g.fillRect(15,19,6,5)
+                    g.setColor(RUST);g.fillRect(12,64,50,3)
+                    break
+                }
+            }
+            g.setColor(NIGHT)
+            g.setFont(new Font('SansSerif',Font.BOLD,TITLES[id][0].length()>6?11:15))
+            g.drawString(TITLES[id][0],69,33)
+            g.setColor(PURPLE);g.setFont(new Font('SansSerif',Font.BOLD,12))
+            g.drawString(TITLES[id][1],69,49)
+            g.setColor(VIOLET);g.fillRect(69,54,46,3)
+            g.setColor(NIGHT);g.setFont(new Font('Monospaced',Font.BOLD,8))
+            g.drawString(TITLES[id][2],69,65)
+            for(int j=0;j<160;j++){
+                int x=6+rnd.nextInt(115),y=8+rnd.nextInt(63)
+                g.setColor(j%3==0?new Color(240,228,211,72):
+                           j%3==1?new Color(45,39,71,48):
+                           new Color(165,92,74,60))
+                g.fillRect(x,y,1+(j%19==0?2:0),1)
+            }
+            // Fully transparent scratches reveal the dyed paper box beneath.
+            g.setComposite(AlphaComposite.Clear)
+            for(int j=0;j<100;j++){
+                int x=6+rnd.nextInt(115),y=9+rnd.nextInt(63)
+                g.fillRect(x,y,j%17==0?3:1,1)
+            }
+            g.setComposite(AlphaComposite.SrcOver)
+            g.setClip(null);g.dispose()
+            ImageIO.write(img,'png',new File(dir,'purple_'+id+'.png'))
+            def out=atlas.createGraphics()
+            out.drawImage(img,(id%2)*W,Math.floorDiv(id,2)*H,null)
+            out.dispose()
+        }
+        ImageIO.write(atlas,'png',new File(dir,'purple_atlas.png'))
+        println 'Generated six original purple forgotten-metro posters and atlas.'
+    }
+}
+tasks.named('processResources') {
+    dependsOn tasks.named('generatePurpleCardboardDecals')
+    from(purpleDecalOutput)
+}
