@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=12;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=13;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=13;col<16;col++){
+        for(int col=14;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -358,6 +358,34 @@ public final class DecalStackRulesTest {
             check(artwork>=0&&artwork<6,
                   "all cardboard variants and nine crafting slots select real blue art");
         }
-        System.out.println("PASS: "+count+"/"+count+" thirteen-carpet decal stack, peeling and ID tests");
+
+        // Purple family 13 is new. Keep all 0..12 save values intact.
+        int purple=DecalStackRules.pack(DecalStackRules.PURPLE,5,4);
+        check(DecalStackRules.supportedColor(DecalStackRules.PURPLE),
+                "finished purple metro designs may be placed");
+        check(DecalStackRules.artCount(DecalStackRules.PURPLE)==6,
+                "six unique purple station prints must exist");
+        check(DecalStackRules.isValid(purple)&&DecalStackRules.color(purple)==13,
+                "purple uses new stored ID 13 without replacing old colors");
+        check(!DecalStackRules.isValid(DecalStackRules.pack(DecalStackRules.PURPLE,6,4)),
+                "no invisible purple art index may be stored");
+        int previousBlue=DecalStackRules.pack(DecalStackRules.BLUE,5,4);
+        int[] purpleMixed=DecalStackRules.append(
+                DecalStackRules.append(
+                DecalStackRules.append(new int[0],white),previousBlue),purple);
+        check(Arrays.equals(purpleMixed,new int[]{white,previousBlue,purple}),
+                "purple is topmost with older white and blue unchanged");
+        check(Arrays.equals(DecalStackRules.peel(purpleMixed),new int[]{white,previousBlue}),
+                "peeling purple preserves older decals exactly");
+        check(Arrays.equals(DecalStackRules.sanitized(purpleMixed),purpleMixed),
+                "mixed prior family and new purple survives saved-data sanitation");
+        check(DecalStackRules.append(purpleMixed,purple).length==3,
+                "14th family must obey three-layer cap");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int art=DecalStackRules.nextArt(DecalStackRules.PURPLE,variant,2,slot);
+            check(art>=0&&art<6,
+                  "all cardboard shapes and nine anchors select a purple graphic");
+        }
+        System.out.println("PASS: "+count+"/"+count+" fourteen-carpet decal stack, peeling and ID tests");
     }
 }
