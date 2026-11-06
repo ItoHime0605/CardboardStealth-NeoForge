@@ -56,5 +56,11 @@
   "tooltip.cardboardstealth.orange_2": "Layer %s: Sunset Roadside Diner Sign",
   "tooltip.cardboardstealth.orange_3": "Layer %s: Radio Dead Zone Notice",
   "tooltip.cardboardstealth.orange_4": "Layer %s: Evacuation Route Marker",
-  "tooltip.cardboardstealth.orange_5": "Layer %s: Scrap Tow Truck Advertisement"
+  "tooltip.cardboardstealth.orange_5": "Layer %s: Scrap Tow Truck Advertisement",
+  "tooltip.cardboardstealth.yellow_0": "Layer %s: Fallout Radiation Warning",
+  "tooltip.cardboardstealth.yellow_1": "Layer %s: Collapsed Bridge Closure",
+  "tooltip.cardboardstealth.yellow_2": "Layer %s: Biohazard Quarantine",
+  "tooltip.cardboardstealth.yellow_3": "Layer %s: High Voltage Danger",
+  "tooltip.cardboardstealth.yellow_4": "Layer %s: Unstable Mine Shaft Warning",
+  "tooltip.cardboardstealth.yellow_5": "Layer %s: Contaminated Water Warning"
 }
