@@ -1,7 +1,7 @@
 {
   "size": 1,
   "operation": "SET",
-  "order": 90,
+  "order": 1000000,
   "icon": "cardboardstealth:slot/empty_cardboard",
   "add_cosmetic": false,
   "validators": [
