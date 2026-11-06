@@ -86,5 +86,11 @@
   "tooltip.cardboardstealth.green_2": "Layer %s: Field Respirator Mask",
   "tooltip.cardboardstealth.green_3": "Layer %s: Emergency Signal Mast",
   "tooltip.cardboardstealth.green_4": "Layer %s: Reinforced Shelter Gate",
-  "tooltip.cardboardstealth.green_5": "Layer %s: Night Patrol Floodlight"
+  "tooltip.cardboardstealth.green_5": "Layer %s: Night Patrol Floodlight",
+  "tooltip.cardboardstealth.cyan_0": "Layer %s: Storm Echo Radar Chart",
+  "tooltip.cardboardstealth.cyan_1": "Layer %s: Rain Gauge Observation Log",
+  "tooltip.cardboardstealth.cyan_2": "Layer %s: Field Anemometer Diagram",
+  "tooltip.cardboardstealth.cyan_3": "Layer %s: Upper-Atmosphere Weather Balloon",
+  "tooltip.cardboardstealth.cyan_4": "Layer %s: Abnormal Barometer Reading",
+  "tooltip.cardboardstealth.cyan_5": "Layer %s: Lost Satellite Ground Station"
 }

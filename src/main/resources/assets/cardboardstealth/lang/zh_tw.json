@@ -86,5 +86,11 @@
   "tooltip.cardboardstealth.green_2": "第 %s 層：野戰防毒面罩",
   "tooltip.cardboardstealth.green_3": "第 %s 層：緊急求救訊號塔",
   "tooltip.cardboardstealth.green_4": "第 %s 層：避難所加固入口",
-  "tooltip.cardboardstealth.green_5": "第 %s 層：夜間巡邏探照燈"
+  "tooltip.cardboardstealth.green_5": "第 %s 層：夜間巡邏探照燈",
+  "tooltip.cardboardstealth.cyan_0": "第 %s 層：暴風回波雷達圖",
+  "tooltip.cardboardstealth.cyan_1": "第 %s 層：雨量計觀測紀錄",
+  "tooltip.cardboardstealth.cyan_2": "第 %s 層：野外風速儀指示圖",
+  "tooltip.cardboardstealth.cyan_3": "第 %s 層：高空氣象探測氣球",
+  "tooltip.cardboardstealth.cyan_4": "第 %s 層：氣壓計異常紀錄",
+  "tooltip.cardboardstealth.cyan_5": "第 %s 層：失聯衛星接收站"
 }
