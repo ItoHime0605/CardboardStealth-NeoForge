@@ -214,7 +214,7 @@ jobs:
       - name: Decode final JAR pixels to verify real dyed icons and recycling mark
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/CardboardAssetIntegrityTest.java
-          java -cp build/rule-tests CardboardAssetIntegrityTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.23-alpha.jar
+          java -cp build/rule-tests CardboardAssetIntegrityTest build/libs/cardboardstealth-neoforge-1.21.1-0.1.24-alpha.jar
       - uses: actions/upload-artifact@v4
         with:
           name: cardboardstealth-neoforge-1.21.1-0.1.24-alpha
