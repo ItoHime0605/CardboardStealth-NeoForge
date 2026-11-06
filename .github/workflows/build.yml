@@ -153,12 +153,12 @@ jobs:
           assert len(miniature['elements'])>=15
           assert any(e.get('name')=='recycle_symbol' for e in miniature['elements'])
           assert any(e.get('name')=='eye_shadow' for e in miniature['elements'])
-          for recipe in ('decal_white_carpet','decal_light_gray_carpet','decal_gray_carpet','decal_black_carpet','decal_red_carpet','decal_peel_slime'):
+          for recipe in ('decal_white_carpet','decal_light_gray_carpet','decal_gray_carpet','decal_black_carpet','decal_red_carpet','decal_orange_carpet','decal_peel_slime'):
               data=json.loads((ns/'data/cardboardstealth/recipe'/f'{recipe}.json').read_text())
               assert data['type']==f'cardboardstealth:{recipe}'
-          print('PASS: 19 2D/3D split item models, 16 dyes, 16 recolor serializers and six decal crafting recipes')
+          print('PASS: 19 2D/3D split item models, 16 dyes, 16 recolor serializers and seven decal crafting recipes')
           PY
-      - name: Verify ordered five-carpet decal rendering paths
+      - name: Verify ordered six-carpet decal rendering paths
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -167,26 +167,28 @@ jobs:
           gui=(r/'client/ClientInit.java').read_text()
           stack=(r/'DecalStackRules.java').read_text()
           recipes=(r/'ModRecipes.java').read_text()
-          assert 'LIGHT_GRAY_ATLAS' in art and 'GRAY_ATLAS' in art and 'BLACK_ATLAS' in art and 'RED_ATLAS' in art
+          assert 'LIGHT_GRAY_ATLAS' in art and 'GRAY_ATLAS' in art and 'BLACK_ATLAS' in art and 'RED_ATLAS' in art and 'ORANGE_ATLAS' in art
           assert 'getBuffer(RenderType.entityCutoutNoCull(atlas))' in art
           assert '0.16F + layer * 0.035F' in art
           assert 'ResourceLocation atlas = CardboardDecalRenderer.atlasFor' in gui
-          assert '"light_gray_"' in gui and '"gray_"' in gui and '"black_"' in gui and '"red_"' in gui
+          assert '"light_gray_"' in gui and '"gray_"' in gui and '"black_"' in gui and '"red_"' in gui and '"orange_"' in gui
           assert '"tooltip.cardboardstealth."' in gui
           assert 'DecalStackRules.LIGHT_GRAY' in recipes
           assert 'DecalStackRules.GRAY' in recipes
           assert 'DecalStackRules.BLACK' in recipes
           assert 'DecalStackRules.RED' in recipes
+          assert 'DecalStackRules.ORANGE' in recipes
           assert 'supportedColor(color(value))' in stack
           craft=(r/'DecalCraftingRecipe.java').read_text()
           assert 'case DecalStackRules.LIGHT_GRAY ->' in craft
           assert 'case DecalStackRules.GRAY ->' in craft
           assert 'case DecalStackRules.BLACK ->' in craft
           assert 'case DecalStackRules.RED ->' in craft
+          assert 'case DecalStackRules.ORANGE ->' in craft
           mini=(r/'client/CardboardLayer.java').read_text()
           assert 'CardboardDecalRenderer.render(' in mini
           assert "CardboardDecalRenderer.render(" not in (r/'client/BoxViewOverlay.java').read_text()
-          print('PASS: 15/15 five-family sticker, ordered layering, GUI and recipe checks')
+          print('PASS: 19/19 six-family sticker, ordered layering, GUI and recipe checks')
           PY
       - name: Validate assets and Curios data JSON
         run: |
@@ -219,7 +221,7 @@ jobs:
               assert len(unique)==16, 'Some dyed sprites are identical'
               print('PASS: 16/16 distinct 64px dyed box item icons packed into JAR')
           PY
-      - name: Validate all 30 original white/light-gray/gray/black/red carpet art sprites in JAR
+      - name: Validate all 36 original white/light-gray/gray/black/red/orange carpet art sprites in JAR
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/DecalArtworkTest.java
           java -cp build/rule-tests DecalArtworkTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
@@ -231,11 +233,15 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/RedDecalArtTest.java
           java -cp build/rule-tests RedDecalArtTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
+      - name: Verify six unique orange roadside sticker artworks in the packaged JAR
+        run: |
+          javac -encoding UTF-8 -d build/rule-tests tests/OrangeDecalArtTest.java
+          java -cp build/rule-tests OrangeDecalArtTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - name: Decode final JAR pixels to verify real dyed icons and recycling mark
         run: |
           javac -encoding UTF-8 -d build/rule-tests tests/CardboardAssetIntegrityTest.java
           java -cp build/rule-tests CardboardAssetIntegrityTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.27-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.28-alpha
           path: build/libs/*.jar

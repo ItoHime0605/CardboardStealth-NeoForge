@@ -50,5 +50,11 @@
   "tooltip.cardboardstealth.red_2": "Layer %s: Field Medic Pin-Up",
   "tooltip.cardboardstealth.red_3": "Layer %s: Desert Rose Vintage Poster",
   "tooltip.cardboardstealth.red_4": "Layer %s: Late Night Radio Pin-Up",
-  "tooltip.cardboardstealth.red_5": "Layer %s: Neon Runner Street Poster"
+  "tooltip.cardboardstealth.red_5": "Layer %s: Neon Runner Street Poster",
+  "tooltip.cardboardstealth.orange_0": "Layer %s: Abandoned Highway Mile Marker",
+  "tooltip.cardboardstealth.orange_1": "Layer %s: Last Fuel Stop Poster",
+  "tooltip.cardboardstealth.orange_2": "Layer %s: Sunset Roadside Diner Sign",
+  "tooltip.cardboardstealth.orange_3": "Layer %s: Radio Dead Zone Notice",
+  "tooltip.cardboardstealth.orange_4": "Layer %s: Evacuation Route Marker",
+  "tooltip.cardboardstealth.orange_5": "Layer %s: Scrap Tow Truck Advertisement"
 }
