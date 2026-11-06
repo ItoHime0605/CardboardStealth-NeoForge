@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=11;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=12;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=12;col<16;col++){
+        for(int col=13;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -330,6 +330,34 @@ public final class DecalStackRulesTest {
             check(chosen>=0&&chosen<6,
                   "every cardboard variant and crafting anchor picks a real cyan image");
         }
-        System.out.println("PASS: "+count+"/"+count+" twelve-carpet decal stack, peeling and ID tests");
+
+        // Blue family 12 is a NEW saved color index, preserving old 0..11 data.
+        int blue=DecalStackRules.pack(DecalStackRules.BLUE,5,4);
+        check(DecalStackRules.supportedColor(DecalStackRules.BLUE),
+                "original blue harbor artwork must be recognized as finished");
+        check(DecalStackRules.artCount(DecalStackRules.BLUE)==6,
+                "blue has exactly six distinctive nautical posters");
+        check(DecalStackRules.isValid(blue) && DecalStackRules.color(blue)==12,
+                "blue family has the new index 12 without changing older colors");
+        check(!DecalStackRules.isValid(DecalStackRules.pack(DecalStackRules.BLUE,6,4)),
+                "unpainted blue index 6 is rejected, not hidden on cardboard");
+        int oldCyan=DecalStackRules.pack(DecalStackRules.CYAN,5,4);
+        int[] blueMixed=DecalStackRules.append(
+                DecalStackRules.append(
+                DecalStackRules.append(new int[0],white),oldCyan),blue);
+        check(Arrays.equals(blueMixed,new int[]{white,oldCyan,blue}),
+                "new blue poster is on top of unchanged white and cyan");
+        check(Arrays.equals(DecalStackRules.peel(blueMixed),new int[]{white,oldCyan}),
+                "peeling top blue sticker retains all older stored IDs");
+        check(Arrays.equals(DecalStackRules.sanitized(blueMixed),blueMixed),
+                "encoded old and new nautical stack survives sanitation");
+        check(DecalStackRules.append(blueMixed,blue).length==3,
+                "a fourth blue poster still cannot exceed three layers");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int artwork=DecalStackRules.nextArt(DecalStackRules.BLUE,variant,2,slot);
+            check(artwork>=0&&artwork<6,
+                  "all cardboard variants and nine crafting slots select real blue art");
+        }
+        System.out.println("PASS: "+count+"/"+count+" thirteen-carpet decal stack, peeling and ID tests");
     }
 }

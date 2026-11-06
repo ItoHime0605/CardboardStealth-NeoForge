@@ -92,5 +92,11 @@
   "tooltip.cardboardstealth.cyan_2": "第 %s 層：野外風速儀指示圖",
   "tooltip.cardboardstealth.cyan_3": "第 %s 層：高空氣象探測氣球",
   "tooltip.cardboardstealth.cyan_4": "第 %s 層：氣壓計異常紀錄",
-  "tooltip.cardboardstealth.cyan_5": "第 %s 層：失聯衛星接收站"
+  "tooltip.cardboardstealth.cyan_5": "第 %s 層：失聯衛星接收站",
+  "tooltip.cardboardstealth.blue_0": "第 %s 層：最後一座海岸燈塔",
+  "tooltip.cardboardstealth.blue_1": "第 %s 層：退潮後的沉船殘骸",
+  "tooltip.cardboardstealth.blue_2": "第 %s 層：失修的航道導航浮標",
+  "tooltip.cardboardstealth.blue_3": "第 %s 層：廢棄碼頭貨櫃吊車",
+  "tooltip.cardboardstealth.blue_4": "第 %s 層：無法返航的海圖",
+  "tooltip.cardboardstealth.blue_5": "第 %s 層：古式深水潛水頭盔"
 }

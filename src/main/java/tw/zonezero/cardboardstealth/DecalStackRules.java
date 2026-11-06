@@ -25,6 +25,7 @@ public final class DecalStackRules {
     public static final int BROWN_ART_COUNT = 6;
     public static final int GREEN_ART_COUNT = 6;
     public static final int CYAN_ART_COUNT = 6;
+    public static final int BLUE_ART_COUNT = 6;
     public static final int WHITE = 0;
     public static final int LIGHT_GRAY = 1;
     public static final int GRAY = 2;
@@ -37,9 +38,10 @@ public final class DecalStackRules {
     public static final int BROWN = 9;
     public static final int GREEN = 10;
     public static final int CYAN = 11;
+    public static final int BLUE = 12;
     /** Only finished artwork families may be added to a box. */
     public static boolean supportedColor(int color) {
-        return color == WHITE || color == LIGHT_GRAY || color == GRAY || color == BLACK || color == RED || color == ORANGE || color == YELLOW || color == LIME || color == PINK || color == BROWN || color == GREEN || color == CYAN;
+        return color == WHITE || color == LIGHT_GRAY || color == GRAY || color == BLACK || color == RED || color == ORANGE || color == YELLOW || color == LIME || color == PINK || color == BROWN || color == GREEN || color == CYAN || color == BLUE;
     }
     public static int artCount(int color) {
         return switch (color) {
@@ -55,6 +57,7 @@ public final class DecalStackRules {
             case BROWN -> BROWN_ART_COUNT;
             case GREEN -> GREEN_ART_COUNT;
             case CYAN -> CYAN_ART_COUNT;
+            case BLUE -> BLUE_ART_COUNT;
             default -> 0;
         };
     }
