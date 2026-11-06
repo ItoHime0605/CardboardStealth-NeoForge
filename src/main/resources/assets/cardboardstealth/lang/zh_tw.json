@@ -19,5 +19,12 @@
   "item.cardboardstealth.green_cardboard_box": "綠色紙箱",
   "item.cardboardstealth.red_cardboard_box": "紅色紙箱",
   "item.cardboardstealth.black_cardboard_box": "黑色紙箱",
-  "itemGroup.cardboardstealth": "紙箱潛行"
+  "itemGroup.cardboardstealth": "紙箱潛行",
+  "tooltip.cardboardstealth.decals": "紙箱貼花：%s／%s 層（由舊到新）",
+  "tooltip.cardboardstealth.white_0": "第 %s 層：荒地物流箱標籤",
+  "tooltip.cardboardstealth.white_1": "第 %s 層：品質檢驗章",
+  "tooltip.cardboardstealth.white_2": "第 %s 層：貨運編號貼紙",
+  "tooltip.cardboardstealth.white_3": "第 %s 層：破損條碼標籤",
+  "tooltip.cardboardstealth.white_4": "第 %s 層：資源分類標籤",
+  "tooltip.cardboardstealth.white_5": "第 %s 層：維修整備標籤"
 }

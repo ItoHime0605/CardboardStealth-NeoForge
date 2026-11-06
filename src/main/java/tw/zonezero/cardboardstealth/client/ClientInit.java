@@ -6,6 +6,11 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import tw.zonezero.cardboardstealth.DecalItemData;
+import tw.zonezero.cardboardstealth.DecalStackRules;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -35,6 +40,7 @@ public final class ClientInit {
     public static void register(IEventBus bus) {
         bus.addListener(ClientInit::registerLayer);
         bus.addListener(ClientInit::addLayers);
+        bus.addListener(ClientInit::registerDecalItemIcons);
         bus.addListener(BoxViewOverlay::register);
         NeoForge.EVENT_BUS.addListener(ClientInit::pre);
         NeoForge.EVENT_BUS.addListener(ClientInit::post);
@@ -43,6 +49,46 @@ public final class ClientInit {
         NeoForge.EVENT_BUS.addListener(ClientInit::jump);
         NeoForge.EVENT_BUS.addListener(ClientInit::clientSounds);
         NeoForge.EVENT_BUS.addListener(ClientInit::emptySwing);
+        NeoForge.EVENT_BUS.addListener(ClientInit::itemTooltip);
+    }
+    /**
+     * Inventories are 2D by design. Show the small paper-art thumbnail on the
+     * icon for each actual layer (oldest first). These are the same 6 images
+     * rendered at full resolution on the player's worn 3D cardboard.
+     */
+    public static void registerDecalItemIcons(RegisterItemDecorationsEvent event) {
+        net.neoforged.neoforge.client.IItemDecorator decorator = (graphics, font, stack, x, y) -> {
+            int[] decals = DecalItemData.get(stack);
+            for (int i=0;i<decals.length;i++) {
+                int code=decals[i];
+                if (DecalStackRules.color(code) != 0) continue;
+                int art=DecalStackRules.art(code);
+                // Minecraft GUI rendering crops the specified 128x80 pixel
+                // portion of the 256x240 texture to a readable 10x6 stamp.
+                graphics.blit(CardboardDecalRenderer.WHITE_ATLAS,
+                        x + 2 + 2*i, y + 7 - i, 10, 6,
+                        (art%2)*128F, (art/2)*80F,
+                        128, 80, 256, 240);
+            }
+            return false;
+        };
+        event.register(ModItems.CARDBOARD.get(), decorator);
+        event.register(ModItems.DELIVERY.get(), decorator);
+        event.register(ModItems.SUPPLY.get(), decorator);
+        for (var item : ModItems.DYED.values()) event.register(item.get(), decorator);
+    }
+    public static void itemTooltip(ItemTooltipEvent event) {
+        int[] layers=DecalItemData.get(event.getItemStack());
+        if (layers.length == 0) return;
+        event.getToolTip().add(Component.translatable("tooltip.cardboardstealth.decals",
+                layers.length, DecalStackRules.MAX_LAYERS));
+        for (int i=0;i<layers.length;i++) {
+            int code=layers[i];
+            if (DecalStackRules.color(code)==0)
+                event.getToolTip().add(Component.translatable(
+                        "tooltip.cardboardstealth.white_" + DecalStackRules.art(code),
+                        i + 1));
+        }
     }
     public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(BOX_LAYER, CardboardLayer::createBodyLayer);

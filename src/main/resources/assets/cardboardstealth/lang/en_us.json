@@ -19,5 +19,12 @@
   "item.cardboardstealth.green_cardboard_box": "Green Cardboard Box",
   "item.cardboardstealth.red_cardboard_box": "Red Cardboard Box",
   "item.cardboardstealth.black_cardboard_box": "Black Cardboard Box",
-  "itemGroup.cardboardstealth": "Cardboard Stealth"
+  "itemGroup.cardboardstealth": "Cardboard Stealth",
+  "tooltip.cardboardstealth.decals": "Cardboard decals: %s/%s layers (oldest first)",
+  "tooltip.cardboardstealth.white_0": "Layer %s: Wasteland Logistics",
+  "tooltip.cardboardstealth.white_1": "Layer %s: Inspection Seal",
+  "tooltip.cardboardstealth.white_2": "Layer %s: Shipping Code",
+  "tooltip.cardboardstealth.white_3": "Layer %s: Distressed Barcode",
+  "tooltip.cardboardstealth.white_4": "Layer %s: Resource Sorting",
+  "tooltip.cardboardstealth.white_5": "Layer %s: Repair Notice"
 }
