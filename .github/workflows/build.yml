@@ -42,28 +42,59 @@ jobs:
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxViewGeometry.java tests/BoxViewGeometryTest.java
           java -cp build/rule-tests BoxViewGeometryTest
-      - name: Check third-person visual concealment
+      - name: Check shared-player-model isolation policy
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxRenderRules.java tests/BoxRenderRulesTest.java
           java -cp build/rule-tests BoxRenderRulesTest
-      - name: Confirm crash-causing client Mixins are not registered
+      - name: Verify no player render layer or SKIN state mutation even if Pre is cancelled
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
-          mixins=json.loads(Path("src/main/resources/cardboardstealth.mixins.json").read_text())
-          assert not mixins.get('client',[]), "No client render Mixins may be registered"
-          code=Path("src/main/java/tw/zonezero/cardboardstealth/client/ClientInit.java").read_text()
-          assert "ClientLayerRenderControl.before(event.getRenderer())" in code
-          assert "ClientLayerRenderControl.after(event.getRenderer())" in code
-          assert not Path("src/main/java/tw/zonezero/cardboardstealth/mixin/ClientLayerFilterMixin.java").exists()
-          assert not Path("src/main/java/tw/zonezero/cardboardstealth/mixin/ClientItemInHandMixin.java").exists()
-          print("PASS: 5/5 client render startup-regression checks")
+          root=Path('src/main/java/tw/zonezero/cardboardstealth')
+          client=root/'client'
+          init=(client/'ClientInit.java').read_text()
+          layer=(client/'CardboardLayer.java').read_text()
+          policy=(root/'BoxRenderRules.java').read_text()
+          mixins=json.loads(Path('src/main/resources/cardboardstealth.mixins.json').read_text())
+          assert not mixins.get('client',[]), 'No client render Mixins allowed'
+          assert not (client/'ClientLayerRenderControl.java').exists()
+          assert not (root/'BoxLayerMasking.java').exists()
+          assert 'ClientLayerRenderControl' not in init
+          assert 'RenderPlayerEvent.Pre' not in init
+          assert 'RenderPlayerEvent.Post' not in init
+          assert 'ClientInit::pre' not in init and 'ClientInit::post' not in init
+          assert 'IdentityHashMap' not in init
+          assert '.visible =' not in init and 'SAVED.remove' not in init
+          assert 'renderer.addLayer(new CardboardLayer(' in init
+          assert 'ClientBoxState.variant(player.getId())' in layer
+          assert 'if (variant == 0) return;' in layer
+          assert 'pose.pushPose();' in layer and 'pose.popPose();' in layer
+          assert 'finally {' in layer
+          for prop in ('front.xRot = oldFrontX','rear.xRot = oldRearX',
+                       'left.zRot = oldLeftZ','right.zRot = oldRightZ'):
+              assert prop in layer,prop
+          assert 'PlayerModel' not in layer or 'PlayerModel<' in layer
+          assert 'return true;' in policy and 'renderAttachedLayer' in policy
+          assert not Path('tests/BoxLayerMaskingTest.java').exists()
+          print('PASS: player SKIN, render layer lists and shared model flags cannot be mutated by this mod')
           PY
-      - name: Test temporary third-person layer filtering and restoration
+      - name: Verify Curios cardboard slot sorts below normal accessory slots
         run: |
-          javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxLayerMasking.java tests/BoxLayerMaskingTest.java
-          java -cp build/rule-tests BoxLayerMaskingTest
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('src/main/resources/data/cardboardstealth/curios')
+          slot=json.loads((root/'slots/cardboard.json').read_text())
+          entities=json.loads((root/'entities/players.json').read_text())
+          assert slot['size']==1 and slot['operation']=='SET'
+          assert slot['order']>=100000,'Curios high order should sort below regular slots'
+          assert slot['icon']=='cardboardstealth:slot/empty_cardboard'
+          assert slot['validators']==['curios:tag']
+          assert 'cardboard' in entities['slots']
+          assert 'minecraft:player' in entities['entities']
+          print('PASS: one valid paper-box Curios slot, bottom-of-list order, unchanged equip identity')
+          PY
       - name: Check five-tick cardboard settling
         run: |
           javac -encoding UTF-8 -d build/rule-tests src/main/java/tw/zonezero/cardboardstealth/BoxMotionRules.java tests/BoxMotionRulesTest.java
@@ -481,5 +512,5 @@ jobs:
           java -cp build/rule-tests CardboardAssetIntegrityTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.42-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.43-alpha
           path: build/libs/*.jar
