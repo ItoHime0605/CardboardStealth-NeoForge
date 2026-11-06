@@ -11,7 +11,8 @@ public final class DecalArtworkTest {
     public static void main(String[] args) throws Exception {
         try(ZipFile z=new ZipFile(Path.of(args[0]).toFile())){
             String root="assets/cardboardstealth/textures/decals/";
-            for (String family : new String[]{"white","light_gray"}) {
+            Set<Long> allArt = new HashSet<>();
+            for (String family : new String[]{"white","light_gray","gray"}) {
             var atlasEntry=z.getEntry(root+family+"_atlas.png");
             ok(atlasEntry!=null,family+" decal atlas included");
             BufferedImage atlas;
@@ -38,11 +39,13 @@ public final class DecalArtworkTest {
                 ok(ink>3000,"sticker contains detailed ink and paper");
                 ok(transparent>120,"true transparent torn edge");
                 signature.add(sum);
+                allArt.add(sum);
             }
             ok(signature.size()==6,"all six "+family+" carpet prints are different");
             }
-            ok(z.getEntry(root+"gray_atlas.png")==null,"unimplemented gray carpet stays absent");
-            System.out.println("PASS: "+tests+"/"+tests+" WHITE + LIGHT GRAY individual/atlas art pixel checks");
+            ok(allArt.size()==18,"all 18 designs from three carpet families are unique");
+            ok(z.getEntry(root+"black_atlas.png")==null,"unfinished black family stays absent");
+            System.out.println("PASS: "+tests+"/"+tests+" WHITE + LIGHT GRAY + GRAY individual/atlas pixel checks");
         }
     }
 }

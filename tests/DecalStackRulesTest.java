@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=1;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=2;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=2;col<16;col++){
+        for(int col=3;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -58,6 +58,26 @@ public final class DecalStackRulesTest {
             int art=DecalStackRules.nextArt(DecalStackRules.LIGHT_GRAY,v,1,slot);
             check(art>=0 && art<6,"light gray art is from the six finished stickers");
         }
-        System.out.println("PASS: "+count+"/"+count+" mixed decal stack, peeling, and art palette tests");
+        int gray=DecalStackRules.pack(DecalStackRules.GRAY,4,4);
+        int lightGray=DecalStackRules.pack(DecalStackRules.LIGHT_GRAY,3,4);
+        int whiteLast=DecalStackRules.pack(DecalStackRules.WHITE,0,4);
+        int[] tricolor=DecalStackRules.append(
+                DecalStackRules.append(DecalStackRules.append(new int[0],gray),lightGray),whiteLast);
+        check(Arrays.equals(tricolor,new int[]{gray,lightGray,whiteLast}),
+                "three carpet families preserve oldest-to-newest order on shared face");
+        check(Arrays.equals(DecalStackRules.peel(tricolor),new int[]{gray,lightGray}),
+                "slime removes the last white decal from tricolor box");
+        check(Arrays.equals(DecalStackRules.peel(DecalStackRules.peel(tricolor)),new int[]{gray}),
+                "two peels leave original gray paint intact");
+        check(DecalStackRules.append(tricolor,gray).length==3,"cannot exceed three tricolor layers");
+        for(int v=1;v<=19;v++) for(int slot=0;slot<9;slot++) {
+            int art=DecalStackRules.nextArt(DecalStackRules.GRAY,v,2,slot);
+            check(art>=0 && art<6,"gray carpet resolves a supported high quality decal");
+        }
+        check(DecalStackRules.supportedColor(DecalStackRules.GRAY),"gray family is now active");
+        check(DecalStackRules.artCount(DecalStackRules.GRAY)==6,"exactly 6 gray artworks");
+        check(!DecalStackRules.isValid(DecalStackRules.pack(2,6,0)),
+                "gray art ID 6 rejected rather than rendering nothing");
+        System.out.println("PASS: "+count+"/"+count+" tricolor decal stack, slime peeling, palette tests");
     }
 }
