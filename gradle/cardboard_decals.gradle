@@ -1,0 +1,169 @@
+import java.awt.image.BufferedImage
+import java.awt.Color
+import java.awt.Font
+import java.awt.Polygon
+import java.awt.RenderingHints
+import java.awt.BasicStroke
+import javax.imageio.ImageIO
+
+// First decal family: six original WASTELAND LOGISTICS stickers, unlocked by
+// WHITE wool carpet. This is deterministic source art: no network dependency,
+// image generator, runtime downloads or external font files.
+def decalsOutput = layout.buildDirectory.dir('generated/cardboard-decals')
+tasks.register('generateCardboardDecals') {
+    inputs.property('white-carpet-art-version', '2026-11-06-white-logistics-six-v1')
+    outputs.dir(decalsOutput)
+    doLast {
+        File dir = new File(decalsOutput.get().asFile,
+                'assets/cardboardstealth/textures/decals')
+        dir.mkdirs()
+
+        final int WIDTH=128, HEIGHT=80
+        BufferedImage atlas = new BufferedImage(256,240,BufferedImage.TYPE_INT_ARGB)
+        int[] ink = [41,43,45] as int[]
+        Color CHARCOAL = new Color(41,43,45)
+        Color WHITE = new Color(226,214,193)
+        Color PAPER = new Color(218,205,184)
+        Color FADED = new Color(157,139,116)
+        Color GREEN = new Color(61,117,70)
+        Color RUST = new Color(144,75,58)
+        Color OCHRE = new Color(183,139,73)
+
+        for (int index=0; index<6; index++) {
+            BufferedImage sticker = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_ARGB)
+            java.awt.Graphics2D g = sticker.createGraphics()
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_OFF)
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF)
+            java.util.Random random = new java.util.Random(806261L + 1337L*index)
+
+            // Torn edge silhouette, single continuous surface (transparent around).
+            int[] px = [4,8,12,26,51,73,99,118,123,122,125,122,125,119,113,90,70,40,15,8,3,4]
+            int[] py = [8,4,6,3,5,4,6,4,9,17,28,47,64,73,75,73,77,74,77,70,61,40]
+            Polygon paperShape = new Polygon(px,py,px.length)
+            g.setColor(PAPER); g.fillPolygon(paperShape)
+            g.setClip(paperShape)
+            // Aged matte card texture with pixel flecks and a few abrasions.
+            for (int i=0;i<1200;i++) {
+                int x=random.nextInt(WIDTH), y=random.nextInt(HEIGHT)
+                if (random.nextInt(9)<3)g.setColor(new Color(176,150,121,random.nextInt(50)+15))
+                else g.setColor(new Color(246,235,218,random.nextInt(44)+15))
+                g.fillRect(x,y,1+random.nextInt(2),1+random.nextInt(2))
+            }
+            g.setColor(FADED)
+            g.drawRect(7,8,114,62)
+            g.setColor(new Color(130,100,72,70))
+            for(int i=0;i<12;i++) {
+                int x=random.nextInt(122), y=random.nextInt(75)
+                g.fillRect(x,y,1+random.nextInt(3),random.nextInt(2)+1)
+            }
+            g.setFont(new Font("Monospaced",Font.BOLD,12))
+            switch(index) {
+                case 0:
+                    // Freight labels: giant crate icon + dirty warehouse type.
+                    g.setColor(CHARCOAL)
+                    g.fillRect(11,14,25,25)
+                    g.setColor(WHITE)
+                    g.drawLine(14,17,23,13);g.drawLine(23,13,33,18)
+                    g.drawLine(23,13,23,30)
+                    g.setFont(new Font("Monospaced",Font.BOLD,13))
+                    g.drawString("WASTELAND",41,23)
+                    g.drawString("LOGISTICS",41,38)
+                    g.setColor(RUST);g.fillRect(88,39,21,3)
+                    g.setColor(CHARCOAL);g.drawLine(9,46,119,46)
+                    g.setFont(new Font("Monospaced",Font.BOLD,11))
+                    g.drawString("CARGO SHIPMENT",10,59)
+                    g.drawString("WL-4473",69,68)
+                    break
+                case 1:
+                    // Quality control, stamped PASS; worn red partial circle.
+                    g.setColor(GREEN); g.fillRect(8,9,112,7)
+                    g.setColor(PAPER);g.fillRect(15,22,29,27)
+                    g.setColor(GREEN);g.drawRect(15,22,29,27)
+                    g.setStroke(new BasicStroke(4.0F))
+                    g.drawLine(20,35,27,42);g.drawLine(27,42,40,27)
+                    g.setStroke(new BasicStroke(1.0F))
+                    g.setColor(CHARCOAL)
+                    g.setFont(new Font("Monospaced",Font.BOLD,15))
+                    g.drawString("INSPECTION",48,30)
+                    g.setFont(new Font("Monospaced",Font.BOLD,9))
+                    g.drawString("QUALITY CONTROL",47,41)
+                    g.setColor(GREEN);g.drawRect(15,55,8,8);g.drawLine(16,59,19,62);g.drawLine(19,62,24,54)
+                    g.setColor(CHARCOAL);g.drawString("PASS  HOLD  REJECT",27,63)
+                    g.setColor(RUST);g.drawArc(105,15,17,25,40,270)
+                    break
+                case 2:
+                    g.setColor(CHARCOAL);g.fillRect(9,10,110,17)
+                    g.setColor(WHITE);g.setFont(new Font("Monospaced",Font.BOLD,15));g.drawString("SHIP CODE",15,23)
+                    g.setColor(RUST);g.fillRect(98,14,16,3)
+                    g.setColor(CHARCOAL);g.drawRect(10,31,107,26)
+                    g.setFont(new Font("Monospaced",Font.BOLD,21))
+                    g.drawString("WS-7B-104",15,52)
+                    g.setFont(new Font("Monospaced",Font.BOLD,9))
+                    g.drawString("ROUTE:E-03",13,67);g.drawString("PRIO:",78,67)
+                    g.setColor(RUST);g.fillRect(109,61,8,6)
+                    break
+                case 3:
+                    // Partly torn/dirty analog barcode, not a QR code.
+                    g.setColor(CHARCOAL)
+                    int cx=12
+                    while(cx<119){
+                        int width=random.nextInt(4)+1
+                        if(random.nextBoolean())g.fillRect(cx,12,width,36+random.nextInt(5))
+                        cx+=width+random.nextInt(3)+1
+                    }
+                    g.setColor(RUST);g.fillRect(86,61,30,4)
+                    g.setColor(CHARCOAL);g.setFont(new Font("Monospaced",Font.BOLD,13))
+                    g.drawString("7710-2984-06",15,65)
+                    break
+                case 4:
+                    g.setColor(CHARCOAL);g.fillRect(9,11,110,15)
+                    g.setColor(WHITE);g.setFont(new Font("Monospaced",Font.BOLD,13))
+                    g.drawString("RESOURCE SORTING",12,23)
+                    g.setColor(FADED);g.drawLine(48,30,48,69);g.drawLine(84,30,84,69)
+                    g.setColor(new Color(144,148,146));g.fillRect(20,34,17,8);g.fillRect(15,42,17,7)
+                    g.setColor(OCHRE);g.fillRect(58,37,17,13);g.fillRect(61,33,10,6)
+                    g.setColor(new Color(117,117,117));g.fillOval(94,36,16,14)
+                    g.setColor(CHARCOAL);g.setFont(new Font("Monospaced",Font.BOLD,9))
+                    g.drawString("METAL",12,63);g.drawString("WOOD",56,63);g.drawString("SCRAP",88,63)
+                    break
+                case 5:
+                    // A repaired maintenance label with crossed hand tools.
+                    g.setColor(CHARCOAL)
+                    g.setStroke(new BasicStroke(4.0F))
+                    g.drawLine(15,18,44,47);g.drawLine(44,18,15,47)
+                    g.setStroke(new BasicStroke(1.0F))
+                    g.drawLine(52,13,52,54)
+                    g.setFont(new Font("Monospaced",Font.BOLD,18))
+                    g.drawString("REPAIR",56,29)
+                    g.setFont(new Font("Monospaced",Font.BOLD,10))
+                    g.drawString("MAINTENANCE",53,45)
+                    g.setColor(RUST);g.fillRect(56,34,58,2)
+                    g.setColor(CHARCOAL);g.drawString("STATUS:",14,64)
+                    g.setColor(OCHRE);g.fillRect(56,53,60,14)
+                    g.setColor(CHARCOAL);g.drawString("SERVICEABLE",56,64)
+                    break
+            }
+            // Faded tape tabs, not photorealistic; 4px square abrasion marks.
+            g.setColor(new Color(186,154,106,155))
+            if(index%2==0)g.fillRect(20,3,18,8)
+            else g.fillRect(85,5,14,7)
+            for(int i=0;i<30;i++){
+                int x=random.nextInt(121),y=random.nextInt(76)
+                g.setColor(new Color(90,79,68,random.nextInt(55)+20))
+                g.fillRect(x,y,1+random.nextInt(2),1)
+            }
+            g.setClip(null)
+            g.dispose()
+            ImageIO.write(sticker,'png',new File(dir, "white_"+index+".png"))
+            java.awt.Graphics2D ag = atlas.createGraphics()
+            ag.drawImage(sticker,(index%2)*128,(int)(index/2)*80,null)
+            ag.dispose()
+        }
+        ImageIO.write(atlas,'png',new File(dir,'white_atlas.png'))
+        println 'Generated 6 transparent, weathered 128x80 white-carpet sticker sheets and 256x240 atlas.'
+    }
+}
+tasks.named('processResources') {
+    dependsOn tasks.named('generateCardboardDecals')
+    from(decalsOutput)
+}
