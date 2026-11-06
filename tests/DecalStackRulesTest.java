@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=14;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=15;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=15;col<16;col++){
+        for(int col=16;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -416,6 +416,54 @@ public final class DecalStackRulesTest {
             check(selected>=0&&selected<6,
                 "every paper-box variant and anchor selects one of six magenta art tiles");
         }
-        System.out.println("PASS: "+count+"/"+count+" fifteen-carpet decal stack, peeling and ID tests");
+
+        // Sixteenth and FINAL family: light blue at data code 15.
+        int finalLightBlue=DecalStackRules.pack(DecalStackRules.LIGHT_BLUE,5,4);
+        check(DecalStackRules.MAX_COLORS==16,
+                "all sixteen vanilla wool carpet families are available");
+        check(DecalStackRules.supportedColor(DecalStackRules.LIGHT_BLUE),
+                "the final light blue airfield poster is supported");
+        check(DecalStackRules.artCount(DecalStackRules.LIGHT_BLUE)==6,
+                "six unique light blue aviation prints, no empty slot");
+        check(DecalStackRules.isValid(finalLightBlue)
+                &&DecalStackRules.color(finalLightBlue)==15,
+                "final color ID 15 does not alter any existing code 0..14");
+        check(!DecalStackRules.isValid(
+                DecalStackRules.pack(DecalStackRules.LIGHT_BLUE,6,4)),
+                "nonexistent 7th light blue image cannot be stored as invisible");
+        int oldMagenta=DecalStackRules.pack(DecalStackRules.MAGENTA,5,4);
+        int[] airfieldMixed=DecalStackRules.append(
+                DecalStackRules.append(
+                DecalStackRules.append(new int[0],white),oldMagenta),finalLightBlue);
+        check(Arrays.equals(airfieldMixed,new int[]{white,oldMagenta,finalLightBlue}),
+                "last family stacks above preserved white/magenta image values");
+        check(Arrays.equals(DecalStackRules.peel(airfieldMixed),
+                new int[]{white,oldMagenta}),
+                "slime removes top light-blue layer, retaining saved older decals");
+        check(Arrays.equals(DecalStackRules.sanitized(airfieldMixed),airfieldMixed),
+                "mixed original+final color data round-trips sanitation");
+        check(DecalStackRules.append(airfieldMixed,finalLightBlue).length==3,
+                "all sixteen completed families obey three-layer cap");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int selected=DecalStackRules.nextArt(DecalStackRules.LIGHT_BLUE,variant,2,slot);
+            check(selected>=0&&selected<6,
+                "final family has valid artwork for every box variant and anchor");
+        }
+        for(int family=0;family<16;family++){
+            check(DecalStackRules.supportedColor(family),
+                "full 16-color coverage; no unsupported carpet family "+family);
+            check(DecalStackRules.artCount(family)==6,
+                "all 16 families have six artworks: "+family);
+            for(int artIndex=0;artIndex<6;artIndex++){
+                int saved=DecalStackRules.pack(family,artIndex,8);
+                check(DecalStackRules.isValid(saved)
+                    &&DecalStackRules.color(saved)==family
+                    &&DecalStackRules.art(saved)==artIndex,
+                    "all 96 IDs retain exact stored color and art index");
+            }
+        }
+        check(!DecalStackRules.supportedColor(16),
+                "no 17th color beyond vanilla carpet palette");
+        System.out.println("PASS: "+count+"/"+count+" sixteen-carpet decal stack, peeling and ID tests");
     }
 }

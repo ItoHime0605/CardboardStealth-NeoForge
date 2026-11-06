@@ -110,5 +110,11 @@
   "tooltip.cardboardstealth.magenta_2": "Layer %s: Field Medical Supply Bag",
   "tooltip.cardboardstealth.magenta_3": "Layer %s: Last Emergency Rescue Van",
   "tooltip.cardboardstealth.magenta_4": "Layer %s: Improvised Infusion Station",
-  "tooltip.cardboardstealth.magenta_5": "Layer %s: Folding Evacuation Stretcher"
+  "tooltip.cardboardstealth.magenta_5": "Layer %s: Folding Evacuation Stretcher",
+  "tooltip.cardboardstealth.light_blue_0": "Layer %s: Last Airport Control Tower",
+  "tooltip.cardboardstealth.light_blue_1": "Layer %s: Grounded Twin-Prop Cargo Aircraft",
+  "tooltip.cardboardstealth.light_blue_2": "Layer %s: Airdropped Supply Parachute",
+  "tooltip.cardboardstealth.light_blue_3": "Layer %s: Terminal Departure Board",
+  "tooltip.cardboardstealth.light_blue_4": "Layer %s: Darkened Runway Guide Lights",
+  "tooltip.cardboardstealth.light_blue_5": "Layer %s: Recovered Flight Data Recorder"
 }

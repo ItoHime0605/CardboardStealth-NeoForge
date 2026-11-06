@@ -110,5 +110,11 @@
   "tooltip.cardboardstealth.magenta_2": "第 %s 層：野戰醫療補給包",
   "tooltip.cardboardstealth.magenta_3": "第 %s 層：末班緊急救援車",
   "tooltip.cardboardstealth.magenta_4": "第 %s 層：臨時輸液觀測站",
-  "tooltip.cardboardstealth.magenta_5": "第 %s 層：折疊式傷患搬運擔架"
+  "tooltip.cardboardstealth.magenta_5": "第 %s 層：折疊式傷患搬運擔架",
+  "tooltip.cardboardstealth.light_blue_0": "第 %s 層：最後一座機場管制塔",
+  "tooltip.cardboardstealth.light_blue_1": "第 %s 層：停飛的雙螺旋槳貨機",
+  "tooltip.cardboardstealth.light_blue_2": "第 %s 層：空投補給降落傘",
+  "tooltip.cardboardstealth.light_blue_3": "第 %s 層：失去航班的出發看板",
+  "tooltip.cardboardstealth.light_blue_4": "第 %s 層：熄滅的跑道指示燈",
+  "tooltip.cardboardstealth.light_blue_5": "第 %s 層：失聯航班飛行紀錄器"
 }
