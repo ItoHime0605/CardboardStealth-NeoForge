@@ -66,6 +66,18 @@ public final class StickerPrinterMenu extends AbstractContainerMenu {
                         ? inventory.getItem(0).getCount():0,
                 dyeCount(),color(),pattern(),inventory.getItem(2).isEmpty());
     }
+    /** Explain exactly why the print button cannot operate yet. */
+    public String printStatusKey(){
+        if(!inventory.getItem(2).isEmpty())
+            return "gui.cardboardstealth.printer.take_output";
+        if(!inventory.getItem(0).is(ModItems.BLANK_STICKER.get()))
+            return "gui.cardboardstealth.printer.missing_blank";
+        if(color()<0)
+            return "gui.cardboardstealth.printer.missing_dye";
+        if(dyeCount()<StickerPrinterRules.requiredDye(pattern()))
+            return "gui.cardboardstealth.printer.insufficient_dye";
+        return "gui.cardboardstealth.printer.ready";
+    }
     @Override public boolean clickMenuButton(Player player,int id){
         // The client has a SimpleContainer, not the actual BlockEntity.
         // Minecraft only sends a menu-button packet when the local menu
