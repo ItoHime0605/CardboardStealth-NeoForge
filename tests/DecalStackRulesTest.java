@@ -42,14 +42,14 @@ public final class DecalStackRulesTest {
                 new int[]{white}),"second peel leaves original white layer");
         check(DecalStackRules.append(combined,gray).length==3,
                 "fourth mixed-color sticker is rejected");
-        for(int col=0;col<=2;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
+        for(int col=0;col<=3;col++)for(int art=0;art<6;art++)for(int anchor=0;anchor<9;anchor++) {
             int entry=DecalStackRules.pack(col,art,anchor);
             check(DecalStackRules.isValid(entry),"all real art codes are valid");
             check(DecalStackRules.color(entry)==col,"carpet color survives packing");
             check(DecalStackRules.art(entry)==art,"art number survives packing");
             check(DecalStackRules.anchor(entry)==anchor,"location survives packing");
         }
-        for(int col=3;col<16;col++){
+        for(int col=4;col<16;col++){
             check(!DecalStackRules.supportedColor(col),"unfinished carpet not implemented yet");
             check(!DecalStackRules.isValid(DecalStackRules.pack(col,0,0)),
                     "unsupported art rejected, no blank texture");
@@ -78,6 +78,27 @@ public final class DecalStackRulesTest {
         check(DecalStackRules.artCount(DecalStackRules.GRAY)==6,"exactly 6 gray artworks");
         check(!DecalStackRules.isValid(DecalStackRules.pack(2,6,0)),
                 "gray art ID 6 rejected rather than rendering nothing");
-        System.out.println("PASS: "+count+"/"+count+" tricolor decal stack, slime peeling, palette tests");
+        // New black art must coexist with every already-saved three-layer
+        // combination; a black sticker is a regular newest-on-top layer.
+        int black=DecalStackRules.pack(DecalStackRules.BLACK,5,4);
+        int[] mixed=DecalStackRules.append(
+                DecalStackRules.append(DecalStackRules.append(new int[0],
+                        DecalStackRules.pack(DecalStackRules.WHITE,0,4)),
+                        DecalStackRules.pack(DecalStackRules.GRAY,2,4)), black);
+        check(mixed.length==3, "three mixed families with black on top");
+        check(mixed[2]==black, "black decal appended after gray");
+        check(DecalStackRules.peel(mixed)[1]==DecalStackRules.pack(DecalStackRules.GRAY,2,4),
+                "peeling black leaves the original gray");
+        check(DecalStackRules.append(mixed,black).length==3, "no fourth black layer");
+        check(DecalStackRules.isValid(black), "black artwork decodes correctly");
+        check(DecalStackRules.color(black)==DecalStackRules.BLACK, "black color tag preserved");
+        check(DecalStackRules.artCount(DecalStackRules.BLACK)==6, "six completed black designs");
+        check(!DecalStackRules.isValid(DecalStackRules.pack(DecalStackRules.BLACK,6,4)),
+                "missing black art never stored as an invisible layer");
+        for(int variant=1;variant<=19;variant++)for(int slot=0;slot<9;slot++){
+            int art=DecalStackRules.nextArt(DecalStackRules.BLACK,variant,2,slot);
+            check(art>=0&&art<6, "valid black decal selection for every box and anchor");
+        }
+        System.out.println("PASS: "+count+"/"+count+" four-carpet decal stack, peeling and ID tests");
     }
 }
