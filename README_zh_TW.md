@@ -1,4 +1,4 @@
-# Cardboard Stealth／紙箱潛行 — 0.1.38-alpha 開發原始碼
+# Cardboard Stealth／紙箱潛行 — 0.1.39-alpha 開發原始碼
 
 > **0.1.7-alpha 已成功透過 GitHub Actions 編譯；0.1.8-alpha 的編譯須以對應 Actions 紀錄確認。** 尚未完成 Minecraft 多人伺服器實際驗收。
 
@@ -65,7 +65,7 @@ java -cp /tmp/cardboard-rules BoxDetectionRulesTest
 gradle --no-daemon build
 ```
 
-理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.38-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
+理論輸出檔名：`cardboardstealth-neoforge-1.21.1-0.1.39-alpha.jar`，**只有真正編譯成功後**才可用於測試伺服器。GitHub Actions 工作流程也會使用這個版本名稱。
 
 
 ## 測試提醒
@@ -579,3 +579,15 @@ CI 擴充十五組總計 **90 張原創圖案**和十五張 atlas 逐像素比�
 本版完整性驗證以 **16 組 × 6 款 = 96 張原創貼花**及 **16 張對應圖集**為目標，逐像素檢查每張圖和圖集的一致性、圖案唯一性、透明度、圖片大小與本次淺藍美術對比。新增十六色資料封頂、舊貼花編碼、九位置、三層拆除與染色保留規則測試。
 
 GitHub Actions 編譯成功只代表資源／程式碼檢查通過；Minecraft 1.21.1 NeoForge 的玩家穿戴、Curios、多人同步、TaCZ、Zombie Awareness 以及遊戲內視覺位置仍需另外實機驗收。
+
+## 0.1.39-alpha｜實機驗收修正：恢復原創 2D 圖、手持小紙箱精修及大型視孔黑遮罩
+
+本版根據使用者在 Minecraft 1.21.1 NeoForge 裡實際看到的紫黑膠帶、背包圖示被改壞，以及不自然手持姿勢直接修正視覺模型；**不改動十六色 96 張貼花、三層合成、偽裝索敵與 TaCZ／Curios 行為。**
+
+- **恢復原有的 2D 道具美術**：三款既有紙箱使用原始 `textures/item/{cardboard_box,delivery_box,supply_box}.png`；16 色使用玩家先前喜歡的 64×64 染色圖 `textures/item/colored/<color>_cardboard_box.png`。不再把 0.1.22 新增的端正背面視角 `textures/item/straight` 當作物品欄圖片。保留 `neoforge:separate_transforms`，因此背包/創造模式仍是 2D，第一/第三人稱手持、地面掉落/展示框才是 3D。原有 2D 小貼紙預覽與 tooltip 保留。
+- **修正小型 3D 紙箱紫黑缺失貼圖**：舊 mini 模型引用 `cardboardstealth:entity/tape_refined`、`cardboardstealth:entity/recycle_stamp`；實體材質不保證會被物品/方塊圖集縫合，因而造成使用者截圖中封箱膠帶的紫黑缺材質。現由 `gradle/cardboard_textures.gradle` 另產生 **`textures/item/mini/packing_tape.png`**、**`textures/item/mini/recycle_stamp.png`**，mini 模型只引用這兩個物品圖集可載入的素材；大型穿戴紙箱仍繼續使用原有實體貼圖。
+- **精修小型 3D 模型**：封箱膠帶頂部與前後摺邊的模型座標重新搭接，避免在接縫處露出紙色。修整模型各面 UV，追加貼合紙箱染色的上蓋雙側折線、前後底沿、四條角落壓痕和兩條微浮起膠帶邊緣，模型由 17 組元素增加至 27 組；小模型仍維持原有細長視孔及背面回收標誌。
+- **重新設定真正後側抓握的手持姿勢**：原本第一人稱 `Y±45°` 露出太多側面，改為 `Y±166°`，第三人稱改為 `Y±162°`，將背面與底後緣朝向玩家手掌，前側視孔朝外。旋轉 X 約 28°/48°，微調平移與比例，讓小紙箱更像從後底部托起，而不是側夾立方體。左右手鏡像分開設定；掉落模型維持正向擺放且略縮小。
+- **大型穿戴紙箱狹長孔改用內部黑暗遮罩**：移除抽取玩家 SKIN 的眼鼻局部繪製，以及相關 face UV vertex；保留狹長的紙板內壁與薄邊，在後方 Z=-9.35 處加入固定暖黑、略有深度的 `slit_blackout` 層。此層不隨 16 色染色；**不影響玩家第一人稱視野用的較大 UI 遮罩**，亦不改箱底原有遮光襯板。
+
+增加 19 件物品原創 2D/3D 分離檢查、模型手持與貼圖正確路徑的靜態測試、JAR 內貼圖實際解碼與透明／色彩測試，以及大型紙箱臉部移除和黑色孔洞的幾何接線檢查。**CI 通過不能宣稱手持姿勢已經完成遊戲實測**；須再次由玩家在第一人稱、第三人稱、掉落狀態、背包 2D 與各色紙箱穿戴畫面確認。
