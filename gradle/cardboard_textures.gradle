@@ -8,7 +8,7 @@ import javax.imageio.ImageIO
 def generatedBoxTextures = layout.buildDirectory.dir('generated/cardboard-textures')
 
 tasks.register('generateCardboardTextures') {
-    inputs.property('texture-art-version', '2026-11-06-recycle-reference-v4')
+    inputs.property('texture-art-version', '2026-11-06-polygon-mini-icons-v5')
     inputs.file(file('src/main/cardboard_art/recycle_mark_32.txt'))
     inputs.files(
         file('src/main/resources/assets/cardboardstealth/textures/item/box_dye_base.png'),
@@ -18,8 +18,12 @@ tasks.register('generateCardboardTextures') {
         File root = generatedBoxTextures.get().asFile
         File entityDir = new File(root, 'assets/cardboardstealth/textures/entity')
         File itemDir = new File(root, 'assets/cardboardstealth/textures/item/colored')
+        File flatDir = new File(root, 'assets/cardboardstealth/textures/item/straight')
+        File miniDir = new File(root, 'assets/cardboardstealth/textures/item/mini')
         entityDir.mkdirs()
         itemDir.mkdirs()
+        flatDir.mkdirs()
+        miniDir.mkdirs()
         final int SIZE = 128
         java.util.Random random = new java.util.Random(606011L)
         BufferedImage paper = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_ARGB)
@@ -111,7 +115,88 @@ tasks.register('generateCardboardTextures') {
                     "Cardboard icon unexpectedly transparent: "+names[i]+" ("+opaque+" opaque pixels)")
             ImageIO.write(finalIcon,'png',new File(itemDir,names[i]+'_cardboard_box.png'))
         }
-        println 'Generated three 128px entity textures and sixteen complete opaque-base 64px dyed box icons.'
+        // Independent 2D sprites are FRONT-ON rather than the formerly angled
+        // icon. A 2D inventory sprite is different from the miniature 3D
+        // cardboard used in hands / as a dropped item.
+        //
+        // The same palette is baked into the 3D miniature's paper material:
+        // no runtime item tint layer or custom BEWLR is involved.
+        Map<String,Integer> variants = [
+            cardboard_box:0xCF9B66,
+            delivery_box:0xAD4A40,
+            supply_box:0x608044
+        ]
+        for (int i=0;i<names.size();i++)
+            variants[names[i]+'_cardboard_box'] = colors[i]
+
+        for (Map.Entry<String,Integer> entry : variants.entrySet()) {
+            String name = entry.key
+            int tint = entry.value
+
+            // Full-coverage matte 128px paper texture for the real 3D miniature
+            // (the free-standing box uses the separate existing worn-box layer).
+            BufferedImage paper3d = new BufferedImage(128,128,BufferedImage.TYPE_INT_ARGB)
+            for(int y=0;y<128;y++)for(int x=0;x<128;x++){
+                int q=paper.getRGB(x,y)
+                int bright=((q>>16)&255)
+                int red=Math.round(((tint>>16)&255)*bright/255F)
+                int green=Math.round(((tint>>8)&255)*bright/255F)
+                int blue=Math.round((tint&255)*bright/255F)
+                paper3d.setRGB(x,y,0xFF000000|(red<<16)|(green<<8)|blue)
+            }
+            ImageIO.write(paper3d,'png',new File(miniDir,name+'_paper.png'))
+
+            // Back of a cardboard, viewed straight-on in the 2D inventory slot:
+            // top tape, delicate seams, matte paper and a crisp recycle icon.
+            // 64x64 RGBA: transparent background, fully opaque box body.
+            BufferedImage flat = new BufferedImage(64,64,BufferedImage.TYPE_INT_ARGB)
+            int outline = 0xFF000000 | (Math.round(((tint>>16)&255)*0.36F)<<16) |
+                    (Math.round(((tint>>8)&255)*0.36F)<<8) |
+                    Math.round((tint&255)*0.36F)
+            int fold = 0xFF000000 | (Math.round(((tint>>16)&255)*0.59F)<<16) |
+                    (Math.round(((tint>>8)&255)*0.59F)<<8) |
+                    Math.round((tint&255)*0.59F)
+            // A precise pixel rectangular silhouette, no angled 3D perspective.
+            for(int y=7;y<=56;y++)for(int x=9;x<=54;x++){
+                boolean border = (x==9||x==54||y==7||y==56)
+                if (border){flat.setRGB(x,y,outline);continue}
+                int ref = paper3d.getRGB((x*7)%128,(y*11)%128)
+                float shadow = x<13?0.78F:(x>51?0.87F:(y>47?0.90F:1.0F))
+                int rr=Math.round(((ref>>16)&255)*shadow)
+                int gg=Math.round(((ref>>8)&255)*shadow)
+                int bb=Math.round((ref&255)*shadow)
+                flat.setRGB(x,y,0xFF000000|(rr<<16)|(gg<<8)|bb)
+            }
+            for(int x=10;x<54;x++){
+                flat.setRGB(x,48,fold) // fold where the lower closure begins
+                if(x>=13 && x<=50)flat.setRGB(x,11,fold)
+            }
+            // The rear right has a readable 13px green recycle mark.
+            for (int oy=0;oy<13;oy++)for (int ox=0;ox<13;ox++) {
+                int srcX=Math.min(31,Math.round((ox+0.5F)*32F/13F))
+                int srcY=Math.min(31,Math.round((oy+0.5F)*32F/13F))
+                if(symbol[srcY].charAt(srcX)=='#')
+                    flat.setRGB(36+ox,33+oy,darkGreen)
+            }
+            // Vertical folded seal and restrained paper tape on top.
+            for (int y=8;y<=23;y++)for (int x=29;x<=34;x++){
+                int sample=tape.getRGB(x*3,y*4)
+                flat.setRGB(x,y,sample)
+            }
+            // Raised 1px tape edges keep the design pixel-art rather than smooth.
+            for(int y=8;y<=22;y++) {
+                flat.setRGB(28,y,fold)
+                flat.setRGB(35,y,fold)
+            }
+            // Slightly projecting pair of lower flaps, still in a frontal 2D view.
+            for(int x=7;x<57;x++) {
+                if(x==7||x==56)flat.setRGB(x,55,outline)
+                else flat.setRGB(x,55,fold)
+            }
+            ImageIO.write(flat,'png',new File(flatDir,name+'.png'))
+        }
+
+        println 'Generated 19 crisp straight-on 2D sprites, 19 mini 3D paper textures, 16 legacy dyed sprites and 3 worn-entity textures.'
     }
 }
 
