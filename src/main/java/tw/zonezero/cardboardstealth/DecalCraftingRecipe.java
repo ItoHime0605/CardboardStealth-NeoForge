@@ -1,7 +1,6 @@
 package tw.zonezero.cardboardstealth;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -11,98 +10,68 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 /**
- * One paper box plus exactly one finished carpet (white/light gray/gray/black/red/orange/yellow/lime/pink/brown/green/cyan/blue/purple/magenta/light blue) or slime ball.
- * The source stack, other component data and oldest decorations survive.
- * Additional carpet families will be introduced only after their art exists.
+ * Printed sticker + any cardboard box adds exactly the chosen artwork.
+ * The dye count was consumed when crafting the physical sticker, never
+ * chosen randomly from the box variant or slot.
+ *
+ * Box + slime ball still peels only the latest existing layer.
  */
 public final class DecalCraftingRecipe extends CustomRecipe {
     public static final int PEEL = -1;
-    private final int color;
-    private final Item ingredient;
-    public DecalCraftingRecipe(CraftingBookCategory category, int color) {
+    public static final int APPLY = 1;
+    private final int operation;
+
+    public DecalCraftingRecipe(CraftingBookCategory category, int operation) {
         super(category);
-        this.color = color;
-        this.ingredient = switch (color) {
-            case PEEL -> Items.SLIME_BALL;
-            case DecalStackRules.WHITE -> Items.WHITE_CARPET;
-            case DecalStackRules.LIGHT_GRAY -> Items.LIGHT_GRAY_CARPET;
-            case DecalStackRules.GRAY -> Items.GRAY_CARPET;
-            case DecalStackRules.BLACK -> Items.BLACK_CARPET;
-            case DecalStackRules.RED -> Items.RED_CARPET;
-            case DecalStackRules.ORANGE -> Items.ORANGE_CARPET;
-            case DecalStackRules.YELLOW -> Items.YELLOW_CARPET;
-            case DecalStackRules.LIME -> Items.LIME_CARPET;
-            case DecalStackRules.PINK -> Items.PINK_CARPET;
-            case DecalStackRules.BROWN -> Items.BROWN_CARPET;
-            case DecalStackRules.GREEN -> Items.GREEN_CARPET;
-            case DecalStackRules.CYAN -> Items.CYAN_CARPET;
-            case DecalStackRules.BLUE -> Items.BLUE_CARPET;
-            case DecalStackRules.PURPLE -> Items.PURPLE_CARPET;
-            case DecalStackRules.MAGENTA -> Items.MAGENTA_CARPET;
-            case DecalStackRules.LIGHT_BLUE -> Items.LIGHT_BLUE_CARPET;
-            default -> throw new IllegalArgumentException("No finished decal for carpet: " + color);
-        };
+        if (operation != PEEL && operation != APPLY)
+            throw new IllegalArgumentException("Unknown sticker recipe operation");
+        this.operation = operation;
     }
 
-    private record RecipeInputs(ItemStack box, int ingredientSlot) {}
+    private record RecipeInputs(ItemStack box, int stickerSlot, DecalStickerItem sticker) {}
     private RecipeInputs parse(CraftingInput input) {
         ItemStack box = ItemStack.EMPTY;
-        int materialSlot = -1;
+        int stickerSlot = -1;
+        DecalStickerItem printedSticker = null;
         int count = 0;
-        for (int i = 0; i < input.size(); i++) {
-            ItemStack stack = input.getItem(i);
-            if (stack.isEmpty()) continue;
+        for (int i=0;i<input.size();i++) {
+            ItemStack stack=input.getItem(i);
+            if(stack.isEmpty())continue;
             count++;
-            if (ModItems.variant(stack.getItem()) != 0 && box.isEmpty()) {
-                box = stack;
-            } else if (materialSlot < 0 && stack.is(ingredient)) {
-                materialSlot = i;
-            } else {
-                return null;
-            }
+            if(box.isEmpty() && ModItems.variant(stack.getItem()) != 0) {
+                box=stack;
+            } else if(stickerSlot<0 && operation==PEEL && stack.is(Items.SLIME_BALL)) {
+                stickerSlot=i;
+            } else if(stickerSlot<0 && operation==APPLY &&
+                    stack.getItem() instanceof DecalStickerItem sticker) {
+                stickerSlot=i;
+                printedSticker=sticker;
+            } else return null;
         }
-        if (count != 2 || box.isEmpty() || materialSlot < 0) return null;
-        int existing = DecalItemData.get(box).length;
-        if (color == PEEL ? existing == 0 : existing >= DecalStackRules.MAX_LAYERS) return null;
-        return new RecipeInputs(box, materialSlot);
+        if(count!=2 || box.isEmpty() || stickerSlot<0)return null;
+        int existing=DecalItemData.get(box).length;
+        if(operation==PEEL ? existing==0 : existing>=DecalStackRules.MAX_LAYERS)return null;
+        return new RecipeInputs(box,stickerSlot,printedSticker);
     }
 
     @Override
-    public boolean matches(CraftingInput input, Level level) { return parse(input) != null; }
+    public boolean matches(CraftingInput input, Level level) { return parse(input)!=null; }
 
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
-        RecipeInputs data = parse(input);
-        if (data == null) return ItemStack.EMPTY;
-        int anchor = Math.floorMod(data.ingredientSlot(), DecalStackRules.ANCHORS);
-        return color == PEEL ? DecalItemData.peel(data.box())
-                : DecalItemData.addCarpet(data.box(), color, anchor);
+        RecipeInputs data=parse(input);
+        if(data==null)return ItemStack.EMPTY;
+        if(operation==PEEL)return DecalItemData.peel(data.box());
+        return DecalItemData.addSticker(data.box(),data.sticker().color(),
+                data.sticker().artwork(),
+                Math.floorMod(data.stickerSlot(), DecalStackRules.ANCHORS));
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) { return width * height >= 2; }
+    public boolean canCraftInDimensions(int width, int height) { return width*height>=2; }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return switch (color) {
-            case PEEL -> ModRecipes.PEEL.get();
-            case DecalStackRules.WHITE -> ModRecipes.WHITE.get();
-            case DecalStackRules.LIGHT_GRAY -> ModRecipes.LIGHT_GRAY.get();
-            case DecalStackRules.GRAY -> ModRecipes.GRAY.get();
-            case DecalStackRules.BLACK -> ModRecipes.BLACK.get();
-            case DecalStackRules.RED -> ModRecipes.RED.get();
-            case DecalStackRules.ORANGE -> ModRecipes.ORANGE.get();
-            case DecalStackRules.YELLOW -> ModRecipes.YELLOW.get();
-            case DecalStackRules.LIME -> ModRecipes.LIME.get();
-            case DecalStackRules.PINK -> ModRecipes.PINK.get();
-            case DecalStackRules.BROWN -> ModRecipes.BROWN.get();
-            case DecalStackRules.GREEN -> ModRecipes.GREEN.get();
-            case DecalStackRules.CYAN -> ModRecipes.CYAN.get();
-            case DecalStackRules.BLUE -> ModRecipes.BLUE.get();
-            case DecalStackRules.PURPLE -> ModRecipes.PURPLE.get();
-            case DecalStackRules.MAGENTA -> ModRecipes.MAGENTA.get();
-            case DecalStackRules.LIGHT_BLUE -> ModRecipes.LIGHT_BLUE.get();
-            default -> throw new IllegalStateException("Missing decal serializer for " + color);
-        };
+        return operation==PEEL?ModRecipes.PEEL.get():ModRecipes.APPLY.get();
     }
 }
