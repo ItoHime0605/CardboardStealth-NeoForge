@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -37,7 +36,7 @@ public final class StickerPrinterBlock extends BaseEntityBlock {
     @Nullable @Override public BlockEntity newBlockEntity(BlockPos pos,BlockState state){
         return new StickerPrinterBlockEntity(pos,state);
     }
-    @Override protected MenuProvider getMenuProvider(BlockState state,Level level,BlockPos pos){
+    @Override public MenuProvider getMenuProvider(BlockState state,Level level,BlockPos pos){
         return level.getBlockEntity(pos) instanceof StickerPrinterBlockEntity printer
                 ?printer:null;
     }
