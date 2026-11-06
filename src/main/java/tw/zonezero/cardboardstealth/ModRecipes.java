@@ -66,6 +66,11 @@ public final class ModRecipes {
                     new SimpleCraftingRecipeSerializer<>(cat ->
                             new DecalCraftingRecipe(cat, DecalStackRules.BROWN)));
 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DecalCraftingRecipe>> GREEN =
+            SERIALIZERS.register("decal_green_carpet", () ->
+                    new SimpleCraftingRecipeSerializer<>(cat ->
+                            new DecalCraftingRecipe(cat, DecalStackRules.GREEN)));
+
     /** Redyeing the old cardboard MUST retain decal custom data. */
     public static final Map<String, DeferredHolder<RecipeSerializer<?>,RecipeSerializer<RecolorDecalRecipe>>> RECOLOR;
     static {

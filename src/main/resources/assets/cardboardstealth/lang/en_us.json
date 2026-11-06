@@ -80,5 +80,11 @@
   "tooltip.cardboardstealth.brown_2": "Layer %s: Improvised Water Filter Diagram",
   "tooltip.cardboardstealth.brown_3": "Layer %s: Wilderness Compass and Trail Map",
   "tooltip.cardboardstealth.brown_4": "Layer %s: Patched Waterproof Travel Satchel",
-  "tooltip.cardboardstealth.brown_5": "Layer %s: Scrap Hauling Handcart"
+  "tooltip.cardboardstealth.brown_5": "Layer %s: Scrap Hauling Handcart",
+  "tooltip.cardboardstealth.green_0": "Layer %s: Wasteland Watchtower",
+  "tooltip.cardboardstealth.green_1": "Layer %s: Improvised Roadblock",
+  "tooltip.cardboardstealth.green_2": "Layer %s: Field Respirator Mask",
+  "tooltip.cardboardstealth.green_3": "Layer %s: Emergency Signal Mast",
+  "tooltip.cardboardstealth.green_4": "Layer %s: Reinforced Shelter Gate",
+  "tooltip.cardboardstealth.green_5": "Layer %s: Night Patrol Floodlight"
 }
