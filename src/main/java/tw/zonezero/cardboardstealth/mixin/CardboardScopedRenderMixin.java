@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import tw.zonezero.cardboardstealth.BoxRenderRules;
 import tw.zonezero.cardboardstealth.client.CardboardLayer;
 import tw.zonezero.cardboardstealth.client.ClientBoxState;
 
@@ -41,7 +42,7 @@ public abstract class CardboardScopedRenderMixin {
     private void cardboardstealth$hideOnlyThisPlayerBody(LivingEntity entity,
             boolean bodyVisible, boolean translucent, boolean glowing,
             CallbackInfoReturnable<RenderType> cir) {
-        if (cardboardstealth$disguised(entity)) {
+        if (!BoxRenderRules.renderBody(cardboardstealth$disguised(entity))) {
             cir.setReturnValue(null);
         }
     }
@@ -61,8 +62,8 @@ public abstract class CardboardScopedRenderMixin {
             Entity renderedEntity, float limbSwing, float limbSwingAmount,
             float partialTick, float ageInTicks, float netHeadYaw, float headPitch,
             Operation<Void> original) {
-        if (cardboardstealth$disguised(renderedEntity)
-                && !(layer instanceof CardboardLayer)) {
+        if (!BoxRenderRules.renderAttachedLayer(
+                cardboardstealth$disguised(renderedEntity), layer instanceof CardboardLayer)) {
             return;
         }
         original.call(layer, matrices, buffers, packedLight, renderedEntity,
