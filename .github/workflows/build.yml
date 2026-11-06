@@ -93,8 +93,8 @@ jobs:
           assert 'ContainerHelper.saveAllItems' in be and 'ContainerHelper.loadAllItems' in be
           assert 'StickerPrinterRules.canPrint(' in be and 'removeItem(DYE,cost)' in be
           assert 'removeItem(BLANK,1)' in be
-          assert 'if(level==null||level.isClientSide||!canPrint())return false' in be
-          assert 'if(!state.is(next.getBlock()))' in block
+          assert 'level==null||level.isClientSide||level.getBlockEntity(worldPosition)!=this||!canPrint()' in be
+          assert 'if(!level.isClientSide && !state.is(next.getBlock()))' in block
           assert 'case DYE' in be and 'case BLANK' in be
           assert 'StickerPrinterRules.outputId(' in be
           assert 'clickMenuButton(Player player,int id)' in menu
@@ -108,6 +108,39 @@ jobs:
           assert 'ModMachines.MENUS.register(modBus)' in entry
           assert "apply from: 'gradle/cardboard_printer_art.gradle'" in Path('build.gradle').read_text()
           print('PASS: 19/19 server-authoritative printing, persistence, GUI and 3D machine integration checks')
+          PY
+      - name: Regression-check functional client buttons, saved three-slot inventory and GUI help
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          root=Path('src/main/java/tw/zonezero/cardboardstealth')
+          menu=(root/'StickerPrinterMenu.java').read_text()
+          block=(root/'StickerPrinterBlock.java').read_text()
+          entity=(root/'StickerPrinterBlockEntity.java').read_text()
+          screen=(root/'client/StickerPrinterScreen.java').read_text()
+          assert 'if(id>=0 && id<StickerPrinterRules.PATTERNS)' in menu
+          assert 'if(machine==null) {' in menu and 'data.set(0,id)' in menu
+          assert 'if(machine==null)return printEnabled()' in menu
+          assert 'if(!stillValid(player) || !machine.print())return false' in menu
+          assert 'handleInventoryButtonClick(menu.containerId,pattern)' in screen
+          assert 'StickerPrinterMenu.PRINT' in screen
+          assert 'inventory.clear();' not in entity.split('loadAdditional')[1].split('selectedPattern')[0]
+          assert 'inventory.add(ItemStack.EMPTY)' not in entity
+          assert 'ContainerHelper.loadAllItems(tag,inventory,registries);' in entity
+          assert 'NonNullList.withSize(SLOTS,ItemStack.EMPTY)' in entity
+          assert 'level.getBlockEntity(worldPosition)==this' in entity
+          assert 'level.getBlockState(worldPosition).is(ModMachines.PRINTER.get())' in entity
+          assert 'player.distanceToSqr(worldPosition.getX()+0.5' in entity
+          assert '!level.isClientSide && !state.is(next.getBlock())' in block
+          assert 'menu.printStatusKey()' in screen
+          assert 'g.renderTooltip(font,Component.translatable(' in screen
+          assert '"NO INK"' not in screen
+          for lang in ('zh_tw','en_us'):
+              d=json.loads(Path('src/main/resources/assets/cardboardstealth/lang/'+lang+'.json').read_text())
+              for key in ('missing_blank','missing_dye','insufficient_dye','take_output','ready'):
+                  assert d.get('gui.cardboardstealth.printer.'+key),lang+' missing '+key
+          print('PASS: client buttons forward correctly, fixed-size reload, range checks, server-only drops and useful GUI explanations')
           PY
       - name: Check 16 dye colors and model movement
         run: |
@@ -448,5 +481,5 @@ jobs:
           java -cp build/rule-tests CardboardAssetIntegrityTest "$(find build/libs -maxdepth 1 -name 'cardboardstealth-neoforge-*.jar' -print -quit)"
       - uses: actions/upload-artifact@v4
         with:
-          name: cardboardstealth-neoforge-1.21.1-0.1.41-alpha
+          name: cardboardstealth-neoforge-1.21.1-0.1.42-alpha
           path: build/libs/*.jar

@@ -323,5 +323,10 @@
   "gui.cardboardstealth.printer.no_dye": "未選擇顏色",
   "gui.cardboardstealth.printer.insert_dye": "放入同色染料後選擇圖案",
   "gui.cardboardstealth.printer.cost": "染料需求：%s／現有：%s",
-  "tooltip.cardboardstealth.printer": "投入空白貼紙與同色染料，選擇 1～6 號圖案後列印成品。"
+  "tooltip.cardboardstealth.printer": "投入空白貼紙與同色染料，選擇 1～6 號圖案後列印成品。",
+  "gui.cardboardstealth.printer.missing_blank": "請先放入空白貼紙。",
+  "gui.cardboardstealth.printer.missing_dye": "請先放入任一顏色的染料。",
+  "gui.cardboardstealth.printer.insufficient_dye": "染料不足，請補足此圖樣所需數量。",
+  "gui.cardboardstealth.printer.take_output": "請先領取出紙槽中的成品。",
+  "gui.cardboardstealth.printer.ready": "材料齊全，按下即可印製指定圖樣。"
 }
