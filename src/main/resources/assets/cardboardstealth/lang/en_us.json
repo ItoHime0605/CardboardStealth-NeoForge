@@ -92,5 +92,11 @@
   "tooltip.cardboardstealth.cyan_2": "Layer %s: Field Anemometer Diagram",
   "tooltip.cardboardstealth.cyan_3": "Layer %s: Upper-Atmosphere Weather Balloon",
   "tooltip.cardboardstealth.cyan_4": "Layer %s: Abnormal Barometer Reading",
-  "tooltip.cardboardstealth.cyan_5": "Layer %s: Lost Satellite Ground Station"
+  "tooltip.cardboardstealth.cyan_5": "Layer %s: Lost Satellite Ground Station",
+  "tooltip.cardboardstealth.blue_0": "Layer %s: Last Coastal Lighthouse",
+  "tooltip.cardboardstealth.blue_1": "Layer %s: Low-Tide Shipwreck",
+  "tooltip.cardboardstealth.blue_2": "Layer %s: Battered Navigation Buoy",
+  "tooltip.cardboardstealth.blue_3": "Layer %s: Abandoned Harbor Cargo Crane",
+  "tooltip.cardboardstealth.blue_4": "Layer %s: No-Return Sea Chart",
+  "tooltip.cardboardstealth.blue_5": "Layer %s: Antique Deepwater Diving Helmet"
 }
